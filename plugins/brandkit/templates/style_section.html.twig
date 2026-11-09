@@ -39,14 +39,61 @@
     {{ __('Structured visual restyling (menus, shape, elevation, motion, density, gradients, watermarks). Settings generate CSS variables and a small set of stable GLPI/Tabler selectors. Free-form CSS above is still applied last.', 'brandkit') }}
 </p>
 
-<div class="mb-3 d-flex flex-wrap gap-2" id="brandkit-presets">
-    {% for key, preset in style_presets %}
-        <button type="button" class="btn btn-outline-primary btn-sm brandkit-apply-preset" data-preset="{{ key }}" {% if not can_edit %}disabled{% endif %}>
-            {{ preset.label }}
-        </button>
+<input type="hidden" name="style[preset]" value="{{ style.preset|e('html_attr') }}" />
+<input type="hidden" name="apply_preset" id="brandkit-apply-preset" value="" />
+
+<div class="brandkit-gallery-toolbar mb-2 d-flex flex-wrap gap-2 align-items-center">
+    <span class="text-muted">{{ __('Browse a template, try it on this page, then Apply to copy it into the form. Save the entity to persist.', 'brandkit') }}</span>
+    <button type="button" class="btn btn-sm btn-outline-secondary" id="brandkit-try-cancel" hidden>
+        {{ __('Cancel try-it', 'brandkit') }}
+    </button>
+</div>
+<div class="brandkit-gallery mb-4" id="brandkit-gallery" data-testid="brandkit-gallery">
+    {% for tpl in style_templates %}
+        {% set c = tpl.colors %}
+        <article class="brandkit-gallery-card{% if tpl.custom %} is-custom{% endif %}"
+                 data-template="{{ tpl.id }}"
+                 {% if tpl.db_id %}data-db-id="{{ tpl.db_id }}"{% endif %}
+                 style="--g-primary: {{ c.color_primary|default('#0e7490') }}; --g-sidebar: {{ c.color_sidebar|default('#0f172a') }}; --g-header: {{ c.color_header|default('#0e7490') }}; --g-accent: {{ c.color_accent|default('#fe9c5c') }}; --g-radius: {{ tpl.style.radius_cards }}px;">
+            <button type="button" class="brandkit-gallery-hit brandkit-try" {% if not can_edit %}disabled{% endif %} aria-label="{{ __('Try %s', 'brandkit')|format(tpl.name) }}">
+                <div class="brandkit-gallery-thumb" data-sidebar="{{ tpl.style.sidebar_preset }}" data-header="{{ tpl.style.header_style }}">
+                    <div class="g-side"></div>
+                    <div class="g-main">
+                        <div class="g-head"></div>
+                        <div class="g-card"></div>
+                    </div>
+                </div>
+                <h3 class="brandkit-gallery-name">{{ tpl.name }}</h3>
+                <p class="brandkit-gallery-desc">{{ tpl.description }}</p>
+            </button>
+            <div class="brandkit-gallery-actions">
+                <button type="button" class="btn btn-sm btn-outline-primary brandkit-try" data-template="{{ tpl.id }}" {% if not can_edit %}disabled{% endif %}>{{ __('Try it', 'brandkit') }}</button>
+                <button type="button" class="btn btn-sm btn-primary brandkit-apply" data-template="{{ tpl.id }}" {% if not can_edit %}disabled{% endif %}>{{ __('Apply', 'brandkit') }}</button>
+                {% if tpl.custom and can_edit %}
+                    <button type="button" class="btn btn-sm btn-outline-danger brandkit-delete" data-db-id="{{ tpl.db_id }}">{{ __('Delete', 'brandkit') }}</button>
+                {% endif %}
+            </div>
+        </article>
     {% endfor %}
 </div>
-<script type="application/json" id="brandkit-preset-json">{{ style_presets|json_encode|raw }}</script>
+<script type="application/json" id="brandkit-gallery-json">{{ style_templates|json_encode|raw }}</script>
+<script type="application/json" id="brandkit-ui-config">{{ {
+    previewCss: preview_css_url,
+    templateUrl: template_url,
+    canEdit: can_edit
+}|json_encode|raw }}</script>
+
+<div class="mb-4" id="brandkit-save-template">
+    {{ fields.textField('template_name', '', __('Save current look as a template', 'brandkit'), ro|merge({
+        helper: __('Stores a copy in the gallery (not applied until you click Apply). Logos are not included.')
+    })) }}
+    {{ fields.textField('template_description', '', __('Template description', 'brandkit'), ro) }}
+    <button type="button" class="btn btn-outline-secondary" id="brandkit-save-template-btn" {% if not can_edit %}disabled{% endif %}>
+        <i class="ti ti-device-floppy"></i>
+        {{ __('Save as template', 'brandkit') }}
+    </button>
+    <p id="brandkit-template-status" class="text-muted small mt-2" hidden></p>
+</div>
 
 <div id="brandkit-live-preview" class="brandkit-preview mb-4" data-testid="brandkit-preview" aria-label="{{ __('Live preview', 'brandkit') }}">
     <div class="brandkit-preview-sidebar">
@@ -238,10 +285,11 @@
 {{ fields.textareaField('style_import_json', '', __('Paste branding JSON', 'brandkit'), {
     readonly: not can_edit,
     rows: 6,
-    helper: __('On save, JSON replaces Style (and colours / copy when present). Logos are not included.', 'brandkit')
+    helper: __('On save, JSON replaces Style (and colours / copy when present). Logos are not included. Template JSON (kind=brandkit-template) is accepted.', 'brandkit')
 }) }}
 {{ fields.fileField('style_import_file', null, __('Or upload a JSON file', 'brandkit'), {
     simple: true,
     readonly: not can_edit,
     accepted_files: 'application/json,.json'
 }) }}
+{{ fields.checkboxField('style_import_as_template', 0, __('Also save the import as a gallery template', 'brandkit'), ro) }}

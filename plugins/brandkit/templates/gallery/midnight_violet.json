@@ -1,0 +1,44 @@
+{
+    "id": "midnight_violet",
+    "name": "Midnight violet",
+    "description": "Plum sidebar, orchid primary, glass dropdowns. A quieter dark theme than neon.",
+    "colors": {
+        "color_primary": "#c084fc",
+        "color_secondary": "#1e1b4b",
+        "color_accent": "#67e8f9",
+        "color_sidebar": "#1e1b4b",
+        "color_header": "#2e1065",
+        "login_background_color": "#1e1b4b"
+    },
+    "style": {
+        "preset": "midnight_violet",
+        "sidebar_preset": "glass",
+        "header_style": "gradient",
+        "dropdown_style": "glass",
+        "nav_active_style": "background",
+        "radius_global": 12,
+        "radius_cards": 16,
+        "radius_buttons": 999,
+        "shadow_cards": "medium",
+        "shadow_sidebar": "medium",
+        "hover_cards": "lift",
+        "hover_buttons": "glow",
+        "font_family": "inter",
+        "font_url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+        "fade_in": 1,
+        "gradient_header": {
+            "enabled": 1,
+            "angle": 90,
+            "stop1": "#2e1065",
+            "stop2": "#6b21a8",
+            "stop3": ""
+        },
+        "gradient_login": {
+            "enabled": 1,
+            "angle": 160,
+            "stop1": "#1e1b4b",
+            "stop2": "#6b21a8",
+            "stop3": ""
+        }
+    }
+}

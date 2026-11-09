@@ -15,7 +15,7 @@ namespace GlpiPlugin\Brandkit;
 
 final class StyleSchema
 {
-    public const VERSION = '1.1.0';
+    public const VERSION = '1.2.0';
 
     /**
      * @var list<string>
@@ -90,7 +90,7 @@ final class StyleSchema
     /**
      * @var list<int>
      */
-    public const RADIUS_STEPS = [0, 2, 4, 6, 8, 12, 16, 20, 24, 999];
+    public const RADIUS_STEPS = [0, 2, 4, 6, 8, 10, 12, 16, 20, 24, 999];
 
     /**
      * @return array<string, mixed>
@@ -161,156 +161,14 @@ final class StyleSchema
     }
 
     /**
+     * Built-in gallery templates (JSON files). Kept for callers that expect
+     * id => {label, style}.
+     *
      * @return array<string, array<string, mixed>>
      */
     public static function presets(): array
     {
-        $base = self::defaults();
-
-        return [
-            'corporate_clean' => [
-                'label'  => 'Corporate clean',
-                'style'  => array_merge($base, [
-                    'preset'           => 'corporate_clean',
-                    'sidebar_preset'   => 'default',
-                    'header_style'     => 'flat',
-                    'dropdown_style'   => 'default',
-                    'radius_global'    => 4,
-                    'radius_cards'     => 6,
-                    'radius_buttons'   => 4,
-                    'radius_inputs'    => 4,
-                    'radius_modals'    => 8,
-                    'shadow_cards'     => 'soft',
-                    'shadow_dropdowns' => 'soft',
-                    'shadow_modals'    => 'medium',
-                    'shadow_sidebar'   => 'none',
-                    'hover_cards'      => 'none',
-                    'hover_buttons'    => 'none',
-                    'hover_menu'       => 'none',
-                    'nav_hover_style'  => 'background',
-                    'density'          => 'comfortable',
-                    'font_family'      => 'system',
-                    'disable_animations' => 0,
-                    'fade_in'          => 0,
-                ]),
-            ],
-            'soft_rounded' => [
-                'label' => 'Soft rounded',
-                'style' => array_merge($base, [
-                    'preset'           => 'soft_rounded',
-                    'sidebar_preset'   => 'pill',
-                    'nav_active_style' => 'background',
-                    'header_style'     => 'gradient',
-                    'dropdown_style'   => 'rounded',
-                    'radius_global'    => 16,
-                    'radius_cards'     => 20,
-                    'radius_buttons'   => 999,
-                    'radius_inputs'    => 12,
-                    'radius_modals'    => 20,
-                    'shadow_cards'     => 'soft',
-                    'shadow_dropdowns' => 'soft',
-                    'shadow_modals'    => 'medium',
-                    'shadow_sidebar'   => 'soft',
-                    'hover_cards'      => 'lift',
-                    'hover_buttons'    => 'grow',
-                    'hover_menu'       => 'lift',
-                    'density'          => 'comfortable',
-                    'font_family'      => 'nunito',
-                    'font_url'         => 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap',
-                    'fade_in'          => 1,
-                    'gradient_header'  => ['enabled' => 1, 'angle' => 90, 'stop1' => '', 'stop2' => '', 'stop3' => ''],
-                ]),
-            ],
-            'glass' => [
-                'label' => 'Glass',
-                'style' => array_merge($base, [
-                    'preset'           => 'glass',
-                    'sidebar_preset'   => 'glass',
-                    'header_style'     => 'transparent',
-                    'dropdown_style'   => 'glass',
-                    'nav_active_style' => 'accent_bar',
-                    'radius_global'    => 12,
-                    'radius_cards'     => 16,
-                    'radius_buttons'   => 10,
-                    'radius_inputs'    => 10,
-                    'radius_modals'    => 16,
-                    'shadow_cards'     => 'medium',
-                    'shadow_dropdowns' => 'medium',
-                    'shadow_modals'    => 'strong',
-                    'shadow_sidebar'   => 'medium',
-                    'hover_cards'      => 'glow',
-                    'hover_buttons'    => 'glow',
-                    'hover_menu'       => 'glow',
-                    'density'          => 'comfortable',
-                    'font_family'      => 'inter',
-                    'font_url'         => 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-                    'page_bg_overlay'  => 18,
-                    'fade_in'          => 1,
-                ]),
-            ],
-            'bold_gradient' => [
-                'label' => 'Bold gradient',
-                'style' => array_merge($base, [
-                    'preset'           => 'bold_gradient',
-                    'sidebar_preset'   => 'default',
-                    'header_style'     => 'gradient',
-                    'nav_active_style' => 'background',
-                    'radius_global'    => 8,
-                    'radius_cards'     => 12,
-                    'radius_buttons'   => 8,
-                    'radius_inputs'    => 8,
-                    'radius_modals'    => 12,
-                    'shadow_cards'     => 'glow',
-                    'shadow_dropdowns' => 'medium',
-                    'shadow_modals'    => 'strong',
-                    'shadow_sidebar'   => 'glow',
-                    'hover_cards'      => 'grow',
-                    'hover_buttons'    => 'grow',
-                    'hover_menu'       => 'grow',
-                    'nav_hover_style'  => 'scale',
-                    'density'          => 'spacious',
-                    'font_family'      => 'ibm_plex',
-                    'font_url'         => 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap',
-                    'font_size'        => 15,
-                    'gradient_header'  => ['enabled' => 1, 'angle' => 90, 'stop1' => '', 'stop2' => '', 'stop3' => ''],
-                    'gradient_sidebar' => ['enabled' => 1, 'angle' => 180, 'stop1' => '', 'stop2' => '', 'stop3' => ''],
-                    'gradient_buttons' => ['enabled' => 1, 'angle' => 135, 'stop1' => '', 'stop2' => '', 'stop3' => ''],
-                    'gradient_login'   => ['enabled' => 1, 'angle' => 160, 'stop1' => '', 'stop2' => '', 'stop3' => ''],
-                    'fade_in'          => 1,
-                ]),
-            ],
-            'minimal_flat' => [
-                'label' => 'Minimal flat',
-                'style' => array_merge($base, [
-                    'preset'             => 'minimal_flat',
-                    'sidebar_preset'     => 'compact',
-                    'header_style'       => 'flat',
-                    'dropdown_style'     => 'default',
-                    'nav_active_style'   => 'accent_bar',
-                    'nav_hover_style'    => 'indent',
-                    'radius_global'      => 0,
-                    'radius_cards'       => 0,
-                    'radius_buttons'     => 0,
-                    'radius_inputs'      => 0,
-                    'radius_modals'      => 0,
-                    'shadow_cards'       => 'none',
-                    'shadow_dropdowns'   => 'none',
-                    'shadow_modals'      => 'soft',
-                    'shadow_sidebar'     => 'none',
-                    'hover_cards'        => 'none',
-                    'hover_buttons'      => 'none',
-                    'hover_menu'         => 'none',
-                    'transition_speed'   => 'instant',
-                    'disable_animations' => 1,
-                    'fade_in'            => 0,
-                    'density'            => 'compact',
-                    'font_family'        => 'system',
-                    'font_size'          => 13,
-                    'nav_item_spacing'   => 0,
-                    'nav_icon_size'      => 16,
-                ]),
-            ],
-        ];
+        return TemplateCatalog::asPresets();
     }
 
     /**
@@ -329,7 +187,7 @@ final class StyleSchema
 
         $out = self::defaults();
 
-        $out['preset'] = self::pick($data['preset'] ?? '', array_merge([''], array_keys(self::presets())));
+        $out['preset'] = TemplateCatalog::slug((string) ($data['preset'] ?? ''));
         $out['sidebar_preset'] = self::pick($data['sidebar_preset'] ?? 'default', self::SIDEBAR_PRESETS);
         $out['nav_active_style'] = self::pick($data['nav_active_style'] ?? 'background', self::NAV_ITEM_STYLES);
         $out['nav_hover_style'] = self::pick($data['nav_hover_style'] ?? 'background', self::NAV_ITEM_STYLES);
@@ -414,7 +272,10 @@ final class StyleSchema
         }
 
         return [
+            'kind'               => 'brandkit-template',
             'brandkit'           => self::VERSION,
+            'name'               => (string) ($branding['product_name'] ?? ''),
+            'description'        => '',
             'product_name'       => (string) ($branding['product_name'] ?? ''),
             'page_title_prefix'  => (string) ($branding['page_title_prefix'] ?? ''),
             'login_heading'      => (string) ($branding['login_heading'] ?? ''),
@@ -446,6 +307,15 @@ final class StyleSchema
 
         $style = self::sanitize($decoded['style'] ?? $decoded);
         $out = ['style' => $style];
+        if (isset($decoded['name']) && is_string($decoded['name'])) {
+            $out['name'] = mb_substr(trim(strip_tags($decoded['name'])), 0, 80);
+        }
+        if (isset($decoded['description']) && is_string($decoded['description'])) {
+            $out['description'] = mb_substr(trim(strip_tags($decoded['description'])), 0, 240);
+        }
+        $out['kind'] = isset($decoded['kind']) && $decoded['kind'] === 'brandkit-template'
+            ? 'brandkit-template'
+            : 'brandkit-branding';
 
         if (isset($decoded['colors']) && is_array($decoded['colors'])) {
             $out['colors'] = $decoded['colors'];

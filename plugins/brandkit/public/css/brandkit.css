@@ -128,3 +128,115 @@
 #brandkit-presets .btn {
     margin: 0;
 }
+
+.brandkit-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.85rem;
+}
+
+.brandkit-gallery-card {
+    border: 1px solid var(--tblr-border-color, #d9e2ec);
+    border-radius: 12px;
+    background: var(--tblr-bg-surface, #fff);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    --g-primary: #0e7490;
+    --g-sidebar: #0f172a;
+    --g-header: #0e7490;
+    --g-accent: #fe9c5c;
+    --g-radius: 8px;
+}
+
+.brandkit-gallery-card.is-active {
+    outline: 2px solid var(--g-primary);
+}
+
+.brandkit-gallery-hit {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+}
+
+.brandkit-gallery-thumb {
+    display: flex;
+    height: 88px;
+    overflow: hidden;
+}
+
+.brandkit-gallery-thumb .g-side {
+    width: 36px;
+    background: var(--g-sidebar);
+}
+
+.brandkit-gallery-thumb[data-sidebar="glass"] .g-side {
+    background: color-mix(in srgb, var(--g-sidebar), transparent 25%);
+}
+
+.brandkit-gallery-thumb[data-sidebar="pill"] .g-side {
+    border-radius: 0 12px 12px 0;
+}
+
+.brandkit-gallery-thumb[data-sidebar="floating"] .g-side {
+    margin: 6px 0 6px 4px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 0.25);
+}
+
+.brandkit-gallery-thumb .g-main {
+    flex: 1;
+    background: color-mix(in srgb, var(--g-header), white 88%);
+    display: flex;
+    flex-direction: column;
+}
+
+.brandkit-gallery-thumb .g-head {
+    height: 18px;
+    background: var(--g-header);
+}
+
+.brandkit-gallery-thumb[data-header="gradient"] .g-head {
+    background-image: linear-gradient(90deg, var(--g-header), var(--g-primary));
+}
+
+.brandkit-gallery-thumb[data-header="transparent"] .g-head {
+    background: color-mix(in srgb, var(--g-header), transparent 40%);
+}
+
+.brandkit-gallery-thumb .g-card {
+    margin: 0.45rem;
+    flex: 1;
+    background: #fff;
+    border-radius: var(--g-radius);
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.12);
+    border-bottom: 3px solid var(--g-accent);
+}
+
+.brandkit-gallery-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0.55rem 0.7rem 0.15rem;
+}
+
+.brandkit-gallery-desc {
+    font-size: 0.78rem;
+    color: var(--tblr-secondary, #64748b);
+    margin: 0 0.7rem 0.55rem;
+    min-height: 2.4em;
+}
+
+.brandkit-gallery-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0 0.7rem 0.7rem;
+}
+
+html.brandkit-trying .brandkit-gallery-toolbar #brandkit-try-cancel {
+    display: inline-flex;
+}

@@ -27,7 +27,7 @@ use GlpiPlugin\Brandkit\MailBranding;
 use GlpiPlugin\Brandkit\Profile as BrandkitProfile;
 use GlpiPlugin\Brandkit\StyleSchema;
 
-define('PLUGIN_BRANDKIT_VERSION', '1.1.1');
+define('PLUGIN_BRANDKIT_VERSION', '1.2.0');
 
 /**
  * Plugin metadata consumed by Plugin::getInfo() / Plugin::checkVersions().
@@ -280,6 +280,26 @@ SQL
         'host_entity_map' => '',
     ]);
 
+    $tpl = \GlpiPlugin\Brandkit\StyleTemplate::getTable();
+    if (!$DB->tableExists($tpl)) {
+        $DB->doQuery(
+            <<<SQL
+CREATE TABLE `$tpl` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `entities_id` int unsigned NOT NULL DEFAULT '0',
+  `name` varchar(128) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `template_json` mediumtext,
+  `date_mod` timestamp NULL DEFAULT NULL,
+  `date_creation` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `entities_id` (`entities_id`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC
+SQL
+        );
+    }
+
     $migration->addRight(Branding::$rightname, ALLSTANDARDRIGHT);
     $migration->executeMigration();
 
@@ -293,6 +313,10 @@ function plugin_brandkit_uninstall(): bool
     $table = Branding::getTable();
     if ($DB->tableExists($table)) {
         $DB->dropTable($table, true);
+    }
+    $tpl = \GlpiPlugin\Brandkit\StyleTemplate::getTable();
+    if ($DB->tableExists($tpl)) {
+        $DB->dropTable($tpl, true);
     }
 
     $DB->delete('glpi_profilerights', ['name' => Branding::$rightname]);

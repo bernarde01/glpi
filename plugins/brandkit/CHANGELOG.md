@@ -2,6 +2,18 @@
 
 All notable changes to BrandKit are documented here.
 
+## 1.2.0 — 2026-11-09
+
+### Fixed
+
+- Style preset pills on the Entity Branding tab did nothing. GLPI 12 loads that tab over AJAX *after* plugin footer scripts run, and `brandkit-style.js` exited when `#brandkit-live-preview` was missing. Handlers are now delegated on `document` and re-init on `glpi.tab.loaded`.
+- Apply now toggles GLPI’s hidden+checkbox pairs (so a later template can turn gradients and flags off) and clears colour fields the template leaves empty. Generated `/Css` is no longer cached for 5 minutes, so a newly saved look shows up immediately.
+
+### Added
+
+- **Template gallery** — 10 built-in looks as JSON files in `templates/gallery/`. Cards show a CSS mini-preview. Click/Try it injects CSS on the current page without saving; Apply copies values into the form; Save on the entity persists.
+- Custom templates stored in `glpi_plugin_brandkit_templates` (name, description, JSON). Saving one adds a gallery card immediately (no page reload, so unsaved form edits stay). Deletable from the gallery. JSON import/export uses `kind=brandkit-template`; import can also be saved as a gallery template. Filling “Save current look as a template” and clicking entity Save is a no-JS fallback.
+
 ## 1.1.1 — 2026-11-09
 
 ### Fixed

@@ -145,6 +145,80 @@ final class BrandingTest extends DbTestCase
         $this->assertSame(12, $style['radius_global']);
     }
 
+    public function testApplyPresetCopiesStyleAndColours(): void
+    {
+        $this->login();
+        $this->addRightToProfile('Super-Admin', Branding::$rightname, ALLSTANDARDRIGHT);
+        $this->login();
+
+        $child_id = $this->createItem(Entity::class, [
+            'name'        => 'BrandKit preset ' . random_int(1, 99999),
+            'entities_id' => 0,
+        ])->getID();
+
+        $ok = (new Branding())->saveFromForm([
+            'entities_id'  => $child_id,
+            'inherit'      => 0,
+            'apply_preset' => 'neon_tech',
+        ]);
+        $this->assertTrue($ok);
+        $resolved = Branding::resolve($child_id);
+        $style = \GlpiPlugin\Brandkit\StyleSchema::fromRow($resolved);
+        $this->assertSame('floating', $style['sidebar_preset']);
+        $this->assertSame('#22d3ee', $resolved['color_primary']);
+    }
+
+    public function testCustomTemplateIsListedAndLoadable(): void
+    {
+        $this->login();
+        $this->addRightToProfile('Super-Admin', Branding::$rightname, ALLSTANDARDRIGHT);
+        $this->login();
+
+        global $DB;
+        $table = \GlpiPlugin\Brandkit\StyleTemplate::getTable();
+        if (!$DB->tableExists($table)) {
+            $this->markTestSkipped('BrandKit templates table is not installed.');
+        }
+
+        $saved = \GlpiPlugin\Brandkit\StyleTemplate::saveFromInput([
+            'name'        => 'Cape Town neon ' . random_int(1, 99999),
+            'description' => 'Saved from functional test',
+            'entities_id' => 0,
+            'style'       => ['sidebar_preset' => 'floating', 'radius_global' => 12],
+            'colors'      => ['color_primary' => '#22d3ee'],
+        ]);
+        $this->assertTrue($saved['ok'], $saved['error'] ?? '');
+        $id = (int) $saved['id'];
+        $got = \GlpiPlugin\Brandkit\TemplateCatalog::get('custom_' . $id);
+        $this->assertNotNull($got);
+        $this->assertSame('floating', $got['style']['sidebar_preset']);
+        $this->assertSame('#22d3ee', $got['colors']['color_primary']);
+        $this->assertSame(1, $got['custom']);
+
+        $child_id = $this->createItem(Entity::class, [
+            'name'        => 'BrandKit tpl ' . random_int(1, 99999),
+            'entities_id' => 0,
+        ])->getID();
+
+        $viaForm = (new Branding())->saveFromForm([
+            'entities_id'           => $child_id,
+            'inherit'               => 0,
+            'template_name'         => 'From entity save ' . random_int(1, 99999),
+            'template_description'  => 'Created on entity save',
+            'apply_preset'          => 'high_contrast',
+        ]);
+        $this->assertTrue($viaForm);
+        $found = false;
+        foreach (\GlpiPlugin\Brandkit\TemplateCatalog::all() as $item) {
+            if (!empty($item['custom']) && str_starts_with((string) $item['name'], 'From entity save')) {
+                $found = true;
+                $this->assertSame('default', $item['style']['sidebar_preset']);
+                $this->assertSame('#111111', $item['colors']['color_primary']);
+            }
+        }
+        $this->assertTrue($found, 'template_name on entity save should insert a gallery row');
+    }
+
     public function testExtensionlessTempUploadIsAcceptedAgainstDocumentIsImage(): void
     {
         $png = (string) base64_decode(

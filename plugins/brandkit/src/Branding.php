@@ -137,6 +137,9 @@ class Branding extends CommonDBTM
             'style'            => $style,
             'style_presets'    => StyleSchema::presets(),
             'style_defaults'   => StyleSchema::defaults(),
+            'style_templates'  => TemplateCatalog::all(),
+            'preview_css_url'  => Html::getPrefixedUrl('/plugins/brandkit/PreviewCss'),
+            'template_url'     => Html::getPrefixedUrl('/plugins/brandkit/Template'),
         ]);
     }
 
@@ -457,25 +460,77 @@ class Branding extends CommonDBTM
             'date_mod'         => $_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s'),
         ];
 
-        foreach (self::COLOR_FIELDS as $field) {
-            $out[$field] = CssSanitizer::normalizeHexColor(isset($input[$field]) ? (string) $input[$field] : null);
-        }
-
         if (!empty($input['style_import_json']) && is_string($input['style_import_json'])) {
             $imported = StyleSchema::import($input['style_import_json']);
             if ($imported['ok']) {
                 $input = self::mergeImported($input, $imported['data']);
+                if (!empty($input['style_import_as_template'])) {
+                    $saved = StyleTemplate::saveFromInput([
+                        'name'          => $imported['data']['name'] ?? ('Imported ' . date('Y-m-d H:i')),
+                        'description'   => $imported['data']['description'] ?? '',
+                        'style'         => $imported['data']['style'] ?? [],
+                        'colors'        => $imported['data']['colors'] ?? [],
+                        'entities_id'   => $entities_id,
+                    ]);
+                    if ($saved['ok']) {
+                        Session::addMessageAfterRedirect(
+                            __('Imported look saved as a gallery template.', 'brandkit'),
+                            false,
+                            INFO
+                        );
+                    }
+                }
             } else {
                 Session::addMessageAfterRedirect(htmlescape($imported['error']), false, ERROR);
             }
         }
 
         $preset_key = (string) ($input['apply_preset'] ?? '');
-        if ($preset_key !== '' && isset(StyleSchema::presets()[$preset_key])) {
-            $input['style'] = StyleSchema::presets()[$preset_key]['style'];
+        if ($preset_key !== '') {
+            $found = TemplateCatalog::get($preset_key);
+            if ($found !== null) {
+                $input['style'] = $found['style'];
+                if (!empty($found['colors']) && is_array($found['colors'])) {
+                    foreach (self::COLOR_FIELDS as $field) {
+                        if (!empty($found['colors'][$field])) {
+                            $input[$field] = $found['colors'][$field];
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach (self::COLOR_FIELDS as $field) {
+            $out[$field] = CssSanitizer::normalizeHexColor(isset($input[$field]) ? (string) $input[$field] : null);
         }
 
         $out['style_json'] = StyleSchema::encode($input['style'] ?? []);
+
+        $tpl_name = mb_substr(trim(strip_tags((string) ($input['template_name'] ?? ''))), 0, 80);
+        if ($tpl_name !== '') {
+            $colors = [];
+            foreach (self::COLOR_FIELDS as $field) {
+                if (!empty($out[$field])) {
+                    $colors[$field] = $out[$field];
+                }
+            }
+            $saved = StyleTemplate::saveFromInput([
+                'name'        => $tpl_name,
+                'description' => (string) ($input['template_description'] ?? ''),
+                'style'       => $input['style'] ?? [],
+                'colors'      => $colors,
+                'entities_id' => $entities_id,
+            ]);
+            if ($saved['ok']) {
+                Session::addMessageAfterRedirect(
+                    __('Look saved as a gallery template.', 'brandkit'),
+                    false,
+                    INFO
+                );
+            } elseif (!empty($saved['error'])) {
+                Session::addMessageAfterRedirect(htmlescape((string) $saved['error']), false, ERROR);
+            }
+        }
 
         $out['custom_css'] = CssSanitizer::sanitize((string) ($input['custom_css'] ?? ''));
         $out['login_heading'] = mb_substr(trim((string) ($input['login_heading'] ?? '')), 0, 255);

@@ -16,6 +16,7 @@ use GlpiPlugin\Brandkit\StyleSchema;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/src/CssSanitizer.php';
+require_once dirname(__DIR__, 2) . '/src/TemplateCatalog.php';
 require_once dirname(__DIR__, 2) . '/src/StyleSchema.php';
 require_once dirname(__DIR__, 2) . '/src/StyleCss.php';
 
@@ -38,7 +39,7 @@ final class StyleCssTest extends TestCase
 
     public function testGlassEmitsBlurAndFloatingRulesForGlassPreset(): void
     {
-        $style = StyleSchema::sanitize(StyleSchema::presets()['glass']['style']);
+        $style = StyleSchema::sanitize(StyleSchema::presets()['glass_aurora']['style']);
         $css = StyleCss::generate([], [], $style);
         $this->assertStringContainsString('backdrop-filter: blur', $css);
         $this->assertStringContainsString('box-shadow: inset 3px 0 0 var(--tblr-primary)', $css);

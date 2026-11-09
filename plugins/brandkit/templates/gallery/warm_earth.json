@@ -1,0 +1,44 @@
+{
+    "id": "warm_earth",
+    "name": "Warm earth",
+    "description": "Terracotta, olive and cream. Spacious density and soft lift \u2014 a calmer, analog feel.",
+    "colors": {
+        "color_primary": "#b45309",
+        "color_secondary": "#3f6212",
+        "color_accent": "#b45309",
+        "color_sidebar": "#431407",
+        "color_header": "#7c2d12",
+        "login_background_color": "#fff7ed"
+    },
+    "style": {
+        "preset": "warm_earth",
+        "sidebar_preset": "default",
+        "header_style": "gradient",
+        "radius_global": 8,
+        "radius_cards": 12,
+        "radius_buttons": 8,
+        "shadow_cards": "soft",
+        "shadow_sidebar": "soft",
+        "hover_cards": "lift",
+        "hover_buttons": "lift",
+        "density": "spacious",
+        "font_family": "source_sans",
+        "font_url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap",
+        "font_size": 15,
+        "fade_in": 1,
+        "gradient_header": {
+            "enabled": 1,
+            "angle": 90,
+            "stop1": "#7c2d12",
+            "stop2": "#b45309",
+            "stop3": ""
+        },
+        "gradient_login": {
+            "enabled": 1,
+            "angle": 160,
+            "stop1": "#7c2d12",
+            "stop2": "#fff7ed",
+            "stop3": ""
+        }
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "id": "bold_gradient",
+    "name": "Bold gradient",
+    "description": "Teal-to-navy washes on header, sidebar, buttons and login. Spacious IBM Plex.",
+    "colors": {
+        "color_primary": "#0e7490",
+        "color_secondary": "#0f172a",
+        "color_accent": "#fe9c5c",
+        "color_sidebar": "#0f172a",
+        "color_header": "#0e7490",
+        "login_background_color": "#042f2e"
+    },
+    "style": {
+        "preset": "bold_gradient",
+        "sidebar_preset": "default",
+        "header_style": "gradient",
+        "nav_active_style": "background",
+        "nav_hover_style": "scale",
+        "radius_global": 8,
+        "radius_cards": 12,
+        "radius_buttons": 8,
+        "radius_inputs": 8,
+        "radius_modals": 12,
+        "shadow_cards": "glow",
+        "shadow_dropdowns": "medium",
+        "shadow_modals": "strong",
+        "shadow_sidebar": "glow",
+        "hover_cards": "grow",
+        "hover_buttons": "grow",
+        "hover_menu": "grow",
+        "density": "spacious",
+        "font_family": "ibm_plex",
+        "font_url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "font_size": 15,
+        "fade_in": 1,
+        "gradient_header": {
+            "enabled": 1,
+            "angle": 90,
+            "stop1": "",
+            "stop2": "",
+            "stop3": ""
+        },
+        "gradient_sidebar": {
+            "enabled": 1,
+            "angle": 180,
+            "stop1": "",
+            "stop2": "",
+            "stop3": ""
+        },
+        "gradient_buttons": {
+            "enabled": 1,
+            "angle": 135,
+            "stop1": "",
+            "stop2": "",
+            "stop3": ""
+        },
+        "gradient_login": {
+            "enabled": 1,
+            "angle": 160,
+            "stop1": "",
+            "stop2": "",
+            "stop3": ""
+        }
+    }
+}

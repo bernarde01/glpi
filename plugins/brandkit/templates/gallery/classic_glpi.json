@@ -1,0 +1,28 @@
+{
+    "id": "classic_glpi",
+    "name": "Classic GLPI",
+    "description": "The familiar GLPI navy sidebar, orange primary and modest radii. A safe starting point.",
+    "colors": {
+        "color_primary": "#e67e22",
+        "color_secondary": "#2f3f64",
+        "color_accent": "#8abe5e",
+        "color_sidebar": "#2f3f64",
+        "color_header": "#ffffff",
+        "login_background_color": "#2f3f64"
+    },
+    "style": {
+        "preset": "classic_glpi",
+        "sidebar_preset": "default",
+        "nav_active_style": "background",
+        "header_style": "flat",
+        "radius_global": 4,
+        "radius_cards": 4,
+        "radius_buttons": 4,
+        "density": "comfortable",
+        "font_family": "system",
+        "font_size": 14,
+        "shadow_cards": "soft",
+        "shadow_sidebar": "none",
+        "disable_animations": 0
+    }
+}

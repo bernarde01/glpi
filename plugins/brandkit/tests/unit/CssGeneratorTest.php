@@ -15,6 +15,7 @@ use GlpiPlugin\Brandkit\CssGenerator;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/src/CssSanitizer.php';
+require_once dirname(__DIR__, 2) . '/src/TemplateCatalog.php';
 require_once dirname(__DIR__, 2) . '/src/StyleSchema.php';
 require_once dirname(__DIR__, 2) . '/src/StyleCss.php';
 require_once dirname(__DIR__, 2) . '/src/CssGenerator.php';

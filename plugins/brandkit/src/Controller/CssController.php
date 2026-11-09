@@ -41,12 +41,18 @@ final class CssController extends AbstractController
         }
 
         $css = CssGenerator::generate($resolved, $urls);
+        $etag = '"' . sha1(($resolved['date_mod'] ?? '') . "\n" . $css) . '"';
+        if ($request->headers->get('If-None-Match') === $etag) {
+            return new Response('', 304, [
+                'Cache-Control' => 'private, no-cache, must-revalidate',
+                'ETag'          => $etag,
+            ]);
+        }
 
-        $response = new Response($css, 200, [
+        return new Response($css, 200, [
             'Content-Type'  => 'text/css; charset=UTF-8',
-            'Cache-Control' => 'public, max-age=300',
+            'Cache-Control' => 'private, no-cache, must-revalidate',
+            'ETag'          => $etag,
         ]);
-
-        return $response;
     }
 }

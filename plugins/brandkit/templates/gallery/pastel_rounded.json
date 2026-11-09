@@ -1,0 +1,41 @@
+{
+    "id": "pastel_rounded",
+    "name": "Soft pastel rounded",
+    "description": "Blush header, lilac sidebar, pill buttons and generous radii. Friendly service-desk look.",
+    "colors": {
+        "color_primary": "#db2777",
+        "color_secondary": "#7c3aed",
+        "color_accent": "#f59e0b",
+        "color_sidebar": "#4c1d95",
+        "color_header": "#9d174d",
+        "login_background_color": "#fdf2f8"
+    },
+    "style": {
+        "preset": "pastel_rounded",
+        "sidebar_preset": "pill",
+        "nav_active_style": "background",
+        "header_style": "gradient",
+        "dropdown_style": "rounded",
+        "radius_global": 16,
+        "radius_cards": 24,
+        "radius_buttons": 999,
+        "radius_inputs": 16,
+        "radius_modals": 24,
+        "shadow_cards": "soft",
+        "shadow_sidebar": "soft",
+        "hover_cards": "lift",
+        "hover_buttons": "grow",
+        "hover_menu": "lift",
+        "density": "comfortable",
+        "font_family": "nunito",
+        "font_url": "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap",
+        "fade_in": 1,
+        "gradient_header": {
+            "enabled": 1,
+            "angle": 90,
+            "stop1": "#9d174d",
+            "stop2": "#7c3aed",
+            "stop3": ""
+        }
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "id": "neon_tech",
+    "name": "Neon dark tech",
+    "description": "Near-black chrome, cyan and magenta glow, floating sidebar. High drama for NOC-style screens.",
+    "colors": {
+        "color_primary": "#22d3ee",
+        "color_secondary": "#050510",
+        "color_accent": "#f0abfc",
+        "color_sidebar": "#050510",
+        "color_header": "#050510",
+        "login_background_color": "#02010a",
+        "dashboard_card_bg": "#0b0b16",
+        "dashboard_card_text": "#e0f2fe"
+    },
+    "style": {
+        "preset": "neon_tech",
+        "sidebar_preset": "floating",
+        "nav_active_style": "accent_bar",
+        "header_style": "gradient",
+        "dropdown_style": "glass",
+        "radius_global": 12,
+        "radius_cards": 12,
+        "radius_buttons": 8,
+        "shadow_cards": "glow",
+        "shadow_sidebar": "glow",
+        "shadow_modals": "strong",
+        "hover_cards": "glow",
+        "hover_buttons": "glow",
+        "hover_menu": "glow",
+        "density": "comfortable",
+        "font_family": "ibm_plex",
+        "font_url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "fade_in": 1,
+        "gradient_header": {
+            "enabled": 1,
+            "angle": 90,
+            "stop1": "#050510",
+            "stop2": "#164e63",
+            "stop3": ""
+        },
+        "gradient_sidebar": {
+            "enabled": 1,
+            "angle": 180,
+            "stop1": "#050510",
+            "stop2": "#083344",
+            "stop3": ""
+        },
+        "gradient_login": {
+            "enabled": 1,
+            "angle": 160,
+            "stop1": "#050510",
+            "stop2": "#164e63",
+            "stop3": "#86198f"
+        },
+        "gradient_buttons": {
+            "enabled": 1,
+            "angle": 135,
+            "stop1": "#22d3ee",
+            "stop2": "#a21caf",
+            "stop3": ""
+        }
+    }
+}
