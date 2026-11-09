@@ -23,8 +23,7 @@
         "shadow_sidebar": "medium",
         "hover_cards": "lift",
         "hover_buttons": "glow",
-        "font_family": "inter",
-        "font_url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+        "font_family": "montserrat",
         "fade_in": 1,
         "gradient_header": {
             "enabled": 1,
@@ -39,6 +38,9 @@
             "stop1": "#1e1b4b",
             "stop2": "#6b21a8",
             "stop3": ""
-        }
+        },
+        "tab_preset": "pill",
+        "tab_item_spacing": 2,
+        "font_cdn": 0
     }
 }

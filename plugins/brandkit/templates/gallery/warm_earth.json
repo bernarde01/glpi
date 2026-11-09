@@ -22,8 +22,7 @@
         "hover_cards": "lift",
         "hover_buttons": "lift",
         "density": "spacious",
-        "font_family": "source_sans",
-        "font_url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap",
+        "font_family": "lato",
         "font_size": 15,
         "fade_in": 1,
         "gradient_header": {
@@ -39,6 +38,9 @@
             "stop1": "#7c2d12",
             "stop2": "#fff7ed",
             "stop3": ""
-        }
+        },
+        "tab_preset": "default",
+        "tab_item_spacing": 2,
+        "font_cdn": 0
     }
 }

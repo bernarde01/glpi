@@ -29,7 +29,6 @@
         "hover_buttons": "glow",
         "hover_menu": "glow",
         "font_family": "inter",
-        "font_url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
         "page_bg_overlay": 30,
         "fade_in": 1,
         "gradient_page": {
@@ -45,6 +44,9 @@
             "stop1": "#082f49",
             "stop2": "#6366f1",
             "stop3": "#0ea5e9"
-        }
+        },
+        "tab_preset": "pill",
+        "tab_item_spacing": 2,
+        "font_cdn": 0
     }
 }

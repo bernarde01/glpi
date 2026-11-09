@@ -29,7 +29,6 @@
         "hover_menu": "glow",
         "density": "comfortable",
         "font_family": "ibm_plex",
-        "font_url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
         "fade_in": 1,
         "gradient_header": {
             "enabled": 1,
@@ -58,6 +57,9 @@
             "stop1": "#22d3ee",
             "stop2": "#a21caf",
             "stop3": ""
-        }
+        },
+        "tab_preset": "accent_bar",
+        "tab_item_spacing": 2,
+        "font_cdn": 0
     }
 }

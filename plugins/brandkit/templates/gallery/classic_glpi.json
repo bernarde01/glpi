@@ -23,6 +23,9 @@
         "font_size": 14,
         "shadow_cards": "soft",
         "shadow_sidebar": "none",
-        "disable_animations": 0
+        "disable_animations": 0,
+        "tab_preset": "default",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
     }
 }

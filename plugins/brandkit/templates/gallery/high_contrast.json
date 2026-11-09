@@ -33,8 +33,11 @@
         "disable_animations": 1,
         "fade_in": 0,
         "density": "comfortable",
-        "font_family": "system",
+        "font_family": "roboto",
         "font_size": 16,
-        "nav_icon_size": 20
+        "nav_icon_size": 20,
+        "tab_preset": "default",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
     }
 }

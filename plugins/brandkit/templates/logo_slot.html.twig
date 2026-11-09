@@ -1,0 +1,37 @@
+{# One logo / file row: label + helper | upload + hint | preview + clear #}
+<div class="brandkit-logo-row" data-slot="{{ slot }}">
+    <div class="brandkit-logo-copy">
+        <div class="brandkit-logo-title">{{ label }}</div>
+        {% if help %}
+            <p class="brandkit-logo-help">{{ help }}</p>
+        {% endif %}
+    </div>
+    <div class="brandkit-logo-control">
+        <label class="brandkit-file">
+            <input type="file"
+                   name="{{ slot }}"
+                   class="brandkit-file-input visually-hidden"
+                   {% if not can_edit %}disabled{% endif %}
+                   accept="{{ accept|default('image/png,image/jpeg,image/gif,image/webp') }}" />
+            <span class="brandkit-file-ui">
+                <i class="ti ti-upload" aria-hidden="true"></i>
+                <span class="brandkit-file-btn">{{ __('Choose file', 'brandkit') }}</span>
+                <span class="brandkit-file-name" data-empty="{{ __('No file chosen', 'brandkit') }}">{{ __('No file chosen', 'brandkit') }}</span>
+            </span>
+        </label>
+        {% if hint %}
+            <p class="brandkit-logo-hint">{{ hint }}</p>
+        {% endif %}
+    </div>
+    <div class="brandkit-logo-preview">
+        {% if preview %}
+            <img src="{{ preview }}" alt="" class="brandkit-logo-thumb{% if dark %} is-dark{% endif %}" />
+            {% if can_edit %}
+                <label class="form-check mt-1">
+                    <input type="checkbox" class="form-check-input" name="_blank_{{ slot }}" value="1" />
+                    <span class="form-check-label">{{ __('Clear', 'brandkit') }}</span>
+                </label>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

@@ -28,7 +28,6 @@
         "hover_menu": "lift",
         "density": "comfortable",
         "font_family": "nunito",
-        "font_url": "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap",
         "fade_in": 1,
         "gradient_header": {
             "enabled": 1,
@@ -36,6 +35,9 @@
             "stop1": "#9d174d",
             "stop2": "#7c3aed",
             "stop3": ""
-        }
+        },
+        "tab_preset": "pill",
+        "tab_item_spacing": 4,
+        "font_cdn": 0
     }
 }

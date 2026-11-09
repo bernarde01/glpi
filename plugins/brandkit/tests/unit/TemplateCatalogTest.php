@@ -20,11 +20,13 @@ require_once dirname(__DIR__, 2) . '/src/StyleSchema.php';
 
 final class TemplateCatalogTest extends TestCase
 {
-    public function testGalleryJsonFilesLoadAsTenDistinctLooks(): void
+    public function testGalleryJsonFilesLoadAsDistinctLooks(): void
     {
         $list = TemplateCatalog::builtins();
         $this->assertGreaterThanOrEqual(8, count($list));
-        $this->assertLessThanOrEqual(12, count($list));
+        $this->assertLessThanOrEqual(14, count($list));
+        $this->assertNotNull(TemplateCatalog::get('clean_cards'));
+        $this->assertNotNull(TemplateCatalog::get('warm_teal'));
         $ids = array_column($list, 'id');
         $this->assertSame($ids, array_unique($ids));
         foreach ($list as $item) {

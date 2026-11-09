@@ -54,11 +54,30 @@
         document.body.appendChild(el);
     };
 
+    const bindFileNames = function (root) {
+        (root || document).querySelectorAll('.brandkit-file-input').forEach(function (input) {
+            if (input.dataset.brandkitBound) {
+                return;
+            }
+            input.dataset.brandkitBound = '1';
+            input.addEventListener('change', function () {
+                const nameEl = input.closest('.brandkit-file')
+                    && input.closest('.brandkit-file').querySelector('.brandkit-file-name');
+                if (!nameEl) {
+                    return;
+                }
+                const empty = nameEl.getAttribute('data-empty') || '';
+                nameEl.textContent = (input.files && input.files[0] && input.files[0].name) ? input.files[0].name : empty;
+            });
+        });
+    };
+
     const run = function () {
         applyIcon();
         applyTitlePrefix();
         applyNoMotion();
         applyWatermark();
+        bindFileNames(document);
     };
 
     if (document.readyState === 'loading') {
@@ -66,4 +85,7 @@
     } else {
         run();
     }
+    document.addEventListener('glpi.tab.loaded', function (ev) {
+        bindFileNames((ev && ev.detail && ev.detail.tab) || document);
+    });
 })();

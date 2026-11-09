@@ -31,9 +31,12 @@
         "transition_speed": "instant",
         "disable_animations": 1,
         "density": "compact",
-        "font_family": "system",
+        "font_family": "raleway",
         "font_size": 13,
         "nav_item_spacing": 0,
-        "nav_icon_size": 16
+        "nav_icon_size": 16,
+        "tab_preset": "underline",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
     }
 }

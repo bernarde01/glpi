@@ -15,23 +15,26 @@ Requires **GLPI 12.0.x** and **PHP 8.3+**.
 5. **Branded notification emails** — HTML mail is wrapped with the entity’s logo (absolute URL), colours, and optional header/footer HTML via `pre_item_add` on `QueuedNotification`.
 6. **Favicon and page title** — favicon upload; product name replaces “GLPI” in `app_name` / the browser title; optional title prefix. Core still emits a hardcoded shortcut icon, so BrandKit rewrites it in JavaScript after load.
 7. **Dashboard styling** — registers a `brandkit` chart palette (and overrides core `tab10` so existing widgets pick it up) plus optional card background/text colours.
-8. **Style layer** — structured restyling (menus, radius, shadows, motion, density, fonts, gradients, watermarks) generated as CSS variables + shallow selectors. JSON export/import and a live preview on the Entity tab.
-9. **Template gallery** — ten built-in looks in `templates/gallery/*.json` (classic GLPI, dark navy corporate, soft pastel rounded, glass aurora, neon dark tech, warm earth, high-contrast accessible, minimal flat, bold gradient, midnight violet). Cards try the look on the current page without saving; Apply copies it into the form; entity Save persists. Admins can save/delete custom templates (DB) without a page reload. JSON export/import uses `kind=brandkit-template`. Works when the plugin is installed under `marketplace/brandkit` as well as `plugins/brandkit` (asset URLs stay `/plugins/brandkit/…`). GLPI 12 loads the Entity Branding tab over AJAX after footer scripts, so gallery clicks are delegated on `document` (the old preset pills did nothing for that reason).
+8. **Style layer** — structured restyling (menus, in-page tabs, radius, shadows, motion, density, fonts, gradients, watermarks) generated as CSS variables + shallow selectors. JSON export/import and a live preview on the Entity tab. Small / grouped chrome (breadcrumbs, search, input-groups, file inputs, badges, pagination, tab items) uses a capped radius so large-radius templates stay usable.
+9. **Template gallery** — twelve built-in looks in `templates/gallery/*.json` (classic GLPI, dark navy corporate, soft pastel rounded, glass aurora, neon dark tech, warm earth, high-contrast accessible, minimal flat, bold gradient, midnight violet). Cards try the look on the current page without saving; Apply copies it into the form; entity Save persists. Admins can save/delete custom templates (DB) without a page reload. JSON export/import uses `kind=brandkit-template`. Works when the plugin is installed under `marketplace/brandkit` as well as `plugins/brandkit` (asset URLs stay `/plugins/brandkit/…`). GLPI 12 loads the Entity Branding tab over AJAX after footer scripts, so gallery clicks are delegated on `document` (the old preset pills did nothing for that reason).
+10. **Bundled fonts** — Inter, Poppins, Roboto, Open Sans, Montserrat, Lato, Nunito, Raleway, IBM Plex Sans, Source Sans 3 as woff2 inside `public/fonts/` (OFL / Apache 2.0). Google Fonts is opt-in for hosts that allow that CDN in CSP.
 
 ### Style templates (`templates/gallery/`)
 
 | Template | Look |
 | --- | --- |
-| Classic GLPI | Navy sidebar, orange primary, modest radii |
-| Dark navy corporate | Tight corners, gold accent, compact Source Sans |
-| Soft pastel rounded | Pill nav, huge radii, Nunito, pink/lilac gradient |
-| Glass aurora | Frosted sidebar, mesh page gradient, Inter |
-| Neon dark tech | Cyan/magenta glow, floating sidebar, IBM Plex |
-| Warm earth | Terracotta/olive, spacious, lift on hover |
-| High-contrast accessible | Black/white/amber, 16px type, motion off |
-| Minimal flat | Zero radius, no shadows, compact |
-| Bold gradient | Teal-to-navy washes on chrome and login |
-| Midnight violet | Plum glass, orchid primary, pill buttons |
+| Classic GLPI | Navy sidebar, orange primary, modest radii, system font |
+| Dark navy corporate | Tight corners, gold accent, Open Sans, underline tabs |
+| Soft pastel rounded | Pill nav, huge radii (chrome capped), Nunito, pill tabs |
+| Glass aurora | Frosted sidebar, mesh page gradient, Inter, pill tabs |
+| Neon dark tech | Cyan/magenta glow, floating sidebar, IBM Plex, accent-bar tabs |
+| Warm earth | Terracotta/olive, spacious, Lato |
+| High-contrast accessible | Black/white/amber, 16px Roboto, motion off |
+| Minimal flat | Zero radius, no shadows, Raleway, underline tabs |
+| Bold gradient | Teal-to-navy washes, Poppins, accent-bar tabs |
+| Midnight violet | Plum glass, orchid primary, Montserrat, pill tabs |
+| Clean cards | Grey workspace, white cards, Inter, card tab panel, outlined uploads |
+| Warm teal | Cream workspace, teal gradient sidebar, Poppins, filled Choose File |
 
 Clicking a gallery card is **try-it** (CSS injected, not saved). **Apply** fills the form. **Save** on the entity writes it. Style pills are gone; they did nothing on GLPI 12 AJAX tabs.
 
@@ -40,9 +43,10 @@ Clicking a gallery card is **try-it** (CSS injected, not saved). **Apply** fills
 Kept shallow so they survive GLPI 12 updates. Prefer Tabler/GLPI variables (`--tblr-border-radius`, `--tblr-box-shadow`, `--tblr-font-sans-serif`, `--tblr-body-font-size`, `--tblr-card-spacer-*`) plus:
 
 - Navigation: `.sidebar`, `.navbar.navbar-vertical`, `.topbar`, `#navbar-menu .nav-link`, `#navbar-menu .nav-item`
-- Header: `header.navbar`, `header.navbar.navbar-light`, `header.navbar.topbar`
+- Header: `header.navbar`, `header.navbar.navbar-light`, `header.navbar.topbar`, `.page > header .breadcrumb`
 - Surfaces: `.card`, `.modal-content`, `.dropdown-menu`, `.kanban-column`, `.kanban-item`
-- Controls: `.btn`, `.btn-primary`, `.form-control`, `.form-select`, `.select2-selection`
+- Controls: `.btn`, `.btn-primary`, `.form-control`, `.form-select`, `.select2-selection`, `.input-group`, `input[type=file]`
+- In-page tabs: `.card-tabs #tabspanel.nav-tabs .nav-link`
 - Data: `.table`, `table.table`, `.dashboard .grid-stack-item-content .card`
 - Chrome: `body`, `.page`, `.page-wrapper`, `body.welcome-anonymous`
 
@@ -69,6 +73,10 @@ Place captures in `docs/screenshots/` when packaging a release:
 | Glass aurora dashboard | `docs/screenshots/style-glass-aurora-dashboard.png` |
 | High-contrast dashboard + login | `docs/screenshots/style-contrast-dashboard.png`, `docs/screenshots/style-contrast-login.png` |
 | Midnight violet dashboard + login | `docs/screenshots/style-violet-dashboard.png`, `docs/screenshots/style-violet-login.png` |
+| 1.3 breadcrumb (Bold gradient) | `docs/screenshots/v13-breadcrumb-bold.png` |
+| 1.3 search + buttons | `docs/screenshots/v13-search-buttons.png` |
+| 1.3 entity tab menu | `docs/screenshots/v13-entity-tabs.png` |
+| 1.3 Poppins | `docs/screenshots/v13-poppins.png` |
 
 ## Install
 
@@ -89,7 +97,7 @@ php bin/console plugin:list
 
    ```bash
    cd plugins
-   tar czf brandkit-1.2.1.tar.gz \
+   tar czf brandkit-1.3.0.tar.gz \
      --exclude='tests' \
      --transform 's,^brandkit,brandkit,' \
      brandkit
@@ -100,7 +108,7 @@ php bin/console plugin:list
 2. Copy it onto the server and extract into GLPI’s plugins directory (or upload via **Setup → Plugins** / the marketplace drop-in folder):
 
    ```bash
-   tar xzf brandkit-1.2.1.tar.gz -C /var/www/glpi/plugins/
+   tar xzf brandkit-1.3.0.tar.gz -C /var/www/glpi/plugins/
    cd /var/www/glpi
    php bin/console plugin:install brandkit -u glpi
    php bin/console plugin:activate brandkit

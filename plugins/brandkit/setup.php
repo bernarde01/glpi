@@ -27,7 +27,7 @@ use GlpiPlugin\Brandkit\MailBranding;
 use GlpiPlugin\Brandkit\Profile as BrandkitProfile;
 use GlpiPlugin\Brandkit\StyleSchema;
 
-define('PLUGIN_BRANDKIT_VERSION', '1.2.1');
+define('PLUGIN_BRANDKIT_VERSION', '1.3.0');
 
 /**
  * Plugin metadata consumed by Plugin::getInfo() / Plugin::checkVersions().
@@ -145,19 +145,22 @@ function plugin_init_brandkit(): void
     }
 
     $style = StyleSchema::fromRow($resolved);
-    $font_url = (string) $style['font_url'];
-    if ($font_url === '') {
-        $font_url = StyleSchema::builtInFontUrl((string) $style['font_family']);
-    }
-    $font_url = StyleSchema::sanitizeFontUrl($font_url);
-    if ($font_url !== '') {
-        $header_tags[] = [
-            'tag'        => 'link',
-            'properties' => [
-                'rel'  => 'stylesheet',
-                'href' => $font_url,
-            ],
-        ];
+    $use_cdn = (int) ($style['font_cdn'] ?? 0) === 1;
+    if ($use_cdn) {
+        $font_url = (string) $style['font_url'];
+        if ($font_url === '') {
+            $font_url = StyleSchema::builtInFontUrl((string) $style['font_family']);
+        }
+        $font_url = StyleSchema::sanitizeFontUrl($font_url);
+        if ($font_url !== '') {
+            $header_tags[] = [
+                'tag'        => 'link',
+                'properties' => [
+                    'rel'  => 'stylesheet',
+                    'href' => $font_url,
+                ],
+            ];
+        }
     }
     if ((int) $style['disable_animations'] === 1) {
         $header_tags[] = [

@@ -1,7 +1,7 @@
 {
     "id": "bold_gradient",
     "name": "Bold gradient",
-    "description": "Teal-to-navy washes on header, sidebar, buttons and login. Spacious IBM Plex.",
+    "description": "Teal-to-navy washes on header, sidebar, buttons and login. Poppins, accent-bar tabs.",
     "colors": {
         "color_primary": "#0e7490",
         "color_secondary": "#0f172a",
@@ -29,8 +29,7 @@
         "hover_buttons": "grow",
         "hover_menu": "grow",
         "density": "spacious",
-        "font_family": "ibm_plex",
-        "font_url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "font_family": "poppins",
         "font_size": 15,
         "fade_in": 1,
         "gradient_header": {
@@ -60,6 +59,9 @@
             "stop1": "",
             "stop2": "",
             "stop3": ""
-        }
+        },
+        "tab_preset": "accent_bar",
+        "tab_item_spacing": 2,
+        "font_cdn": 0
     }
 }

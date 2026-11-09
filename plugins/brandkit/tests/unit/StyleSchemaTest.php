@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/src/CssSanitizer.php';
 require_once dirname(__DIR__, 2) . '/src/TemplateCatalog.php';
+require_once dirname(__DIR__, 2) . '/src/BundledFonts.php';
 require_once dirname(__DIR__, 2) . '/src/StyleSchema.php';
 
 final class StyleSchemaTest extends TestCase
@@ -92,6 +93,38 @@ final class StyleSchemaTest extends TestCase
         $this->assertSame('Cape Town neon', $imported['data']['name']);
         $this->assertSame('NOC glow', $imported['data']['description']);
         $this->assertSame('floating', $imported['data']['style']['sidebar_preset']);
+    }
+
+    public function testNewFontsAndTabPresetSanitize(): void
+    {
+        $clean = StyleSchema::sanitize([
+            'font_family'      => 'poppins',
+            'tab_preset'       => 'accent_bar',
+            'tab_item_spacing' => 4,
+            'font_cdn'         => '1',
+        ]);
+        $this->assertSame('poppins', $clean['font_family']);
+        $this->assertSame('accent_bar', $clean['tab_preset']);
+        $this->assertSame(4, $clean['tab_item_spacing']);
+        $this->assertSame(1, $clean['font_cdn']);
+        $this->assertNotSame('', StyleSchema::builtInFontUrl('open_sans'));
+        $this->assertSame('', StyleSchema::builtInFontUrl('system'));
+        $layout = StyleSchema::sanitize([
+            'tab_preset'       => 'card',
+            'form_layout'      => 'two_column',
+            'file_input_style' => 'filled',
+            'search_style'     => 'inset_dark',
+            'breadcrumb_style' => 'ghost',
+            'page_tone'        => 'cream',
+            'header_user_chip' => '1',
+        ]);
+        $this->assertSame('card', $layout['tab_preset']);
+        $this->assertSame('two_column', $layout['form_layout']);
+        $this->assertSame('filled', $layout['file_input_style']);
+        $this->assertSame('inset_dark', $layout['search_style']);
+        $this->assertSame('ghost', $layout['breadcrumb_style']);
+        $this->assertSame('cream', $layout['page_tone']);
+        $this->assertSame(1, $layout['header_user_chip']);
     }
 
     public function testImportRejectsGarbage(): void

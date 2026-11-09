@@ -24,9 +24,11 @@
         "shadow_sidebar": "none",
         "hover_cards": "none",
         "density": "compact",
-        "font_family": "source_sans",
-        "font_url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap",
+        "font_family": "open_sans",
         "font_size": 13,
-        "nav_item_spacing": 0
+        "nav_item_spacing": 0,
+        "tab_preset": "underline",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
     }
 }

@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the BrandKit package.
 msgid ""
 msgstr ""
-"Project-Id-Version: BrandKit 1.0.0\n"
+"Project-Id-Version: BrandKit 1.3.0\n"
 "Report-Msgid-Bugs-To: https://glpi.distillect.co.za/\n"
 "POT-Creation-Date: 2026-11-09 14:00+0000\n"
 "PO-Revision-Date: 2026-11-09 14:00+0000\n"
@@ -157,3 +157,78 @@ msgstr "You do not have permission to update this entity."
 
 msgid "You do not have permission to update branding."
 msgstr "You do not have permission to update branding."
+
+msgid "In-page tabs"
+msgstr "In-page tabs"
+
+msgid "The vertical (or horizontal) tab menu on item forms: Entity, Address, Branding, All, …"
+msgstr "The vertical (or horizontal) tab menu on item forms: Entity, Address, Branding, All, …"
+
+msgid "Tab style"
+msgstr "Tab style"
+
+msgid "Underline"
+msgstr "Underline"
+
+msgid "Accent bar"
+msgstr "Accent bar"
+
+msgid "Tab item spacing"
+msgstr "Tab item spacing"
+
+msgid "Bundled woff2 files are served from the plugin (works offline and with CSP)."
+msgstr "Bundled woff2 files are served from the plugin (works offline and with CSP)."
+
+msgid "Load this font from Google Fonts instead of the bundled files"
+msgstr "Load this font from Google Fonts instead of the bundled files"
+
+msgid "Opt-in. Requires fonts.googleapis.com / fonts.gstatic.com in CSP. Bundled files are used when this is off."
+msgstr "Opt-in. Requires fonts.googleapis.com / fonts.gstatic.com in CSP. Bundled files are used when this is off."
+
+msgid "Only used when the CDN option is on. https://fonts.googleapis.com/css2?… only."
+msgstr "Only used when the CDN option is on. https://fonts.googleapis.com/css2?… only."
+
+msgid "Custom family name"
+msgstr "Custom family name"
+
+msgid "Used when Font family is “Custom”. Pair with a Google Fonts URL (CDN on) or your own @font-face in Custom CSS."
+msgstr "Used when Font family is “Custom”. Pair with a Google Fonts URL (CDN on) or your own @font-face in Custom CSS."
+
+msgid "Configuration"
+msgstr "Configuration"
+
+msgid "Choose file"
+msgstr "Choose file"
+
+msgid "No file chosen"
+msgstr "No file chosen"
+
+msgid "This logo appears in the main sidebar when expanded."
+msgstr "This logo appears in the main sidebar when expanded."
+
+msgid "Card (separate rounded panel)"
+msgstr "Card (separate rounded panel)"
+
+msgid "Merge into content"
+msgstr "Merge into content"
+
+msgid "Forms and chrome"
+msgstr "Forms and chrome"
+
+msgid "Two-column (label left, control right)"
+msgstr "Two-column (label left, control right)"
+
+msgid "Form layout"
+msgstr "Form layout"
+
+msgid "File inputs"
+msgstr "File inputs"
+
+msgid "Global search box"
+msgstr "Global search box"
+
+msgid "Page background tone"
+msgstr "Page background tone"
+
+msgid "User menu as a rounded chip"
+msgstr "User menu as a rounded chip"

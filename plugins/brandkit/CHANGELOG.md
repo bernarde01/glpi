@@ -2,6 +2,22 @@
 
 All notable changes to BrandKit are documented here.
 
+## 1.3.0 — 2026-11-09
+
+### Fixed
+
+- Breadcrumb (Home / Administration / Entities) and the neighbouring **Add** button no longer inherit pill / 24px corners. Separators, alignment and backgrounds are restored; chrome radius is capped at 10px so large gallery templates do not break the header.
+- Rounded buttons and the global search box get real padding. Input-groups and button-groups round **only the outer corners**; file inputs (`Choose File`) use the same chrome radius on `::file-selector-button`.
+- Badges, dropdowns and pagination scale to the same chrome radius so Soft pastel / Midnight violet / Glass aurora no longer look broken on small controls.
+
+### Added
+
+- **In-page tab menu** (`#tabspanel` on Entity, Ticket, … forms): tab style (default / pill / underline / accent bar), item spacing, hover and active states. Gallery templates set a preset (Bold gradient uses accent bar).
+- **Bundled fonts** — Inter, Poppins, Roboto, Open Sans, Montserrat, Lato, Nunito, Raleway, IBM Plex Sans and Source Sans 3 (latin 400/700 woff2 + OFL/Apache licence files) served from `/plugins/brandkit/fonts/`. Works offline and with a strict CSP. Google Fonts CDN is an **opt-in** (`Load this font from Google Fonts`). Custom `font-family` name remains available. Templates pick a font (Bold gradient / Warm teal → Poppins, Clean cards → Inter).
+- **Form and chrome options** so gallery looks can match a design mockup without custom CSS: two-column form layout, accordion section cards, outlined or filled file inputs, dark/light inset search, ghost or pill breadcrumbs, grey or cream page tone, user-menu chip. In-page tabs gain **card** (separate rounded panel + “Configuration” heading) and **merge** (active tab joins the content) presets.
+- **Branding tab layout** — logo rows are always two-column (label + helper | Choose file + recommended size | preview + Clear). Colours is a collapsible card. Native `Choose File` on other GLPI forms is restyled by the template.
+- **Clean cards** and **Warm teal** gallery templates, matching Bernard’s two mockups (grey/Inter/card tabs vs cream/Poppins/filled file buttons).
+
 ## 1.2.1 — 2026-11-09
 
 ### Fixed

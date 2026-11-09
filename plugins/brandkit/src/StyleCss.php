@@ -11,8 +11,12 @@
  *   header.navbar, header.navbar.navbar-light, header.navbar.topbar
  *   .dropdown-menu, .dropdown-item
  *   .card, .modal-content, .modal-dialog
- *   .btn, .btn-primary
- *   .form-control, .form-select, .select2-selection
+ *   .btn, .btn-primary, .btn-sm
+ *   .form-control, .form-select, .select2-selection, .input-group
+ *   input[type=file], ::file-selector-button
+ *   header.navbar .breadcrumb, header.navbar .nav.navbar-nav
+ *   .card-tabs #tabspanel.nav-tabs
+ *   .badge, .pagination, .dropdown-menu
  *   .table, table.table
  *   .dashboard .grid-stack-item-content .card
  *   .kanban-column, .kanban-item, .kanban-add-form
@@ -37,8 +41,12 @@ final class StyleCss
     public static function generate(array $branding, array $urls, array $style): string
     {
         $blocks = [];
+        $blocks[] = BundledFonts::fontFaceCss($style);
         $blocks[] = self::rootVariables($style, $branding);
         $blocks[] = self::shapeAndElevation($style);
+        $blocks[] = self::chrome($style);
+        $blocks[] = self::tabs($style);
+        $blocks[] = self::forms($style);
         $blocks[] = self::densityAndType($style);
         $blocks[] = self::motion($style);
         $blocks[] = self::sidebar($style, $branding);
@@ -61,21 +69,33 @@ final class StyleCss
     {
         $radius = (int) $style['radius_global'];
         $radius_css = $radius === 999 ? '999px' : $radius . 'px';
-        $r_card = self::px($style['radius_cards']);
-        $r_btn = self::px($style['radius_buttons']);
-        $r_in = self::px($style['radius_inputs']);
-        $r_mod = self::px($style['radius_modals']);
+        $r_card = self::px((int) $style['radius_cards']);
+        $r_btn = self::px((int) $style['radius_buttons']);
+        $r_in = self::px((int) $style['radius_inputs']);
+        $r_mod = self::px((int) $style['radius_modals']);
+        $r_chrome = self::chromePx($radius);
+        $btn_pad = ((int) $style['radius_buttons'] === 999) ? '1.15rem' : '0.85rem';
 
         $lines = [':root {'];
-        $lines[] = sprintf('  --tblr-border-radius: %s !important;', $radius_css);
-        $lines[] = sprintf('  --tblr-border-radius-sm: %s !important;', self::px(max(0, (int) $style['radius_global'] === 999 ? 999 : (int) $style['radius_global'] - 2)));
-        $lines[] = sprintf('  --tblr-border-radius-lg: %s !important;', self::px((int) $style['radius_global'] === 999 ? 999 : min(32, (int) $style['radius_global'] + 4)));
+        // Cap Tabler's global radius so breadcrumbs, badges and grouped
+        // controls do not inherit pill / 24px corners.
+        $lines[] = sprintf('  --tblr-border-radius: %s !important;', $r_chrome);
+        $lines[] = sprintf('  --tblr-border-radius-sm: %s !important;', self::chromePx($radius, 6));
+        $lines[] = sprintf('  --tblr-border-radius-lg: %s !important;', self::chromePx((int) $style['radius_cards'], 16));
         $lines[] = sprintf('  --brandkit-radius: %s;', $radius_css);
-        $lines[] = sprintf('  --brandkit-radius-lg: %s;', self::px((int) $style['radius_global'] === 999 ? 999 : min(32, (int) $style['radius_global'] + 4)));
+        $lines[] = sprintf('  --brandkit-radius-lg: %s;', self::px((int) $style['radius_global'] === 999 ? 16 : min(32, max(0, $radius + 4))));
         $lines[] = sprintf('  --brandkit-radius-card: %s;', $r_card);
         $lines[] = sprintf('  --brandkit-radius-btn: %s;', $r_btn);
         $lines[] = sprintf('  --brandkit-radius-input: %s;', $r_in);
         $lines[] = sprintf('  --brandkit-radius-modal: %s;', $r_mod);
+        $lines[] = sprintf('  --brandkit-radius-chrome: %s;', $r_chrome);
+        $lines[] = sprintf('  --brandkit-btn-pad: %s;', $btn_pad);
+        $lines[] = sprintf('  --brandkit-tab-gap: %dpx;', (int) $style['tab_item_spacing']);
+        $heading = 'Configuration';
+        if (function_exists('__')) {
+            $heading = (string) __('Configuration', 'brandkit');
+        }
+        $lines[] = sprintf('  --brandkit-tab-heading: "%s";', self::cssString($heading));
         $lines[] = sprintf('  --brandkit-shadow-card: %s;', self::shadow((string) $style['shadow_cards']));
         $lines[] = sprintf('  --brandkit-shadow-dropdown: %s;', self::shadow((string) $style['shadow_dropdowns']));
         $lines[] = sprintf('  --brandkit-shadow-modal: %s;', self::shadow((string) $style['shadow_modals']));
@@ -128,14 +148,703 @@ final class StyleCss
 
 .btn {
   border-radius: var(--brandkit-radius-btn) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  line-height: 1.2;
+}
+
+.btn:not(.btn-link):not(.btn-icon):not(.btn-sm):not(.btn-close) {
+  padding-block: 0.4rem;
+  padding-inline: var(--brandkit-btn-pad, 0.85rem);
+  min-height: 2.2rem;
+}
+
+.btn-sm {
+  min-height: 1.75rem;
+  padding-block: 0.2rem;
+  padding-inline: 0.7rem;
+  border-radius: var(--brandkit-radius-chrome) !important;
+  gap: 0.25rem;
+}
+
+.btn-icon,
+.btn.btn-icon {
+  padding-inline: 0.5rem;
 }
 
 .form-control,
 .form-select,
 .select2-container .select2-selection {
   border-radius: var(--brandkit-radius-input) !important;
+  min-height: 2.2rem;
+  padding-block: 0.4rem;
+  padding-inline: 0.75rem;
 }
 CSS;
+    }
+
+    /**
+     * Breadcrumb, search, file inputs, input-groups, badges, pagination.
+     * Large template radii are scaled down via --brandkit-radius-chrome.
+     *
+     * @param array<string, mixed> $style
+     */
+    private static function chrome(array $style): string
+    {
+        $base = <<<CSS
+.page > header,
+header.navbar,
+.navbar.secondary-bar {
+  border-radius: 0 !important;
+  overflow: visible;
+}
+.page > header .header-container,
+header.navbar .header-container,
+.navbar.secondary-bar .container-fluid {
+  align-items: center;
+}
+.page > header .breadcrumb,
+header.navbar .breadcrumb,
+.navbar.secondary-bar .breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0;
+  margin: 0;
+  padding: 0.15rem 0;
+  background: transparent !important;
+  font-size: 0.9rem;
+}
+.page > header .breadcrumb-item,
+header.navbar .breadcrumb-item,
+.navbar.secondary-bar .breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0;
+  max-width: 14rem;
+}
+.page > header .breadcrumb-item + .breadcrumb-item::before,
+header.navbar .breadcrumb-item + .breadcrumb-item::before,
+.navbar.secondary-bar .breadcrumb-item + .breadcrumb-item::before {
+  display: inline-flex;
+  align-items: center;
+  float: none !important;
+  padding: 0 0.45rem;
+  transform: none;
+  content: var(--tblr-breadcrumb-divider, "/");
+  opacity: 0.7;
+  line-height: 1;
+}
+.page > header .breadcrumb-item a,
+header.navbar .breadcrumb-item a,
+.navbar.secondary-bar .breadcrumb-item a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  line-height: 1.2;
+  padding: 0.15rem 0;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+.page > header .nav.navbar-nav,
+header.navbar .nav.navbar-nav,
+.navbar.secondary-bar .nav.navbar-nav {
+  align-items: center;
+  align-self: center;
+  margin-inline-start: 0.35rem;
+  padding-inline-start: 0.5rem;
+}
+.page > header .nav.navbar-nav .btn,
+header.navbar .nav.navbar-nav .btn,
+.navbar.secondary-bar .nav.navbar-nav .btn {
+  border-radius: var(--brandkit-radius-chrome) !important;
+  min-height: 1.7rem;
+  padding: 0.15rem 0.65rem !important;
+}
+
+.input-group {
+  align-items: stretch;
+  border-radius: var(--brandkit-radius-chrome);
+}
+.input-group > .form-control,
+.input-group > .form-select,
+.input-group > .form-control:focus,
+.input-group > .btn,
+.input-group > .input-group-text,
+.input-group > .select2-container .select2-selection {
+  border-radius: 0 !important;
+}
+.input-group > :first-child {
+  border-top-left-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-left-radius: var(--brandkit-radius-chrome) !important;
+}
+.input-group > :last-child {
+  border-top-right-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-right-radius: var(--brandkit-radius-chrome) !important;
+}
+.input-group .input-group-text .btn,
+.input-group-flat .input-group-text .btn {
+  border-radius: 0 !important;
+  min-height: auto;
+}
+header.navbar .input-group-flat,
+.navbar.secondary-bar .input-group-flat,
+.page > header .input-group-flat {
+  overflow: hidden;
+  border-radius: var(--brandkit-radius-chrome);
+  min-height: 2.2rem;
+}
+header.navbar .input-group-flat > .form-control,
+.navbar.secondary-bar .input-group-flat > .form-control,
+.page > header .input-group-flat > .form-control {
+  min-height: 2.2rem;
+  padding-inline: 0.85rem;
+}
+header.navbar .input-group-flat .btn-link,
+.navbar.secondary-bar .input-group-flat .btn-link,
+.page > header .input-group-flat .btn-link {
+  padding: 0.45rem 0.75rem !important;
+  min-height: 2.2rem;
+  min-width: 2.4rem;
+  border-radius: 0 !important;
+}
+
+.btn-group > .btn {
+  border-radius: 0 !important;
+}
+.btn-group > .btn:first-child {
+  border-top-left-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-left-radius: var(--brandkit-radius-chrome) !important;
+}
+.btn-group > .btn:last-child {
+  border-top-right-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-right-radius: var(--brandkit-radius-chrome) !important;
+}
+
+input[type="file"].form-control,
+.form-control[type="file"] {
+  padding: 0.3rem 0.7rem;
+  min-height: 2.35rem;
+  line-height: 1.4;
+  border-radius: var(--brandkit-radius-chrome) !important;
+}
+input[type="file"]::file-selector-button {
+  margin-inline-end: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  border: 0;
+  border-radius: var(--brandkit-radius-chrome);
+  background: color-mix(in srgb, var(--tblr-primary), transparent 82%);
+  color: inherit;
+}
+
+.badge {
+  border-radius: var(--brandkit-radius-chrome) !important;
+  padding-inline: 0.55em;
+}
+.pagination .page-link {
+  min-width: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagination .page-item:first-child .page-link {
+  border-top-left-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-left-radius: var(--brandkit-radius-chrome) !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.pagination .page-item:last-child .page-link {
+  border-top-right-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-right-radius: var(--brandkit-radius-chrome) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.pagination .page-item:not(:first-child):not(:last-child) .page-link {
+  border-radius: 0 !important;
+}
+
+header.navbar,
+header.navbar.navbar-light,
+header.navbar.topbar {
+  color: var(--brandkit-header-fg, inherit);
+}
+header.navbar .breadcrumb,
+header.navbar .breadcrumb-item,
+header.navbar .breadcrumb-item a,
+header.navbar .nav-link,
+header.navbar .form-control,
+header.navbar .form-control::placeholder {
+  color: color-mix(in srgb, var(--brandkit-header-fg, currentColor), transparent 8%);
+}
+header.navbar .form-control {
+  background: transparent;
+}
+CSS;
+        $extra = '';
+        $search = (string) ($style['search_style'] ?? 'default');
+        if ($search === 'inset_dark') {
+            $extra .= <<<CSS
+
+header.navbar .input-group-flat,
+.page > header .input-group-flat,
+.navbar.secondary-bar .input-group-flat {
+  background: color-mix(in srgb, #000, transparent 55%) !important;
+  border: 0 !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff, transparent 82%);
+}
+header.navbar .input-group-flat > .form-control,
+header.navbar .input-group-flat .btn-link {
+  color: #fff !important;
+  background: transparent !important;
+}
+header.navbar .input-group-flat > .form-control::placeholder {
+  color: color-mix(in srgb, #fff, transparent 40%);
+}
+CSS;
+        } elseif ($search === 'inset_light') {
+            $extra .= <<<CSS
+
+header.navbar .input-group-flat,
+.page > header .input-group-flat,
+.navbar.secondary-bar .input-group-flat {
+  background: #fff !important;
+  border: 0 !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, #000, transparent 86%);
+  border-radius: 999px;
+  overflow: hidden;
+}
+header.navbar .input-group-flat > .form-control,
+header.navbar .input-group-flat .btn-link {
+  color: #0f172a !important;
+  background: transparent !important;
+}
+header.navbar .input-group-flat > .form-control::placeholder {
+  color: #64748b;
+}
+CSS;
+        }
+
+        $crumb = (string) ($style['breadcrumb_style'] ?? 'default');
+        if ($crumb === 'pill') {
+            $extra .= <<<CSS
+
+header.navbar .breadcrumb-item a {
+  background: color-mix(in srgb, #fff, transparent 82%) !important;
+  border-radius: 999px !important;
+  padding: 0.2rem 0.7rem !important;
+}
+header.navbar .nav.navbar-nav .btn {
+  border-radius: 999px !important;
+}
+CSS;
+        } elseif ($crumb === 'ghost') {
+            $extra .= <<<CSS
+
+header.navbar .breadcrumb-item a {
+  background: transparent !important;
+  border-radius: 0 !important;
+  font-weight: 500;
+}
+header.navbar .nav.navbar-nav .btn {
+  border-radius: 999px !important;
+  background: var(--tblr-primary) !important;
+  color: var(--tblr-primary-fg, #fff) !important;
+  border: 0 !important;
+  padding: 0.2rem 0.85rem !important;
+}
+CSS;
+        }
+
+        if ((int) ($style['header_user_chip'] ?? 0) === 1) {
+            $extra .= <<<CSS
+
+header.navbar .user-menu-dropdown-toggle {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.45rem;
+  background: color-mix(in srgb, #fff, transparent 86%) !important;
+  border-radius: 999px !important;
+  padding: 0.15rem 0.4rem 0.15rem 0.65rem !important;
+  border: 0 !important;
+}
+header.navbar .user-menu-dropdown-toggle .user-picture,
+header.navbar .user-menu-dropdown-toggle .avatar,
+header.navbar .user-menu-dropdown-toggle img {
+  border-radius: 999px !important;
+  width: 1.7rem;
+  height: 1.7rem;
+}
+CSS;
+        }
+
+        return $base . $extra;
+    }
+
+    /**
+     * In-page Entity tab strip (#tabspanel).
+     *
+     * @param array<string, mixed> $style
+     */
+    private static function tabs(array $style): string
+    {
+        $preset = (string) ($style['tab_preset'] ?? 'default');
+        $base = <<<CSS
+.card-tabs #tabspanel.nav-tabs .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.8rem;
+  margin-block: var(--brandkit-tab-gap);
+  transition: background-color var(--brandkit-duration) var(--brandkit-easing),
+              color var(--brandkit-duration) var(--brandkit-easing),
+              box-shadow var(--brandkit-duration) var(--brandkit-easing);
+}
+.card-tabs #tabspanel.nav-tabs .nav-link:hover {
+  background: color-mix(in srgb, var(--tblr-primary), transparent 90%);
+  color: inherit;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-item:first-child .nav-link {
+  border-top-left-radius: var(--brandkit-radius-chrome);
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-item:last-child .nav-link {
+  border-bottom-left-radius: var(--brandkit-radius-chrome);
+}
+CSS;
+
+        $extra = match ($preset) {
+            'pill' => <<<CSS
+.card-tabs #tabspanel.nav-tabs .nav-link {
+  border-radius: var(--brandkit-radius-chrome) !important;
+  margin-inline: 0.35rem;
+  border-width: 0 !important;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link {
+  border-top-right-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-right-radius: var(--brandkit-radius-chrome) !important;
+}
+.card-tabs #tabspanel.nav-tabs .nav-link.active {
+  background: color-mix(in srgb, var(--tblr-primary), transparent 82%) !important;
+  color: inherit !important;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tblr-primary), transparent 55%);
+}
+CSS,
+            'underline' => <<<CSS
+.card-tabs #tabspanel.nav-tabs .nav-link {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 2px solid transparent !important;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link {
+  border-bottom: 0 !important;
+  border-left: 2px solid transparent !important;
+}
+.card-tabs #tabspanel.nav-tabs .nav-link.active {
+  background: transparent !important;
+  font-weight: 600;
+  border-bottom-color: var(--tblr-primary) !important;
+  color: var(--tblr-primary) !important;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link.active {
+  border-bottom-color: transparent !important;
+  border-left-color: var(--tblr-primary) !important;
+}
+CSS,
+            'accent_bar' => <<<CSS
+.card-tabs #tabspanel.nav-tabs .nav-link.active {
+  box-shadow: inset 4px 0 0 var(--tblr-primary);
+  background: color-mix(in srgb, var(--tblr-primary), transparent 88%) !important;
+  font-weight: 600;
+  border-left-color: var(--tblr-primary) !important;
+}
+.card-tabs.horizontal #tabspanel.nav-tabs .nav-link.active {
+  box-shadow: inset 0 -3px 0 var(--tblr-primary);
+}
+CSS,
+            'card' => <<<CSS
+.card-tabs.vertical {
+  gap: 1rem;
+  align-items: flex-start;
+  background: transparent !important;
+}
+.card-tabs.vertical #tabspanel.nav-tabs {
+  background: var(--tblr-bg-surface, #fff);
+  border: 0 !important;
+  border-radius: var(--brandkit-radius-card) !important;
+  box-shadow: var(--brandkit-shadow-card);
+  padding: 0.35rem 0.35rem 0.75rem;
+  min-width: 220px;
+}
+.card-tabs.vertical #tabspanel.nav-tabs::before {
+  content: var(--brandkit-tab-heading);
+  display: flex;
+  align-items: center;
+  font-weight: 650;
+  font-size: 0.95rem;
+  color: var(--tblr-primary);
+  padding: 0.7rem 0.9rem 0.45rem;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link {
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  margin: 0.12rem 0.4rem !important;
+  padding: 0.45rem 0.85rem !important;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link.active {
+  background: color-mix(in srgb, var(--tblr-primary), #fff 82%) !important;
+  color: var(--tblr-primary) !important;
+  font-weight: 600;
+  box-shadow: none;
+  border-left-width: 0 !important;
+}
+.card-tabs.vertical .tab-content.card {
+  border: 0 !important;
+  border-radius: var(--brandkit-radius-card) !important;
+  box-shadow: var(--brandkit-shadow-card);
+  background: var(--tblr-bg-surface, #fff);
+  padding: 1.25rem 1.5rem !important;
+}
+CSS,
+            'merge' => <<<CSS
+.card-tabs.vertical {
+  gap: 0;
+  background: transparent !important;
+}
+.card-tabs.vertical #tabspanel.nav-tabs {
+  background: transparent;
+  border-right: 0 !important;
+  padding-top: 0.35rem;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link {
+  border: 0 !important;
+  border-top-left-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-left-radius: var(--brandkit-radius-chrome) !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  background: transparent !important;
+  margin-right: 0;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link.active {
+  background: var(--tblr-bg-surface, #fff) !important;
+  color: inherit !important;
+  font-weight: 600;
+  box-shadow: none;
+  border-left-width: 0 !important;
+  border-right-color: transparent !important;
+}
+.card-tabs.vertical .tab-content.card {
+  border: 0 !important;
+  border-radius: var(--brandkit-radius-card) !important;
+  box-shadow: var(--brandkit-shadow-card);
+  background: var(--tblr-bg-surface, #fff);
+  margin-left: -1px;
+}
+CSS,
+            default => <<<CSS
+.card-tabs #tabspanel.nav-tabs .nav-link.active {
+  background: color-mix(in srgb, var(--tblr-primary), transparent 88%) !important;
+  font-weight: 600;
+}
+.card-tabs.vertical #tabspanel.nav-tabs .nav-link.active {
+  border-left: 4px solid var(--tblr-primary) !important;
+}
+CSS,
+        };
+
+        return $base . "\n" . $extra;
+    }
+
+    /**
+     * Form layout, section cards, file inputs.
+     *
+     * @param array<string, mixed> $style
+     */
+    private static function forms(array $style): string
+    {
+        $css = '';
+        if ((string) ($style['form_layout'] ?? 'default') === 'two_column') {
+            $css .= <<<CSS
+@media (min-width: 992px) {
+  .tab-content .asset .form-field.row,
+  #brandkit-fields .form-field.row {
+    display: grid;
+    grid-template-columns: minmax(12rem, 34%) 1fr;
+    width: 100% !important;
+    max-width: none !important;
+    flex: 0 0 100%;
+    border-bottom: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 35%);
+    padding: 1.1rem 0.15rem;
+    margin: 0 !important;
+    align-items: start;
+    column-gap: 1.5rem;
+  }
+  .tab-content .asset .form-field > .col-form-label,
+  #brandkit-fields .form-field > .col-form-label {
+    text-align: start !important;
+    font-weight: 650;
+    font-size: 0.95rem;
+    padding-top: 0.35rem;
+  }
+  .tab-content .asset .form-field .form-text,
+  .tab-content .asset .form-field .text-muted,
+  #brandkit-fields .form-field .form-text,
+  #brandkit-fields .form-field .text-muted {
+    display: block;
+    font-weight: 400;
+    font-size: 0.82rem;
+    margin-top: 0.2rem;
+  }
+}
+.brandkit-logo-row {
+  border-bottom: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 35%);
+}
+
+CSS;
+        }
+
+        if ((string) ($style['form_sections'] ?? 'default') === 'accordion') {
+            $css .= <<<CSS
+.brandkit-accordion {
+  border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 20%);
+  border-radius: 999px;
+  background: var(--tblr-bg-surface, #fff);
+  box-shadow: var(--brandkit-shadow-card);
+  margin: 0.85rem 0;
+  overflow: hidden;
+}
+.brandkit-accordion[open] {
+  border-radius: var(--brandkit-radius-card);
+}
+.brandkit-accordion > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.brandkit-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+.brandkit-accordion > summary .brandkit-acc-chevron {
+  margin-inline-start: auto;
+  transition: transform var(--brandkit-duration) var(--brandkit-easing);
+}
+.brandkit-accordion[open] > summary .brandkit-acc-chevron {
+  transform: rotate(90deg);
+}
+.brandkit-accordion-body {
+  padding: 0.25rem 1.25rem 1.1rem;
+  border-top: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 40%);
+}
+.tab-content .card-header {
+  border-radius: var(--brandkit-radius-card);
+}
+
+CSS;
+        }
+
+        $file = (string) ($style['file_input_style'] ?? 'default');
+        if ($file === 'outlined') {
+            $css .= <<<CSS
+input[type="file"]::file-selector-button {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tblr-primary), transparent 35%);
+  color: var(--tblr-primary);
+  font-weight: 600;
+}
+.brandkit-file-ui {
+  border: 1px solid var(--tblr-border-color);
+  background: var(--tblr-bg-surface, #fff);
+}
+.brandkit-file-btn {
+  color: var(--tblr-primary);
+  font-weight: 600;
+}
+.brandkit-logo-preview img {
+  box-shadow: none;
+}
+
+CSS;
+        } elseif ($file === 'filled') {
+            $css .= <<<CSS
+input[type="file"].form-control,
+.form-control[type="file"] {
+  padding-left: 0;
+  background: var(--tblr-bg-surface, #fff);
+}
+input[type="file"]::file-selector-button {
+  background: var(--tblr-primary);
+  color: var(--tblr-primary-fg, #fff);
+  font-weight: 600;
+  border-radius: var(--brandkit-radius-chrome) 0 0 var(--brandkit-radius-chrome);
+  margin: 0;
+  margin-inline-end: 0.65rem;
+}
+.brandkit-file-ui {
+  border: 1px solid var(--tblr-border-color);
+  background: var(--tblr-bg-surface, #fff);
+  padding: 0;
+  gap: 0;
+}
+.brandkit-file-btn {
+  background: var(--tblr-primary);
+  color: var(--tblr-primary-fg, #fff);
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--brandkit-radius-chrome) 0 0 var(--brandkit-radius-chrome);
+}
+.brandkit-file-name {
+  padding-inline: 0.75rem;
+}
+.brandkit-logo-preview img {
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--tblr-body-color), transparent 88%);
+}
+
+CSS;
+        }
+
+        $tone = (string) ($style['page_tone'] ?? 'default');
+        if ($tone === 'grey') {
+            $css .= <<<CSS
+body.central,
+body.central .page,
+body.central .page-wrapper,
+body.central .page-body {
+  background-color: #eef1f6 !important;
+}
+body.central .card-tabs.vertical {
+  background: transparent !important;
+}
+
+CSS;
+        } elseif ($tone === 'cream') {
+            $css .= <<<CSS
+body.central,
+body.central .page,
+body.central .page-wrapper,
+body.central .page-body {
+  background-color: #f6ead8 !important;
+  background-image: linear-gradient(#f3d5b5, #f6ead8 8rem);
+  background-repeat: no-repeat;
+}
+body.central .card-tabs.vertical {
+  background: transparent !important;
+}
+
+CSS;
+        }
+
+        return $css;
     }
 
     /**
@@ -370,7 +1079,7 @@ CSS;
     private static function dropdowns(array $style): string
     {
         $kind = (string) $style['dropdown_style'];
-        $radius = $kind === 'rounded' ? 'var(--brandkit-radius-card)' : 'var(--brandkit-radius-input)';
+        $radius = 'var(--brandkit-radius-chrome)';
         $glass = $kind === 'glass'
             ? "background: color-mix(in srgb, var(--tblr-bg-surface), transparent 12%);\n  backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);"
             : '';
@@ -383,7 +1092,7 @@ CSS;
   {$glass}
 }
 .dropdown-item {
-  border-radius: calc(var(--brandkit-radius-input) - 2px);
+  border-radius: var(--brandkit-radius-chrome);
 }
 CSS;
     }
@@ -405,6 +1114,7 @@ CSS;
   background-image: {$grad} !important;
   background-color: transparent !important;
   border-color: transparent !important;
+  background-size: 100% 100%;
 }
 CSS;
     }
@@ -676,18 +1386,33 @@ CSS;
             return sprintf('"%s", system-ui, sans-serif', str_replace('"', '', $custom));
         }
 
-        return match ((string) $style['font_family']) {
-            'inter' => '"Inter", system-ui, sans-serif',
-            'nunito' => '"Nunito", system-ui, sans-serif',
-            'ibm_plex' => '"IBM Plex Sans", system-ui, sans-serif',
-            'source_sans' => '"Source Sans 3", system-ui, sans-serif',
-            default => 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-        };
+        $names = BundledFonts::cssNames();
+        $id = (string) $style['font_family'];
+        if (isset($names[$id])) {
+            return sprintf('"%s", system-ui, sans-serif', $names[$id]);
+        }
+
+        return 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
     }
 
     private static function px(int $n): string
     {
         return $n === 999 ? '999px' : $n . 'px';
+    }
+
+    /**
+     * Radius used on small / grouped chrome. Never a full pill.
+     */
+    private static function chromePx(int $n, int $cap = 10): string
+    {
+        if ($n <= 0) {
+            return '0px';
+        }
+        if ($n === 999) {
+            $n = $cap;
+        }
+
+        return min($n, $cap) . 'px';
     }
 
     private static function cssString(string $text): string

@@ -135,6 +135,51 @@
     glass: __('Glass', 'brandkit')
 }, __('Dropdown menus', 'brandkit'), ro) }}
 
+{{ fields.largeTitle(__('In-page tabs', 'brandkit'), 'ti ti-layout-navbar') }}
+<p class="text-muted">{{ __('The vertical (or horizontal) tab menu on item forms: Entity, Address, Branding, All, …', 'brandkit') }}</p>
+{{ fields.dropdownArrayField('style[tab_preset]', style.tab_preset, {
+    default: __('Default', 'brandkit'),
+    pill: __('Pill / rounded items', 'brandkit'),
+    underline: __('Underline', 'brandkit'),
+    accent_bar: __('Accent bar', 'brandkit'),
+    card: __('Card (separate rounded panel)', 'brandkit'),
+    merge: __('Merge into content', 'brandkit')
+}, __('Tab style', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[tab_item_spacing]', style.tab_item_spacing, {0: '0', 2: '2px', 4: '4px', 6: '6px', 8: '8px', 12: '12px'}, __('Tab item spacing', 'brandkit'), ro) }}
+
+{{ fields.largeTitle(__('Forms and chrome', 'brandkit'), 'ti ti-forms') }}
+{{ fields.dropdownArrayField('style[form_layout]', style.form_layout, {
+    default: __('Default GLPI grid', 'brandkit'),
+    two_column: __('Two-column (label left, control right)', 'brandkit')
+}, __('Form layout', 'brandkit'), ro|merge({
+    helper: __('Applies to item forms (tickets, entities, …). The Branding tab always uses two-column logo rows.', 'brandkit')
+})) }}
+{{ fields.dropdownArrayField('style[form_sections]', style.form_sections, {
+    default: __('Default headings', 'brandkit'),
+    accordion: __('Accordion / collapsible cards', 'brandkit')
+}, __('Section headings', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[file_input_style]', style.file_input_style, {
+    default: __('Default', 'brandkit'),
+    outlined: __('Outlined Choose file', 'brandkit'),
+    filled: __('Filled Choose file (joined)', 'brandkit')
+}, __('File inputs', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[search_style]', style.search_style, {
+    default: __('Default', 'brandkit'),
+    inset_dark: __('Dark inset (on a coloured header)', 'brandkit'),
+    inset_light: __('Light pill (on a dark header)', 'brandkit')
+}, __('Global search box', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[breadcrumb_style]', style.breadcrumb_style, {
+    default: __('Default', 'brandkit'),
+    ghost: __('Ghost text + pill Add', 'brandkit'),
+    pill: __('Pill items', 'brandkit')
+}, __('Breadcrumb', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[page_tone]', style.page_tone, {
+    default: __('Default', 'brandkit'),
+    grey: __('Light grey workspace', 'brandkit'),
+    cream: __('Warm cream workspace', 'brandkit')
+}, __('Page background tone', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[header_user_chip]', style.header_user_chip, __('User menu as a rounded chip', 'brandkit'), ro) }}
+
 {{ fields.largeTitle(__('Shape', 'brandkit'), 'ti ti-radius-top-left') }}
 {{ fields.dropdownArrayField('style[radius_global]', style.radius_global, radius_opts, __('Global radius', 'brandkit'), ro) }}
 {{ fields.dropdownArrayField('style[radius_cards]', style.radius_cards, radius_opts, __('Cards', 'brandkit'), ro) }}
@@ -178,15 +223,28 @@
 {{ fields.dropdownArrayField('style[font_family]', style.font_family, {
     system: __('System stack', 'brandkit'),
     inter: 'Inter',
-    source_sans: 'Source Sans 3',
-    ibm_plex: 'IBM Plex Sans',
+    poppins: 'Poppins',
+    roboto: 'Roboto',
+    open_sans: 'Open Sans',
+    montserrat: 'Montserrat',
+    lato: 'Lato',
     nunito: 'Nunito',
-    custom: __('Custom (Google Fonts URL)', 'brandkit')
-}, __('Font family', 'brandkit'), ro) }}
-{{ fields.textField('style[font_url]', style.font_url, __('Google Fonts URL', 'brandkit'), ro|merge({
-    helper: __('Only https://fonts.googleapis.com/css2?… is accepted.', 'brandkit')
+    raleway: 'Raleway',
+    ibm_plex: 'IBM Plex Sans',
+    source_sans: 'Source Sans 3',
+    custom: __('Custom family name', 'brandkit')
+}, __('Font family', 'brandkit'), ro|merge({
+    helper: __('Bundled woff2 files are served from the plugin (works offline and with CSP).', 'brandkit')
 })) }}
-{{ fields.textField('style[font_custom_name]', style.font_custom_name, __('Custom font name', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[font_cdn]', style.font_cdn, __('Load this font from Google Fonts instead of the bundled files', 'brandkit'), ro|merge({
+    helper: __('Opt-in. Requires fonts.googleapis.com / fonts.gstatic.com in CSP. Bundled files are used when this is off.', 'brandkit')
+})) }}
+{{ fields.textField('style[font_url]', style.font_url, __('Google Fonts URL', 'brandkit'), ro|merge({
+    helper: __('Only used when the CDN option is on. https://fonts.googleapis.com/css2?… only.', 'brandkit')
+})) }}
+{{ fields.textField('style[font_custom_name]', style.font_custom_name, __('Custom font name', 'brandkit'), ro|merge({
+    helper: __('Used when Font family is “Custom”. Pair with a Google Fonts URL (CDN on) or your own @font-face in Custom CSS.', 'brandkit')
+})) }}
 {{ fields.dropdownArrayField('style[font_size]', style.font_size, {12: '12px', 13: '13px', 14: '14px', 15: '15px', 16: '16px', 18: '18px'}, __('Base font size', 'brandkit'), ro) }}
 
 {{ fields.largeTitle(__('Gradients and backgrounds', 'brandkit'), 'ti ti-gradienter') }}
@@ -206,22 +264,17 @@
     {{ fields.textField('style[' ~ key ~ '][stop3]', style[key].stop3|default(''), __('Stop 3 (#hex, optional)', 'brandkit'), ro) }}
 {% endfor %}
 
-{{ fields.fileField('app_background_image', null, __('App background image', 'brandkit'), {
-    simple: true,
-    readonly: not can_edit,
-    accepted_files: 'image/png,image/jpeg,image/gif,image/webp'
-}) }}
-{% if previews.app_background_image %}
-    <div class="mb-3" style="max-width: 240px;">
-        <img src="{{ previews.app_background_image }}" alt="" class="img-fluid border rounded" />
-        {% if can_edit %}
-            <label class="form-check mt-1">
-                <input type="checkbox" class="form-check-input" name="_blank_app_background_image" value="1" />
-                <span class="form-check-label">{{ __('Clear', 'brandkit') }}</span>
-            </label>
-        {% endif %}
-    </div>
-{% endif %}
+<div class="brandkit-logo-rows">
+    {% include '@brandkit/logo_slot.html.twig' with {
+        slot: 'app_background_image',
+        label: __('App background image', 'brandkit'),
+        help: __('Optional wallpaper behind the central interface.', 'brandkit'),
+        hint: __('Recommended: 1920 × 1080px, PNG or JPEG', 'brandkit'),
+        preview: previews.app_background_image,
+        dark: false,
+        can_edit: can_edit
+    } %}
+</div>
 {{ fields.dropdownArrayField('style[page_bg_fit]', style.page_bg_fit, {cover: 'cover', contain: 'contain', repeat: 'repeat'}, __('Background fit', 'brandkit'), ro) }}
 {{ fields.dropdownArrayField('style[page_bg_position]', style.page_bg_position, {
     center: __('Center', 'brandkit'),
@@ -245,22 +298,17 @@
     text: __('Text', 'brandkit')
 }, __('Watermark type', 'brandkit'), ro) }}
 {{ fields.textField('style[watermark_text]', style.watermark_text, __('Watermark text', 'brandkit'), ro) }}
-{{ fields.fileField('watermark_image', null, __('Watermark image', 'brandkit'), {
-    simple: true,
-    readonly: not can_edit,
-    accepted_files: 'image/png,image/jpeg,image/gif,image/webp'
-}) }}
-{% if previews.watermark_image %}
-    <div class="mb-3" style="max-width: 160px;">
-        <img src="{{ previews.watermark_image }}" alt="" class="img-fluid border rounded" />
-        {% if can_edit %}
-            <label class="form-check mt-1">
-                <input type="checkbox" class="form-check-input" name="_blank_watermark_image" value="1" />
-                <span class="form-check-label">{{ __('Clear', 'brandkit') }}</span>
-            </label>
-        {% endif %}
-    </div>
-{% endif %}
+<div class="brandkit-logo-rows">
+    {% include '@brandkit/logo_slot.html.twig' with {
+        slot: 'watermark_image',
+        label: __('Watermark image', 'brandkit'),
+        help: __('Shown behind app or login content when Watermark type is Image.', 'brandkit'),
+        hint: __('PNG with transparency works best.', 'brandkit'),
+        preview: previews.watermark_image,
+        dark: false,
+        can_edit: can_edit
+    } %}
+</div>
 {{ fields.dropdownArrayField('style[watermark_opacity]', style.watermark_opacity, {4: '4%', 8: '8%', 12: '12%', 18: '18%', 24: '24%', 32: '32%'}, __('Opacity', 'brandkit'), ro) }}
 {{ fields.dropdownArrayField('style[watermark_size]', style.watermark_size, {sm: __('Small', 'brandkit'), md: __('Medium', 'brandkit'), lg: __('Large', 'brandkit')}, __('Size', 'brandkit'), ro) }}
 {{ fields.dropdownArrayField('style[watermark_position]', style.watermark_position, {

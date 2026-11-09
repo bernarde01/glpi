@@ -15,7 +15,7 @@ namespace GlpiPlugin\Brandkit;
 
 final class StyleSchema
 {
-    public const VERSION = '1.2.0';
+    public const VERSION = '1.3.0';
 
     /**
      * @var list<string>
@@ -65,7 +65,55 @@ final class StyleSchema
     /**
      * @var list<string>
      */
-    public const FONTS = ['system', 'inter', 'source_sans', 'ibm_plex', 'nunito', 'custom'];
+    public const FONTS = [
+        'system',
+        'inter',
+        'poppins',
+        'roboto',
+        'open_sans',
+        'montserrat',
+        'lato',
+        'nunito',
+        'raleway',
+        'ibm_plex',
+        'source_sans',
+        'custom',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    public const TAB_PRESETS = ['default', 'pill', 'underline', 'accent_bar', 'card', 'merge'];
+
+    /**
+     * @var list<string>
+     */
+    public const FORM_LAYOUTS = ['default', 'two_column'];
+
+    /**
+     * @var list<string>
+     */
+    public const FORM_SECTIONS = ['default', 'accordion'];
+
+    /**
+     * @var list<string>
+     */
+    public const FILE_INPUT_STYLES = ['default', 'outlined', 'filled'];
+
+    /**
+     * @var list<string>
+     */
+    public const SEARCH_STYLES = ['default', 'inset_dark', 'inset_light'];
+
+    /**
+     * @var list<string>
+     */
+    public const BREADCRUMB_STYLES = ['default', 'ghost', 'pill'];
+
+    /**
+     * @var list<string>
+     */
+    public const PAGE_TONES = ['default', 'grey', 'cream'];
 
     /**
      * @var list<string>
@@ -104,6 +152,15 @@ final class StyleSchema
             'nav_hover_style'     => 'background',
             'nav_icon_size'       => 18,
             'nav_item_spacing'    => 4,
+            'tab_preset'          => 'default',
+            'tab_item_spacing'    => 0,
+            'form_layout'         => 'default',
+            'form_sections'       => 'default',
+            'file_input_style'    => 'default',
+            'search_style'        => 'default',
+            'breadcrumb_style'    => 'default',
+            'page_tone'           => 'default',
+            'header_user_chip'    => 0,
             'header_style'        => 'flat',
             'dropdown_style'      => 'default',
             'radius_global'       => 6,
@@ -124,6 +181,7 @@ final class StyleSchema
             'disable_animations'  => 0,
             'density'             => 'comfortable',
             'font_family'         => 'system',
+            'font_cdn'            => 0,
             'font_url'            => '',
             'font_custom_name'    => '',
             'font_size'           => 14,
@@ -193,6 +251,15 @@ final class StyleSchema
         $out['nav_hover_style'] = self::pick($data['nav_hover_style'] ?? 'background', self::NAV_ITEM_STYLES);
         $out['nav_icon_size'] = self::clampInt($data['nav_icon_size'] ?? 18, 14, 32);
         $out['nav_item_spacing'] = self::clampInt($data['nav_item_spacing'] ?? 4, 0, 16);
+        $out['tab_preset'] = self::pick($data['tab_preset'] ?? 'default', self::TAB_PRESETS);
+        $out['tab_item_spacing'] = self::clampInt($data['tab_item_spacing'] ?? 0, 0, 12);
+        $out['form_layout'] = self::pick($data['form_layout'] ?? 'default', self::FORM_LAYOUTS);
+        $out['form_sections'] = self::pick($data['form_sections'] ?? 'default', self::FORM_SECTIONS);
+        $out['file_input_style'] = self::pick($data['file_input_style'] ?? 'default', self::FILE_INPUT_STYLES);
+        $out['search_style'] = self::pick($data['search_style'] ?? 'default', self::SEARCH_STYLES);
+        $out['breadcrumb_style'] = self::pick($data['breadcrumb_style'] ?? 'default', self::BREADCRUMB_STYLES);
+        $out['page_tone'] = self::pick($data['page_tone'] ?? 'default', self::PAGE_TONES);
+        $out['header_user_chip'] = self::boolInt($data['header_user_chip'] ?? 0);
         $out['header_style'] = self::pick($data['header_style'] ?? 'flat', self::HEADER_STYLES);
         $out['dropdown_style'] = self::pick($data['dropdown_style'] ?? 'default', self::DROPDOWN_STYLES);
         foreach (['radius_global', 'radius_cards', 'radius_buttons', 'radius_inputs', 'radius_modals'] as $key) {
@@ -211,6 +278,7 @@ final class StyleSchema
         $out['disable_animations'] = self::boolInt($data['disable_animations'] ?? 0);
         $out['density'] = self::pick($data['density'] ?? 'comfortable', self::DENSITIES);
         $out['font_family'] = self::pick($data['font_family'] ?? 'system', self::FONTS);
+        $out['font_cdn'] = self::boolInt($data['font_cdn'] ?? 0);
         $out['font_url'] = self::sanitizeFontUrl((string) ($data['font_url'] ?? ''));
         $out['font_custom_name'] = mb_substr(preg_replace('/[^A-Za-z0-9 _-]/', '', (string) ($data['font_custom_name'] ?? '')) ?? '', 0, 64);
         $out['font_size'] = self::clampInt($data['font_size'] ?? 14, 12, 20);
@@ -364,10 +432,16 @@ final class StyleSchema
     public static function builtInFontUrl(string $family): string
     {
         return match ($family) {
-            'inter' => 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-            'nunito' => 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap',
-            'ibm_plex' => 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap',
-            'source_sans' => 'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap',
+            'inter' => 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
+            'poppins' => 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap',
+            'roboto' => 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
+            'open_sans' => 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap',
+            'montserrat' => 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap',
+            'lato' => 'https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap',
+            'nunito' => 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap',
+            'raleway' => 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap',
+            'ibm_plex' => 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&display=swap',
+            'source_sans' => 'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap',
             default => '',
         };
     }
