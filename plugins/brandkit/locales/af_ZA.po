@@ -1,0 +1,234 @@
+# Afrikaans translations for BrandKit.
+# Copyright (C) 2026 Distillect
+# This file is distributed under the same license as the BrandKit package.
+msgid ""
+msgstr ""
+"Project-Id-Version: BrandKit 1.3.1\n"
+"Report-Msgid-Bugs-To: https://glpi.distillect.co.za/\n"
+"POT-Creation-Date: 2026-11-09 14:00+0000\n"
+"PO-Revision-Date: 2026-11-09 14:00+0000\n"
+"Last-Translator: Distillect\n"
+"Language-Team: Afrikaans\n"
+"Language: af_ZA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Branding"
+msgid_plural "Branding"
+msgstr[0] "Handelsmerk"
+msgstr[1] "Handelsmerk"
+
+msgid "Inherit branding from the parent entity"
+msgstr "Erf handelsmerk vanaf die ouerentiteit"
+
+msgid "When inheritance is enabled, this entity uses the branding of its parent. Uncheck to override."
+msgstr "Wanneer oorerwing aangeskakel is, gebruik hierdie entiteit die ouer se handelsmerk. Ontmerk om te oorskryf."
+
+msgid "Logos"
+msgstr "Logo’s"
+
+msgid "Main sidebar logo"
+msgstr "Hoof sybalk-logo"
+
+msgid "Collapsed sidebar logo"
+msgstr "Ingevoude sybalk-logo"
+
+msgid "Login page logo"
+msgstr "Aanmeldbladsy-logo"
+
+msgid "Login logo (dark mode)"
+msgstr "Aanmeldlogo (donker modus)"
+
+msgid "Favicon"
+msgstr "Favicon"
+
+msgid "Clear"
+msgstr "Maak skoon"
+
+msgid "Colours"
+msgstr "Kleure"
+
+msgid "Primary colour"
+msgstr "Primêre kleur"
+
+msgid "Secondary colour"
+msgstr "Sekondêre kleur"
+
+msgid "Accent colour"
+msgstr "Aksentkleur"
+
+msgid "Sidebar colour"
+msgstr "Sybalkkleur"
+
+msgid "Header colour"
+msgstr "Kopstukkleur"
+
+msgid "Custom CSS"
+msgstr "Pasgemaakte CSS"
+
+msgid "Sanitised on save: style/script breakouts and javascript: URLs are removed."
+msgstr "Word by stoor skoongemaak: style/script-uitbrake en javascript:-URL’s word verwyder."
+
+msgid "Login page"
+msgstr "Aanmeldbladsy"
+
+msgid "Login background image"
+msgstr "Aanmeldagtergrondbeeld"
+
+msgid "Login background colour"
+msgstr "Aanmeldagtergrondkleur"
+
+msgid "Login heading"
+msgstr "Aanmeldopskrif"
+
+msgid "Login message"
+msgstr "Aanmeldboodskap"
+
+msgid "Shown next to the login form. Coexists with Setup → General → text_login."
+msgstr "Word langs die aanmeldvorm gewys. Bestaan saam met Opstelling → Algemeen → text_login."
+
+msgid "Login footer links"
+msgstr "Aanmeldvoetskakels"
+
+msgid "One per line: Label|https://example.com"
+msgstr "Een per lyn: Etiket|https://example.com"
+
+msgid "Product name and page title"
+msgstr "Produknaam en bladsytitel"
+
+msgid "Product name"
+msgstr "Produknaam"
+
+msgid "Replaces “GLPI” in the browser title."
+msgstr "Vervang “GLPI” in die blaaier-titel."
+
+msgid "Page title prefix"
+msgstr "Bladsytitel-voorvoegsel"
+
+msgid "Notification emails"
+msgstr "Kennisgewing-e-posse"
+
+msgid "Email header HTML"
+msgstr "E-pos kopstuk-HTML"
+
+msgid "Email footer HTML"
+msgstr "E-pos voetstuk-HTML"
+
+msgid "Include logo in HTML emails"
+msgstr "Sluit logo in HTML-e-posse in"
+
+msgid "Dashboards"
+msgstr "Kontroleskerms"
+
+msgid "These colours are registered as the “brandkit” chart palette and also replace the default tab10 palette so existing widgets pick them up."
+msgstr "Hierdie kleure word as die “brandkit”-grafiekpalet geregistreer en vervang ook die standaard tab10-palet sodat bestaande widgets dit gebruik."
+
+msgid "Chart colour %s"
+msgstr "Grafiekkleur %s"
+
+msgid "Card background"
+msgstr "Kaartagtergrond"
+
+msgid "Card text colour"
+msgstr "Kaartteks kleur"
+
+msgid "BrandKit"
+msgstr "BrandKit"
+
+msgid "Per-entity logos, colours and login branding are edited on Administration → Entities → Branding. The root entity supplies the default (and the login page, unless a hostname mapping below applies)."
+msgstr "Logo’s, kleure en aanmeldhandelsmerk per entiteit word by Administrasie → Entiteite → Handelsmerk gewysig. Die wortelentiteit lewer die verstek (en die aanmeldbladsy, tensy ’n gasheernaam-kartering hieronder geld)."
+
+msgid "Edit root entity branding"
+msgstr "Wysig wortelentiteit-handelsmerk"
+
+msgid "Login hostname → entity map"
+msgstr "Aanmeld-gasheernaam → entiteit-kaart"
+
+msgid "One host per line: client.example.com=12  (entity id). Unmapped hosts use the root entity."
+msgstr "Een gasheer per lyn: client.example.com=12  (entiteit-id). Ongemerkte gashere gebruik die wortelentiteit."
+
+msgid "Configuration saved."
+msgstr "Opstelling gestoor."
+
+msgid "You do not have permission to update this entity."
+msgstr "Jy het nie toestemming om hierdie entiteit by te werk nie."
+
+msgid "You do not have permission to update branding."
+msgstr "Jy het nie toestemming om die handelsmerk by te werk nie."
+
+msgid "In-page tabs"
+msgstr "Oortjies op die vorm"
+
+msgid "The vertical (or horizontal) tab menu on item forms: Entity, Address, Branding, All, …"
+msgstr "Die vertikale (of horisontale) oortjie-kieslys op itemvorms: Entiteit, Adres, Handelsmerk, Alles, …"
+
+msgid "Tab style"
+msgstr "Oortjie-styl"
+
+msgid "Underline"
+msgstr "Onderstreep"
+
+msgid "Accent bar"
+msgstr "Aksentbalk"
+
+msgid "Tab item spacing"
+msgstr "Oortjie-spasiëring"
+
+msgid "Bundled woff2 files are served from the plugin (works offline and with CSP)."
+msgstr "Ingeslote woff2-lêers word vanuit die inprop bedien (werk vanlyn en met CSP)."
+
+msgid "Load this font from Google Fonts instead of the bundled files"
+msgstr "Laai hierdie lettertipe van Google Fonts in plaas van die ingeslote lêers"
+
+msgid "Opt-in. Requires fonts.googleapis.com / fonts.gstatic.com in CSP. Bundled files are used when this is off."
+msgstr "Opsioneel. Vereis fonts.googleapis.com / fonts.gstatic.com in CSP. Ingeslote lêers word gebruik as dit af is."
+
+msgid "Only used when the CDN option is on. https://fonts.googleapis.com/css2?… only."
+msgstr "Slegs wanneer die CDN-opsie aan is. Slegs https://fonts.googleapis.com/css2?…"
+
+msgid "Custom family name"
+msgstr "Pasmaak-lettertipe-naam"
+
+msgid "Used when Font family is “Custom”. Pair with a Google Fonts URL (CDN on) or your own @font-face in Custom CSS."
+msgstr "Word gebruik wanneer Lettertipe “Pasmaak” is. Koppel aan ’n Google Fonts-URL (CDN aan) of jou eie @font-face in Pasmaak-CSS."
+
+msgid "Configuration"
+msgstr "Opstelling"
+
+msgid "Choose file"
+msgstr "Kies lêer"
+
+msgid "No file chosen"
+msgstr "Geen lêer gekies nie"
+
+msgid "This logo appears in the main sidebar when expanded."
+msgstr "Hierdie logo verskyn in die hoofkantbalk wanneer dit oopgemaak is."
+
+msgid "Card (separate rounded panel)"
+msgstr "Kaart (aparte afgeronde paneel)"
+
+msgid "Merge into content"
+msgstr "Smelt saam met inhoud"
+
+msgid "Forms and chrome"
+msgstr "Vorms en chroom"
+
+msgid "Two-column (label left, control right)"
+msgstr "Twee kolomme (etiket links, beheer regs)"
+
+msgid "Form layout"
+msgstr "Vormuitleg"
+
+msgid "File inputs"
+msgstr "Lêerinvoere"
+
+msgid "Global search box"
+msgstr "Globale soekboks"
+
+msgid "Page background tone"
+msgstr "Bladsy-agtergrondtoon"
+
+msgid "User menu as a rounded chip"
+msgstr "Gebruikerkieslys as ’n afgeronde skyfie"

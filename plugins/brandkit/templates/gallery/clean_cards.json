@@ -1,0 +1,42 @@
+{
+    "id": "clean_cards",
+    "name": "Clean cards",
+    "description": "Grey workspace, white rounded cards, card tab panel, Inter. Two-column forms and outlined file inputs.",
+    "colors": {
+        "color_primary": "#0e7490",
+        "color_secondary": "#134e4a",
+        "color_accent": "#f97316",
+        "color_sidebar": "#0b3b44",
+        "color_header": "#0f3f4a",
+        "login_background_color": "#e8eef3"
+    },
+    "style": {
+        "preset": "clean_cards",
+        "sidebar_preset": "default",
+        "nav_active_style": "accent_bar",
+        "nav_hover_style": "background",
+        "header_style": "flat",
+        "tab_preset": "card",
+        "tab_item_spacing": 2,
+        "form_layout": "two_column",
+        "form_sections": "accordion",
+        "file_input_style": "outlined",
+        "search_style": "inset_dark",
+        "breadcrumb_style": "ghost",
+        "page_tone": "grey",
+        "header_user_chip": 1,
+        "radius_global": 12,
+        "radius_cards": 16,
+        "radius_buttons": 999,
+        "radius_inputs": 10,
+        "radius_modals": 16,
+        "shadow_cards": "soft",
+        "shadow_dropdowns": "soft",
+        "shadow_sidebar": "none",
+        "hover_buttons": "grow",
+        "density": "comfortable",
+        "font_family": "inter",
+        "font_size": 14,
+        "font_cdn": 0
+    }
+}

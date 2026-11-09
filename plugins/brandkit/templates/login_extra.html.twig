@@ -1,0 +1,20 @@
+{# @brandkit/login_extra.html.twig — DISPLAY_LOGIN hook output #}
+<div class="brandkit-login-extra text-start">
+    {% if heading %}
+        <h3 class="mb-2">{{ heading }}</h3>
+    {% endif %}
+    {% if message %}
+        <div class="rich_text_container mb-3">
+            {{ message|raw }}
+        </div>
+    {% endif %}
+    {% if links is not empty %}
+        <ul class="list-unstyled mb-0">
+            {% for link in links %}
+                <li class="mb-1">
+                    <a href="{{ link.url }}" rel="noopener noreferrer">{{ link.label }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

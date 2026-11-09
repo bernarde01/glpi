@@ -1,0 +1,45 @@
+{# @brandkit/config.html.twig — plugin configuration page #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="asset">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="ti ti-palette"></i>
+                {{ __('BrandKit', 'brandkit') }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <p>
+                {{ __('Per-entity logos, colours and login branding are edited on Administration → Entities → Branding. The root entity supplies the default (and the login page, unless a hostname mapping below applies).', 'brandkit') }}
+            </p>
+            <p>
+                <a class="btn btn-outline-primary" href="{{ root_entity_url }}">
+                    <i class="ti ti-building"></i>
+                    {{ __('Edit root entity branding', 'brandkit') }}
+                </a>
+            </p>
+
+            <form method="post" action="{{ form_url }}" data-submit-once>
+                {{ fields.textareaField(
+                    'host_entity_map',
+                    host_entity_map,
+                    __('Login hostname → entity map', 'brandkit'),
+                    {
+                        readonly: not can_edit,
+                        rows: 8,
+                        helper: __('One host per line: client.example.com=12  (entity id). Unmapped hosts use the root entity.', 'brandkit')
+                    }
+                ) }}
+                {% if can_edit %}
+                    <div class="mt-3">
+                        <button class="btn btn-primary" type="submit" name="update" value="1">
+                            <i class="ti ti-device-floppy"></i>
+                            {{ _x('button', 'Save') }}
+                        </button>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+{# @brandkit/entity_tab.html.twig — Branding tab on Entity #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="asset">
+    <form method="post" action="{{ form_url }}" enctype="multipart/form-data" data-submit-once>
+        <input type="hidden" name="entities_id" value="{{ entity.getID() }}" />
+        {% if item.fields['id']|default(0) %}
+            <input type="hidden" name="id" value="{{ item.fields['id'] }}" />
+        {% endif %}
+
+        <div class="card-body">
+            {% if not is_root %}
+                {{ fields.checkboxField(
+                    'inherit',
+                    inherit,
+                    __('Inherit branding from the parent entity', 'brandkit'),
+                    {readonly: not can_edit}
+                ) }}
+                <p class="text-muted mb-3">
+                    {{ __('When inheritance is enabled, this entity uses the branding of its parent. Uncheck to override.', 'brandkit') }}
+                </p>
+            {% else %}
+                <input type="hidden" name="inherit" value="0" />
+            {% endif %}
+
+            <div id="brandkit-fields" class="{{ (not is_root and inherit) ? 'opacity-75' : '' }}">
+                <div class="brandkit-logo-rows">
+                    {% include '@brandkit/logo_slot.html.twig' with {
+                        slot: 'logo_main',
+                        label: __('Main sidebar logo', 'brandkit'),
+                        help: __('This logo appears in the main sidebar when expanded.', 'brandkit'),
+                        hint: __('Recommended: 320 × 80px, PNG or JPEG', 'brandkit'),
+                        preview: previews.logo_main,
+                        dark: true,
+                        can_edit: can_edit
+                    } %}
+                    {% include '@brandkit/logo_slot.html.twig' with {
+                        slot: 'logo_collapsed',
+                        label: __('Collapsed sidebar logo', 'brandkit'),
+                        help: __('This logo appears in the collapsed sidebar.', 'brandkit'),
+                        hint: __('Recommended: 48 × 48px, PNG or JPEG', 'brandkit'),
+                        preview: previews.logo_collapsed,
+                        dark: true,
+                        can_edit: can_edit
+                    } %}
+                    {% include '@brandkit/logo_slot.html.twig' with {
+                        slot: 'logo_login',
+                        label: __('Login page logo', 'brandkit'),
+                        help: __('This logo appears on the login page.', 'brandkit'),
+                        hint: __('Recommended: 320 × 80px, PNG or JPEG', 'brandkit'),
+                        preview: previews.logo_login,
+                        dark: false,
+                        can_edit: can_edit
+                    } %}
+                    {% include '@brandkit/logo_slot.html.twig' with {
+                        slot: 'logo_login_dark',
+                        label: __('Login logo (dark mode)', 'brandkit'),
+                        help: __('This logo appears on the login page in dark mode.', 'brandkit'),
+                        hint: __('Recommended: 320 × 80px, PNG or JPEG', 'brandkit'),
+                        preview: previews.logo_login_dark,
+                        dark: true,
+                        can_edit: can_edit
+                    } %}
+                    {% include '@brandkit/logo_slot.html.twig' with {
+                        slot: 'favicon',
+                        label: __('Favicon', 'brandkit'),
+                        help: __('This icon appears in the browser tab and bookmarks.', 'brandkit'),
+                        hint: __('Recommended: 32 × 32px, ICO, PNG or JPEG', 'brandkit'),
+                        preview: previews.favicon,
+                        dark: false,
+                        can_edit: can_edit,
+                        accept: 'image/png,image/jpeg,image/gif,image/webp,image/x-icon,image/vnd.microsoft.icon'
+                    } %}
+                </div>
+
+                <details class="brandkit-accordion">
+                    <summary>
+                        <i class="ti ti-palette" aria-hidden="true"></i>
+                        {{ __('Colours', 'brandkit') }}
+                        <i class="ti ti-chevron-right brandkit-acc-chevron" aria-hidden="true"></i>
+                    </summary>
+                    <div class="brandkit-accordion-body">
+                        {{ fields.colorField('color_primary', item.fields['color_primary']|default(inherited.color_primary|default('#fe9c5c')), __('Primary colour', 'brandkit'), {readonly: not can_edit}) }}
+                        {{ fields.colorField('color_secondary', item.fields['color_secondary']|default(inherited.color_secondary|default('#2f3f64')), __('Secondary colour', 'brandkit'), {readonly: not can_edit}) }}
+                        {{ fields.colorField('color_accent', item.fields['color_accent']|default(inherited.color_accent|default('#055cad')), __('Accent colour', 'brandkit'), {readonly: not can_edit}) }}
+                        {{ fields.colorField('color_sidebar', item.fields['color_sidebar']|default(inherited.color_sidebar|default('#2f3f64')), __('Sidebar colour', 'brandkit'), {readonly: not can_edit}) }}
+                        {{ fields.colorField('color_header', item.fields['color_header']|default(inherited.color_header|default('#ffffff')), __('Header colour', 'brandkit'), {readonly: not can_edit}) }}
+                        {{ fields.textareaField('custom_css', item.fields['custom_css']|default(inherited.custom_css|default('')), __('Custom CSS', 'brandkit'), {
+                            readonly: not can_edit,
+                            rows: 8,
+                            helper: __('Sanitised on save: style/script breakouts and javascript: URLs are removed. Applied after generated Style CSS.', 'brandkit')
+                        }) }}
+                    </div>
+                </details>
+
+                {% include '@brandkit/style_section.html.twig' %}
+
+                {{ fields.largeTitle(__('Login page', 'brandkit'), 'ti ti-login') }}
+                <div class="brandkit-logo-rows">
+                    {% include '@brandkit/logo_slot.html.twig' with {
+                        slot: 'login_background_image',
+                        label: __('Login background image', 'brandkit'),
+                        help: __('Optional full-page background behind the login form.', 'brandkit'),
+                        hint: __('Recommended: 1920 × 1080px, PNG or JPEG', 'brandkit'),
+                        preview: previews.login_background_image,
+                        dark: false,
+                        can_edit: can_edit
+                    } %}
+                </div>
+                {{ fields.colorField('login_background_color', item.fields['login_background_color']|default(inherited.login_background_color|default('#f5f7fb')), __('Login background colour', 'brandkit'), {readonly: not can_edit}) }}
+                {{ fields.textField('login_heading', item.fields['login_heading']|default(inherited.login_heading|default('')), __('Login heading', 'brandkit'), {readonly: not can_edit}) }}
+                {{ fields.textareaField('login_message', item.fields['login_message']|default(inherited.login_message|default('')), __('Login message', 'brandkit'), {
+                    readonly: not can_edit,
+                    enable_richtext: true,
+                    helper: __('Shown next to the login form. Coexists with Setup → General → text_login.', 'brandkit')
+                }) }}
+                {{ fields.textareaField('login_footer_links', footer_links, __('Login footer links', 'brandkit'), {
+                    readonly: not can_edit,
+                    rows: 4,
+                    helper: __('One per line: Label|https://example.com', 'brandkit')
+                }) }}
+
+                {{ fields.largeTitle(__('Product name and page title', 'brandkit'), 'ti ti-typography') }}
+                {{ fields.textField('product_name', item.fields['product_name']|default(inherited.product_name|default('')), __('Product name', 'brandkit'), {
+                    readonly: not can_edit,
+                    helper: __('Replaces “GLPI” in the browser title.', 'brandkit')
+                }) }}
+                {{ fields.textField('page_title_prefix', item.fields['page_title_prefix']|default(inherited.page_title_prefix|default('')), __('Page title prefix', 'brandkit'), {readonly: not can_edit}) }}
+
+                {{ fields.largeTitle(__('Notification emails', 'brandkit'), 'ti ti-mail') }}
+                {{ fields.textareaField('email_header_html', item.fields['email_header_html']|default(inherited.email_header_html|default('')), __('Email header HTML', 'brandkit'), {
+                    readonly: not can_edit,
+                    enable_richtext: true
+                }) }}
+                {{ fields.textareaField('email_footer_html', item.fields['email_footer_html']|default(inherited.email_footer_html|default('')), __('Email footer HTML', 'brandkit'), {
+                    readonly: not can_edit,
+                    enable_richtext: true
+                }) }}
+                {{ fields.checkboxField('email_embed_logo', item.fields['email_embed_logo']|default(inherited.email_embed_logo|default(1)), __('Include logo in HTML emails', 'brandkit'), {readonly: not can_edit}) }}
+
+                {{ fields.largeTitle(__('Dashboards', 'brandkit'), 'ti ti-chart-pie') }}
+                <p class="text-muted">{{ __('These colours are registered as the “brandkit” chart palette and also replace the default tab10 palette so existing widgets pick them up.', 'brandkit') }}</p>
+                {% for i in 0..7 %}
+                    {{ fields.colorField(
+                        'dashboard_palette[' ~ i ~ ']',
+                        dashboard_colors[i]|default('#4e79a7'),
+                        __('Chart colour %s', 'brandkit')|format(i + 1),
+                        {readonly: not can_edit}
+                    ) }}
+                {% endfor %}
+                {{ fields.colorField('dashboard_card_bg', item.fields['dashboard_card_bg']|default(inherited.dashboard_card_bg|default('')), __('Card background', 'brandkit'), {readonly: not can_edit}) }}
+                {{ fields.colorField('dashboard_card_text', item.fields['dashboard_card_text']|default(inherited.dashboard_card_text|default('')), __('Card text colour', 'brandkit'), {readonly: not can_edit}) }}
+            </div>
+        </div>
+
+        {% if can_edit %}
+            <div class="card-footer mx-n2 mb-n2 mt-3">
+                <button class="btn btn-primary" type="submit" name="update" value="1">
+                    <i class="ti ti-device-floppy"></i>
+                    {{ _x('button', 'Save') }}
+                </button>
+            </div>
+        {% endif %}
+    </form>
+</div>

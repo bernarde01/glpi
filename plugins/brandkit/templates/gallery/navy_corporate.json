@@ -1,0 +1,34 @@
+{
+    "id": "navy_corporate",
+    "name": "Dark navy corporate",
+    "description": "Deep navy chrome, gold accent, tight corners. Built for finance and public-sector desks.",
+    "colors": {
+        "color_primary": "#1d4ed8",
+        "color_secondary": "#0f172a",
+        "color_accent": "#c9a227",
+        "color_sidebar": "#0b1b33",
+        "color_header": "#0b1b33",
+        "login_background_color": "#07101f"
+    },
+    "style": {
+        "preset": "navy_corporate",
+        "sidebar_preset": "compact",
+        "nav_active_style": "accent_bar",
+        "header_style": "flat",
+        "radius_global": 2,
+        "radius_cards": 4,
+        "radius_buttons": 2,
+        "radius_inputs": 2,
+        "radius_modals": 6,
+        "shadow_cards": "soft",
+        "shadow_sidebar": "none",
+        "hover_cards": "none",
+        "density": "compact",
+        "font_family": "open_sans",
+        "font_size": 13,
+        "nav_item_spacing": 0,
+        "tab_preset": "underline",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
+    }
+}
