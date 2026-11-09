@@ -27,7 +27,7 @@ use GlpiPlugin\Brandkit\MailBranding;
 use GlpiPlugin\Brandkit\Profile as BrandkitProfile;
 use GlpiPlugin\Brandkit\StyleSchema;
 
-define('PLUGIN_BRANDKIT_VERSION', '1.1.0');
+define('PLUGIN_BRANDKIT_VERSION', '1.1.1');
 
 /**
  * Plugin metadata consumed by Plugin::getInfo() / Plugin::checkVersions().

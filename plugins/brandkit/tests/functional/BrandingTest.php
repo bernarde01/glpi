@@ -19,6 +19,7 @@ namespace tests\units;
 
 use Entity;
 use Glpi\Tests\DbTestCase;
+use GlpiPlugin\Brandkit\AssetStorage;
 use GlpiPlugin\Brandkit\Branding;
 use GlpiPlugin\Brandkit\CssGenerator;
 use GlpiPlugin\Brandkit\MailBranding;
@@ -142,5 +143,36 @@ final class BrandingTest extends DbTestCase
         $style = \GlpiPlugin\Brandkit\StyleSchema::fromRow($resolved);
         $this->assertSame('glass', $style['sidebar_preset']);
         $this->assertSame(12, $style['radius_global']);
+    }
+
+    public function testExtensionlessTempUploadIsAcceptedAgainstDocumentIsImage(): void
+    {
+        $png = (string) base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+            true
+        );
+        $tmp = tempnam(sys_get_temp_dir(), 'php');
+        $this->assertNotFalse($tmp);
+        file_put_contents($tmp, $png);
+
+        $this->assertFalse(
+            \Document::isImage($tmp),
+            'Document::isImage() rejects PHP upload temps (no image extension)'
+        );
+
+        $dir = sys_get_temp_dir() . '/brandkit-func-' . bin2hex(random_bytes(3));
+        mkdir($dir, 0755, true);
+        $storage = new AssetStorage($dir);
+        $result = $storage->store(0, 'logo_main', [
+            'name'     => 'logo.png',
+            'type'     => 'image/png',
+            'tmp_name' => $tmp,
+            'error'    => UPLOAD_ERR_OK,
+            'size'     => strlen($png),
+        ]);
+        $this->assertTrue($result['ok'], $result['error'] ?? '');
+        $this->assertNotNull($storage->absolutePath(0, $result['filename']));
+        $storage->purgeAll();
+        @rmdir($dir);
     }
 }

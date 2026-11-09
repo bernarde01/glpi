@@ -2,6 +2,12 @@
 
 All notable changes to BrandKit are documented here.
 
+## 1.1.1 — 2026-11-09
+
+### Fixed
+
+- Logo (and other image) uploads no longer fail with “File is not a supported image”. PHP’s upload temp files have no extension (`/tmp/php…`), and `Document::isImage()` rejects those paths. BrandKit now checks the original filename extension plus file contents (`exif_imagetype` / magic bytes / `finfo` / `getimagesize`). SVG is not accepted (no safe sanitiser). Favicon may also be `.ico`.
+
 ## 1.1.0 — 2026-11-09
 
 ### Added

@@ -8,7 +8,7 @@ Requires **GLPI 12.0.x** and **PHP 8.3+**.
 
 ## Features
 
-1. **Logos** — main sidebar, collapsed sidebar, login page, optional dark-mode login logo. Images are validated (type and 2 MiB size), stored under `GLPI_PLUGIN_DOC_DIR/brandkit/`, and served by `/plugins/brandkit/Asset/{slot}` with path-traversal checks. Missing logos fall back to GLPI defaults.
+1. **Logos** — main sidebar, collapsed sidebar, login page, optional dark-mode login logo. Images are validated from **file contents** plus the original filename (png/jpg/gif/webp, 2 MiB; `.ico` for favicon). SVG is not accepted. PHP upload temps have no extension, so GLPI’s `Document::isImage()` is not used on that path. Files are stored under `GLPI_PLUGIN_DOC_DIR/brandkit/` and served by `/plugins/brandkit/Asset/{slot}` with path-traversal checks. Missing logos fall back to GLPI defaults.
 2. **Theme colours and custom CSS** — primary, secondary, accent, sidebar and header colour pickers. BrandKit emits CSS variables that override GLPI 12’s Tabler/Bootstrap palette (`--tblr-primary`, `--glpi-mainmenu-bg`, …). A free-form CSS field is sanitised (no `</style>` breakouts, no `javascript:` / `<script>`).
 3. **Login page** — background image or colour, heading and message (coexists with core `text_login`), optional footer links (`Label|https://…` per line).
 4. **Per-entity branding** — settings attach to entities. Child entities inherit from the parent until they override (GLPI’s usual inheritance pattern). After login, the **active entity** applies. The login page uses the **root entity**, or a hostname → entity map (plugin config page).
@@ -76,7 +76,7 @@ php bin/console plugin:list
 
    ```bash
    cd plugins
-   tar czf brandkit-1.1.0.tar.gz \
+   tar czf brandkit-1.1.1.tar.gz \
      --exclude='tests' \
      --transform 's,^brandkit,brandkit,' \
      brandkit
@@ -87,7 +87,7 @@ php bin/console plugin:list
 2. Copy it onto the server and extract into GLPI’s plugins directory (or upload via **Setup → Plugins** / the marketplace drop-in folder):
 
    ```bash
-   tar xzf brandkit-1.1.0.tar.gz -C /var/www/glpi/plugins/
+   tar xzf brandkit-1.1.1.tar.gz -C /var/www/glpi/plugins/
    cd /var/www/glpi
    php bin/console plugin:install brandkit -u glpi
    php bin/console plugin:activate brandkit

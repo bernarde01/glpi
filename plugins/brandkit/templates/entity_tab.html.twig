@@ -96,7 +96,7 @@
                 {{ fields.fileField('favicon', null, __('Favicon', 'brandkit'), {
                     simple: true,
                     readonly: not can_edit,
-                    accepted_files: 'image/png,image/x-icon,image/vnd.microsoft.icon,image/gif'
+                    accepted_files: 'image/png,image/jpeg,image/gif,image/webp,image/x-icon,image/vnd.microsoft.icon'
                 }) }}
                 {% if previews.favicon %}
                     <div class="mb-3" style="max-width: 48px;">

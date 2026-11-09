@@ -11,14 +11,32 @@
 
 namespace GlpiPlugin\Brandkit;
 
-use Document;
-
 /**
  * Store branding images under GLPI_PLUGIN_DOC_DIR/brandkit/{entity}/.
+ *
+ * PHP stores uploads as extensionless temp files (e.g. /tmp/phpAbC123).
+ * Do not call Document::isImage() on that path: it requires an image
+ * extension on the file name itself and rejects every real upload.
  */
 final class AssetStorage
 {
     public const MAX_BYTES = 2097152; // 2 MiB
+
+    /**
+     * Raster types accepted for logos, backgrounds and watermarks.
+     * SVG is excluded: a safe sanitiser is out of scope and unsanitised
+     * SVG can carry script.
+     *
+     * @var list<string>
+     */
+    public const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+
+    /**
+     * Favicon may also be a Windows ICO.
+     *
+     * @var list<string>
+     */
+    public const FAVICON_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'ico'];
 
     public const IMAGE_SLOTS = [
         'logo_main',
@@ -83,13 +101,10 @@ final class AssetStorage
         }
 
         $original = (string) ($file['name'] ?? 'upload');
-        $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-        if ($slot === 'favicon' && $ext === 'ico') {
-            if (!$this->isIco($tmp)) {
-                return ['ok' => false, 'error' => 'Favicon is not a valid ICO or image file'];
-            }
-        } elseif (!$this->isImage($tmp, $ext)) {
-            return ['ok' => false, 'error' => 'File is not a supported image (png, jpg, gif, webp, bmp)'];
+        $ext = strtolower((string) pathinfo($original, PATHINFO_EXTENSION));
+        $checked = $this->validateImageUpload($slot, $tmp, $ext);
+        if ($checked['ok'] === false) {
+            return $checked;
         }
 
         $safe_ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
@@ -189,37 +204,150 @@ final class AssetStorage
             && (bool) preg_match('/^[A-Za-z0-9._-]+$/', $filename);
     }
 
-    private function isImage(string $path, string $ext): bool
+    /**
+     * @return array{ok: true}|array{ok: false, error: string}
+     */
+    private function validateImageUpload(string $slot, string $path, string $ext): array
     {
-        $allowed = ['bmp', 'gif', 'jpeg', 'jpg', 'png', 'webp'];
-        if (!in_array($ext, $allowed, true)) {
-            return false;
+        if ($ext === 'svg' || $ext === 'svgz') {
+            return ['ok' => false, 'error' => 'SVG uploads are not supported'];
         }
 
-        if (class_exists(Document::class) && method_exists(Document::class, 'isImage')) {
-            return Document::isImage($path);
+        $allowed_ext = $slot === 'favicon' ? self::FAVICON_EXTENSIONS : self::IMAGE_EXTENSIONS;
+        if (!in_array($ext, $allowed_ext, true)) {
+            return [
+                'ok'    => false,
+                'error' => $slot === 'favicon'
+                    ? 'Favicon must be png, jpg, gif, webp or ico'
+                    : 'File is not a supported image (png, jpg, gif, webp)',
+            ];
         }
 
-        $info = @getimagesize($path);
+        $kind = $this->detectImageKind($path);
+        if ($kind === null) {
+            return ['ok' => false, 'error' => 'File is not a supported image (png, jpg, gif, webp)'];
+        }
 
-        return $info !== false;
+        if ($kind === 'ico' && $slot !== 'favicon') {
+            return ['ok' => false, 'error' => 'File is not a supported image (png, jpg, gif, webp)'];
+        }
+
+        if (!$this->extensionMatchesKind($ext, $kind)) {
+            return ['ok' => false, 'error' => 'File contents do not match the image extension'];
+        }
+
+        return ['ok' => true];
     }
 
-    private function isIco(string $path): bool
+    /**
+     * Identify a raster/ICO from file contents. Never uses the path extension
+     * (PHP upload temps have none).
+     *
+     * @return 'png'|'jpeg'|'gif'|'webp'|'ico'|null
+     */
+    private function detectImageKind(string $path): ?string
     {
-        if (class_exists(Document::class) && Document::isImage($path)) {
-            return true;
+        if (!is_file($path) || !is_readable($path)) {
+            return null;
+        }
+
+        $size = filesize($path);
+        if ($size === false || $size < 4) {
+            return null;
         }
 
         $fh = @fopen($path, 'rb');
         if ($fh === false) {
-            return false;
+            return null;
         }
-        $header = fread($fh, 4);
+        $header = (string) fread($fh, 16);
         fclose($fh);
 
-        // ICO: reserved (0x0000) + type (0x0001)
-        return $header === "\x00\x00\x01\x00";
+        if (str_starts_with($header, "\x00\x00\x01\x00") && $size >= 6) {
+            return 'ico';
+        }
+        if (str_starts_with($header, "\x89PNG\r\n\x1a\n")) {
+            return 'png';
+        }
+        if (str_starts_with($header, 'GIF87a') || str_starts_with($header, 'GIF89a')) {
+            return 'gif';
+        }
+        if (str_starts_with($header, "\xff\xd8\xff")) {
+            return 'jpeg';
+        }
+        if (strlen($header) >= 12 && str_starts_with($header, 'RIFF') && substr($header, 8, 4) === 'WEBP') {
+            return 'webp';
+        }
+
+        if (function_exists('exif_imagetype') && $size >= 12) {
+            $etype = @exif_imagetype($path);
+            $from_exif = $this->kindFromExif($etype);
+            if ($from_exif !== null) {
+                return $from_exif;
+            }
+        }
+
+        if (class_exists(\finfo::class)) {
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mime = $finfo->file($path);
+            $from_mime = $this->kindFromMime(is_string($mime) ? $mime : '');
+            if ($from_mime !== null) {
+                return $from_mime;
+            }
+        }
+
+        $info = @getimagesize($path);
+        if (is_array($info) && isset($info[2])) {
+            return $this->kindFromExif((int) $info[2]);
+        }
+
+        return null;
+    }
+
+    private function extensionMatchesKind(string $ext, string $kind): bool
+    {
+        return match ($ext) {
+            'png' => $kind === 'png',
+            'jpg', 'jpeg' => $kind === 'jpeg',
+            'gif' => $kind === 'gif',
+            'webp' => $kind === 'webp',
+            'ico' => $kind === 'ico',
+            default => false,
+        };
+    }
+
+    /**
+     * @return 'png'|'jpeg'|'gif'|'webp'|'ico'|null
+     */
+    private function kindFromExif(mixed $etype): ?string
+    {
+        if (!is_int($etype)) {
+            return null;
+        }
+
+        return match ($etype) {
+            IMAGETYPE_PNG => 'png',
+            IMAGETYPE_JPEG => 'jpeg',
+            IMAGETYPE_GIF => 'gif',
+            IMAGETYPE_WEBP => 'webp',
+            IMAGETYPE_ICO => 'ico',
+            default => null,
+        };
+    }
+
+    /**
+     * @return 'png'|'jpeg'|'gif'|'webp'|'ico'|null
+     */
+    private function kindFromMime(string $mime): ?string
+    {
+        return match (strtolower($mime)) {
+            'image/png' => 'png',
+            'image/jpeg' => 'jpeg',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            'image/x-icon', 'image/vnd.microsoft.icon', 'image/ico' => 'ico',
+            default => null,
+        };
     }
 
     private function rrmdir(string $dir): void
