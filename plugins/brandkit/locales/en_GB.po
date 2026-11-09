@@ -1,0 +1,159 @@
+# English translations for BrandKit.
+# Copyright (C) 2026 Distillect
+# This file is distributed under the same license as the BrandKit package.
+msgid ""
+msgstr ""
+"Project-Id-Version: BrandKit 1.0.0\n"
+"Report-Msgid-Bugs-To: https://glpi.distillect.co.za/\n"
+"POT-Creation-Date: 2026-11-09 14:00+0000\n"
+"PO-Revision-Date: 2026-11-09 14:00+0000\n"
+"Last-Translator: Distillect\n"
+"Language-Team: English\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Branding"
+msgid_plural "Branding"
+msgstr[0] "Branding"
+msgstr[1] "Branding"
+
+msgid "Inherit branding from the parent entity"
+msgstr "Inherit branding from the parent entity"
+
+msgid "When inheritance is enabled, this entity uses the branding of its parent. Uncheck to override."
+msgstr "When inheritance is enabled, this entity uses the branding of its parent. Uncheck to override."
+
+msgid "Logos"
+msgstr "Logos"
+
+msgid "Main sidebar logo"
+msgstr "Main sidebar logo"
+
+msgid "Collapsed sidebar logo"
+msgstr "Collapsed sidebar logo"
+
+msgid "Login page logo"
+msgstr "Login page logo"
+
+msgid "Login logo (dark mode)"
+msgstr "Login logo (dark mode)"
+
+msgid "Favicon"
+msgstr "Favicon"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Colours"
+msgstr "Colours"
+
+msgid "Primary colour"
+msgstr "Primary colour"
+
+msgid "Secondary colour"
+msgstr "Secondary colour"
+
+msgid "Accent colour"
+msgstr "Accent colour"
+
+msgid "Sidebar colour"
+msgstr "Sidebar colour"
+
+msgid "Header colour"
+msgstr "Header colour"
+
+msgid "Custom CSS"
+msgstr "Custom CSS"
+
+msgid "Sanitised on save: style/script breakouts and javascript: URLs are removed."
+msgstr "Sanitised on save: style/script breakouts and javascript: URLs are removed."
+
+msgid "Login page"
+msgstr "Login page"
+
+msgid "Login background image"
+msgstr "Login background image"
+
+msgid "Login background colour"
+msgstr "Login background colour"
+
+msgid "Login heading"
+msgstr "Login heading"
+
+msgid "Login message"
+msgstr "Login message"
+
+msgid "Shown next to the login form. Coexists with Setup → General → text_login."
+msgstr "Shown next to the login form. Coexists with Setup → General → text_login."
+
+msgid "Login footer links"
+msgstr "Login footer links"
+
+msgid "One per line: Label|https://example.com"
+msgstr "One per line: Label|https://example.com"
+
+msgid "Product name and page title"
+msgstr "Product name and page title"
+
+msgid "Product name"
+msgstr "Product name"
+
+msgid "Replaces “GLPI” in the browser title."
+msgstr "Replaces “GLPI” in the browser title."
+
+msgid "Page title prefix"
+msgstr "Page title prefix"
+
+msgid "Notification emails"
+msgstr "Notification emails"
+
+msgid "Email header HTML"
+msgstr "Email header HTML"
+
+msgid "Email footer HTML"
+msgstr "Email footer HTML"
+
+msgid "Include logo in HTML emails"
+msgstr "Include logo in HTML emails"
+
+msgid "Dashboards"
+msgstr "Dashboards"
+
+msgid "These colours are registered as the “brandkit” chart palette and also replace the default tab10 palette so existing widgets pick them up."
+msgstr "These colours are registered as the “brandkit” chart palette and also replace the default tab10 palette so existing widgets pick them up."
+
+msgid "Chart colour %s"
+msgstr "Chart colour %s"
+
+msgid "Card background"
+msgstr "Card background"
+
+msgid "Card text colour"
+msgstr "Card text colour"
+
+msgid "BrandKit"
+msgstr "BrandKit"
+
+msgid "Per-entity logos, colours and login branding are edited on Administration → Entities → Branding. The root entity supplies the default (and the login page, unless a hostname mapping below applies)."
+msgstr "Per-entity logos, colours and login branding are edited on Administration → Entities → Branding. The root entity supplies the default (and the login page, unless a hostname mapping below applies)."
+
+msgid "Edit root entity branding"
+msgstr "Edit root entity branding"
+
+msgid "Login hostname → entity map"
+msgstr "Login hostname → entity map"
+
+msgid "One host per line: client.example.com=12  (entity id). Unmapped hosts use the root entity."
+msgstr "One host per line: client.example.com=12  (entity id). Unmapped hosts use the root entity."
+
+msgid "Configuration saved."
+msgstr "Configuration saved."
+
+msgid "You do not have permission to update this entity."
+msgstr "You do not have permission to update this entity."
+
+msgid "You do not have permission to update branding."
+msgstr "You do not have permission to update branding."

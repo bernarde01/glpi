@@ -1,0 +1,10 @@
+/**
+ * BrandKit config UI helpers. Theme colours are injected via /plugins/brandkit/Css.
+ */
+.brandkit-login-extra h3 {
+    font-weight: 600;
+}
+
+.brandkit-login-extra a {
+    text-decoration: underline;
+}

@@ -1,0 +1,117 @@
+<?php
+
+/**
+ * Functional smoke tests. Run from the GLPI tree:
+ *
+ *   php vendor/bin/phpunit -c phpunit.xml.dist plugins/brandkit/tests/functional
+ *
+ * Requires a testing database (`php bin/console database:install --env=testing ...`).
+ *
+ * ---------------------------------------------------------------------
+ *
+ * Copyright (C) 2026 Distillect
+ * GPL-3.0-or-later
+ *
+ * ---------------------------------------------------------------------
+ */
+
+namespace tests\units;
+
+use Entity;
+use Glpi\Tests\DbTestCase;
+use GlpiPlugin\Brandkit\Branding;
+use GlpiPlugin\Brandkit\CssGenerator;
+use GlpiPlugin\Brandkit\MailBranding;
+use Plugin;
+
+final class BrandingTest extends DbTestCase
+{
+    public function setUp(): void
+    {
+        parent::setUp();
+        global $DB;
+        if (!$DB->tableExists(Branding::getTable())) {
+            $this->markTestSkipped('BrandKit is not installed in the testing database.');
+        }
+    }
+
+    public function testPluginIsPresentAndTableExists(): void
+    {
+        global $DB;
+
+        $this->assertTrue($DB->tableExists(Branding::getTable()));
+        $plugin = new Plugin();
+        $this->assertTrue(
+            $plugin->isInstalled('brandkit') || is_dir(GLPI_ROOT . '/plugins/brandkit'),
+            'brandkit plugin directory must exist'
+        );
+    }
+
+    public function testRootEntityResolvesWithoutInherit(): void
+    {
+        $row = Branding::resolve(0);
+        $this->assertSame(0, (int) $row['entities_id']);
+        $this->assertSame(0, (int) $row['inherit']);
+    }
+
+    public function testChildInheritsUntilOverride(): void
+    {
+        $this->login();
+        $this->addRightToProfile('Super-Admin', Branding::$rightname, ALLSTANDARDRIGHT);
+        $this->login(); // reload rights
+
+        $child_id = $this->createItem(Entity::class, [
+            'name'        => 'BrandKit child ' . random_int(1, 99999),
+            'entities_id' => 0,
+        ])->getID();
+
+        $child_row = Branding::resolve($child_id);
+        $this->assertSame(0, (int) $child_row['entities_id']);
+
+        $branding = new Branding();
+        $ok = $branding->saveFromForm([
+            'entities_id'    => $child_id,
+            'inherit'        => 0,
+            'color_primary'  => '#112233',
+            'product_name'   => 'ChildBrand',
+        ]);
+        $this->assertTrue($ok);
+
+        $resolved = Branding::resolve($child_id);
+        $this->assertSame($child_id, (int) $resolved['entities_id']);
+        $this->assertSame('#112233', $resolved['color_primary']);
+        $this->assertSame('ChildBrand', $resolved['product_name']);
+    }
+
+    public function testHostMapPicksLoginEntity(): void
+    {
+        $map = Branding::parseHostMap("client.example.com=42\n# comment\nbad line\nroot.local=0");
+        $this->assertSame(['client.example.com' => 42, 'root.local' => 0], $map);
+    }
+
+    public function testMailWrapperInjectsLogoAndColours(): void
+    {
+        $html = MailBranding::wrapHtml('<p>Hello</p>', [
+            'entities_id'       => 0,
+            'color_primary'     => '#fe9c5c',
+            'color_secondary'   => '#123456',
+            'email_header_html' => '<p>Header</p>',
+            'email_footer_html' => '<p>Footer</p>',
+            'email_embed_logo'  => 0,
+            'logo_main'         => null,
+        ]);
+
+        $this->assertStringContainsString('Hello', $html);
+        $this->assertStringContainsString('Header', $html);
+        $this->assertStringContainsString('Footer', $html);
+        $this->assertStringContainsString('#fe9c5c', $html);
+        $this->assertStringContainsString('brandkit-mail', $html);
+    }
+
+    public function testCssGeneratorFallsBackToCoreWhenEmpty(): void
+    {
+        $css = CssGenerator::generate([], []);
+        $this->assertStringContainsString(':root {', $css);
+        $this->assertStringNotContainsString('--tblr-primary:', $css);
+    }
+}
