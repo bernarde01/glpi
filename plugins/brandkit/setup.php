@@ -27,7 +27,7 @@ use GlpiPlugin\Brandkit\MailBranding;
 use GlpiPlugin\Brandkit\Profile as BrandkitProfile;
 use GlpiPlugin\Brandkit\StyleSchema;
 
-define('PLUGIN_BRANDKIT_VERSION', '1.2.0');
+define('PLUGIN_BRANDKIT_VERSION', '1.2.1');
 
 /**
  * Plugin metadata consumed by Plugin::getInfo() / Plugin::checkVersions().
@@ -276,9 +276,21 @@ SQL
         @mkdir($dir, 0755, true);
     }
 
-    Config::setConfigurationValues('plugin:brandkit', [
+    // Defaults only for keys that do not exist yet. plugin:install is also the
+    // upgrade path; overwriting would wipe the hostname map on every update.
+    $config_defaults = [
         'host_entity_map' => '',
-    ]);
+    ];
+    $existing_config = Config::getConfigurationValues('plugin:brandkit', array_keys($config_defaults));
+    $missing_config = [];
+    foreach ($config_defaults as $name => $value) {
+        if (!array_key_exists($name, $existing_config)) {
+            $missing_config[$name] = $value;
+        }
+    }
+    if ($missing_config !== []) {
+        Config::setConfigurationValues('plugin:brandkit', $missing_config);
+    }
 
     $tpl = \GlpiPlugin\Brandkit\StyleTemplate::getTable();
     if (!$DB->tableExists($tpl)) {
@@ -300,6 +312,7 @@ SQL
         );
     }
 
+    // Additive: only inserts the right on profiles that do not have it yet.
     $migration->addRight(Branding::$rightname, ALLSTANDARDRIGHT);
     $migration->executeMigration();
 

@@ -2,6 +2,12 @@
 
 All notable changes to BrandKit are documented here.
 
+## 1.2.1 — 2026-11-09
+
+### Fixed
+
+- `plugin:install` on an update no longer wipes the hostname-to-entity map (or other plugin config). Defaults are written only for keys that do not exist yet. Branding rows, custom templates, uploaded files and profile rights were already additive and stay that way.
+
 ## 1.2.0 — 2026-11-09
 
 ### Fixed

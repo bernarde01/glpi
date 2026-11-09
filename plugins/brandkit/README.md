@@ -89,7 +89,7 @@ php bin/console plugin:list
 
    ```bash
    cd plugins
-   tar czf brandkit-1.2.0.tar.gz \
+   tar czf brandkit-1.2.1.tar.gz \
      --exclude='tests' \
      --transform 's,^brandkit,brandkit,' \
      brandkit
@@ -100,7 +100,7 @@ php bin/console plugin:list
 2. Copy it onto the server and extract into GLPI’s plugins directory (or upload via **Setup → Plugins** / the marketplace drop-in folder):
 
    ```bash
-   tar xzf brandkit-1.2.0.tar.gz -C /var/www/glpi/plugins/
+   tar xzf brandkit-1.2.1.tar.gz -C /var/www/glpi/plugins/
    cd /var/www/glpi
    php bin/console plugin:install brandkit -u glpi
    php bin/console plugin:activate brandkit

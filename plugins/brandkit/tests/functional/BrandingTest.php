@@ -17,6 +17,7 @@
 
 namespace tests\units;
 
+use Config;
 use Entity;
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Brandkit\AssetStorage;
@@ -217,6 +218,82 @@ final class BrandingTest extends DbTestCase
             }
         }
         $this->assertTrue($found, 'template_name on entity save should insert a gallery row');
+    }
+
+    public function testReinstallPreservesConfigAndData(): void
+    {
+        $this->login();
+        $this->addRightToProfile('Super-Admin', Branding::$rightname, ALLSTANDARDRIGHT);
+        $this->login();
+
+        $this->assertTrue(function_exists('plugin_brandkit_install'));
+
+        global $DB;
+        $map = "glpi.distillect.co.za=0\nclient.example.com=1";
+        Config::setConfigurationValues(Branding::CONFIG_CONTEXT, [
+            'host_entity_map' => $map,
+        ]);
+
+        $updated = $DB->update(Branding::getTable(), [
+            'product_name' => 'ReinstallPreserve',
+        ], [
+            'entities_id' => 0,
+        ]);
+        $this->assertNotFalse($updated);
+
+        $tpl_table = \GlpiPlugin\Brandkit\StyleTemplate::getTable();
+        $this->assertTrue($DB->tableExists($tpl_table));
+        $saved = \GlpiPlugin\Brandkit\StyleTemplate::saveFromInput([
+            'name'        => 'Survive reinstall ' . random_int(1, 99999),
+            'description' => 'Must remain after plugin:install',
+            'entities_id' => 0,
+            'style'       => ['sidebar_preset' => 'pill'],
+            'colors'      => ['color_primary' => '#123456'],
+        ]);
+        $this->assertTrue($saved['ok'], $saved['error'] ?? '');
+        $tpl_id = (int) $saved['id'];
+
+        $rights_before = iterator_to_array($DB->request([
+            'FROM'  => 'glpi_profilerights',
+            'WHERE' => ['name' => Branding::$rightname],
+            'ORDER' => 'id',
+        ]));
+        $branding_count = count(iterator_to_array($DB->request(['FROM' => Branding::getTable()])));
+        $tpl_count = count(iterator_to_array($DB->request(['FROM' => $tpl_table])));
+
+        $this->assertTrue(plugin_brandkit_install());
+
+        $this->assertSame(
+            $map,
+            Config::getConfigurationValue(Branding::CONFIG_CONTEXT, 'host_entity_map')
+        );
+        $root = Branding::getRowForEntity(0);
+        $this->assertSame('ReinstallPreserve', $root['product_name'] ?? null);
+        $this->assertNotNull(\GlpiPlugin\Brandkit\TemplateCatalog::get('custom_' . $tpl_id));
+        $this->assertSame(
+            $branding_count,
+            count(iterator_to_array($DB->request(['FROM' => Branding::getTable()])))
+        );
+        $this->assertSame(
+            $tpl_count,
+            count(iterator_to_array($DB->request(['FROM' => $tpl_table])))
+        );
+        $rights_after = iterator_to_array($DB->request([
+            'FROM'  => 'glpi_profilerights',
+            'WHERE' => ['name' => Branding::$rightname],
+            'ORDER' => 'id',
+        ]));
+        $this->assertSame($rights_before, $rights_after);
+
+        Config::setConfigurationValues(Branding::CONFIG_CONTEXT, [
+            'host_entity_map' => '',
+        ]);
+        $this->assertTrue(plugin_brandkit_install());
+        $this->assertSame(
+            '',
+            Config::getConfigurationValue(Branding::CONFIG_CONTEXT, 'host_entity_map'),
+            'An existing empty map must not be treated as missing and re-defaulted'
+        );
     }
 
     public function testExtensionlessTempUploadIsAcceptedAgainstDocumentIsImage(): void
