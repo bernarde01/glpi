@@ -1,0 +1,247 @@
+{# Style layer: structured settings, presets, live preview, import/export #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{% set radius_opts = {
+    0: '0',
+    2: '2px',
+    4: '4px',
+    6: '6px',
+    8: '8px',
+    12: '12px',
+    16: '16px',
+    20: '20px',
+    24: '24px',
+    999: __('Pill', 'brandkit')
+} %}
+{% set shadow_opts = {
+    none: __('None', 'brandkit'),
+    soft: __('Soft', 'brandkit'),
+    medium: __('Medium', 'brandkit'),
+    strong: __('Strong', 'brandkit'),
+    glow: __('Coloured glow', 'brandkit')
+} %}
+{% set hover_opts = {
+    none: __('None', 'brandkit'),
+    lift: __('Lift', 'brandkit'),
+    grow: __('Grow', 'brandkit'),
+    glow: __('Glow', 'brandkit')
+} %}
+{% set nav_opts = {
+    background: __('Background', 'brandkit'),
+    accent_bar: __('Left accent bar', 'brandkit'),
+    scale: __('Scale', 'brandkit'),
+    indent: __('Indent', 'brandkit')
+} %}
+{% set ro = {readonly: not can_edit} %}
+
+{{ fields.largeTitle(__('Style', 'brandkit'), 'ti ti-sparkles') }}
+<p class="text-muted">
+    {{ __('Structured visual restyling (menus, shape, elevation, motion, density, gradients, watermarks). Settings generate CSS variables and a small set of stable GLPI/Tabler selectors. Free-form CSS above is still applied last.', 'brandkit') }}
+</p>
+
+<div class="mb-3 d-flex flex-wrap gap-2" id="brandkit-presets">
+    {% for key, preset in style_presets %}
+        <button type="button" class="btn btn-outline-primary btn-sm brandkit-apply-preset" data-preset="{{ key }}" {% if not can_edit %}disabled{% endif %}>
+            {{ preset.label }}
+        </button>
+    {% endfor %}
+</div>
+<script type="application/json" id="brandkit-preset-json">{{ style_presets|json_encode|raw }}</script>
+
+<div id="brandkit-live-preview" class="brandkit-preview mb-4" data-testid="brandkit-preview" aria-label="{{ __('Live preview', 'brandkit') }}">
+    <div class="brandkit-preview-sidebar">
+        <div class="brandkit-preview-nav active">{{ __('Dashboard', 'brandkit') }}</div>
+        <div class="brandkit-preview-nav">{{ __('Tickets', 'brandkit') }}</div>
+        <div class="brandkit-preview-nav">{{ __('Assets', 'brandkit') }}</div>
+    </div>
+    <div class="brandkit-preview-main">
+        <div class="brandkit-preview-header">{{ __('Header', 'brandkit') }}</div>
+        <div class="brandkit-preview-card">
+            <div class="brandkit-preview-card-title">{{ __('Sample card', 'brandkit') }}</div>
+            <p class="mb-2">{{ __('Buttons, menu and chart update as you change Style values.', 'brandkit') }}</p>
+            <button type="button" class="brandkit-preview-btn">{{ __('Primary action', 'brandkit') }}</button>
+            <div class="brandkit-preview-chart" aria-hidden="true"></div>
+        </div>
+        <div id="brandkit-contrast-warn" class="alert alert-warning mt-2 d-none" role="status"></div>
+    </div>
+</div>
+
+{{ fields.dropdownArrayField('style[sidebar_preset]', style.sidebar_preset, {
+    default: __('Default', 'brandkit'),
+    compact: __('Compact', 'brandkit'),
+    pill: __('Pill / rounded items', 'brandkit'),
+    floating: __('Floating (margin + shadow)', 'brandkit'),
+    glass: __('Glass / blur', 'brandkit')
+}, __('Sidebar style', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[nav_active_style]', style.nav_active_style, nav_opts, __('Active menu item', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[nav_hover_style]', style.nav_hover_style, nav_opts, __('Hover menu item', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[nav_icon_size]', style.nav_icon_size, {14: '14px', 16: '16px', 18: '18px', 20: '20px', 24: '24px', 28: '28px'}, __('Menu icon size', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[nav_item_spacing]', style.nav_item_spacing, {0: '0', 2: '2px', 4: '4px', 6: '6px', 8: '8px', 12: '12px', 16: '16px'}, __('Menu item spacing', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[header_style]', style.header_style, {
+    flat: __('Flat', 'brandkit'),
+    gradient: __('Gradient', 'brandkit'),
+    transparent: __('Transparent / glass', 'brandkit')
+}, __('Top header style', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[dropdown_style]', style.dropdown_style, {
+    default: __('Default', 'brandkit'),
+    rounded: __('Rounded', 'brandkit'),
+    glass: __('Glass', 'brandkit')
+}, __('Dropdown menus', 'brandkit'), ro) }}
+
+{{ fields.largeTitle(__('Shape', 'brandkit'), 'ti ti-radius-top-left') }}
+{{ fields.dropdownArrayField('style[radius_global]', style.radius_global, radius_opts, __('Global radius', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[radius_cards]', style.radius_cards, radius_opts, __('Cards', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[radius_buttons]', style.radius_buttons, radius_opts, __('Buttons', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[radius_inputs]', style.radius_inputs, radius_opts, __('Inputs', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[radius_modals]', style.radius_modals, radius_opts, __('Modals', 'brandkit'), ro) }}
+
+{{ fields.largeTitle(__('Elevation', 'brandkit'), 'ti ti-shadow') }}
+{{ fields.dropdownArrayField('style[shadow_cards]', style.shadow_cards, shadow_opts, __('Card shadow', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[shadow_dropdowns]', style.shadow_dropdowns, shadow_opts, __('Dropdown shadow', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[shadow_modals]', style.shadow_modals, shadow_opts, __('Modal shadow', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[shadow_sidebar]', style.shadow_sidebar, shadow_opts, __('Sidebar shadow', 'brandkit'), ro) }}
+
+{{ fields.largeTitle(__('Motion', 'brandkit'), 'ti ti-keyframes') }}
+{{ fields.dropdownArrayField('style[hover_cards]', style.hover_cards, hover_opts, __('Card hover', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[hover_buttons]', style.hover_buttons, hover_opts, __('Button hover', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[hover_menu]', style.hover_menu, hover_opts, __('Menu hover animation', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[transition_speed]', style.transition_speed, {
+    instant: __('Instant', 'brandkit'),
+    fast: __('Fast', 'brandkit'),
+    normal: __('Normal', 'brandkit'),
+    slow: __('Slow', 'brandkit')
+}, __('Transition speed', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[transition_easing]', style.transition_easing, {
+    ease: 'ease',
+    'ease-in-out': 'ease-in-out',
+    linear: 'linear',
+    smooth: __('Smooth (spring)', 'brandkit')
+}, __('Easing', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[fade_in]', style.fade_in, __('Page / card fade-in', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[disable_animations]', style.disable_animations, __('Disable animations', 'brandkit'), ro|merge({
+    helper: __('Also respects the OS prefers-reduced-motion setting.', 'brandkit')
+})) }}
+
+{{ fields.largeTitle(__('Spacing and type', 'brandkit'), 'ti ti-text-size') }}
+{{ fields.dropdownArrayField('style[density]', style.density, {
+    compact: __('Compact', 'brandkit'),
+    comfortable: __('Comfortable', 'brandkit'),
+    spacious: __('Spacious', 'brandkit')
+}, __('Density', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[font_family]', style.font_family, {
+    system: __('System stack', 'brandkit'),
+    inter: 'Inter',
+    source_sans: 'Source Sans 3',
+    ibm_plex: 'IBM Plex Sans',
+    nunito: 'Nunito',
+    custom: __('Custom (Google Fonts URL)', 'brandkit')
+}, __('Font family', 'brandkit'), ro) }}
+{{ fields.textField('style[font_url]', style.font_url, __('Google Fonts URL', 'brandkit'), ro|merge({
+    helper: __('Only https://fonts.googleapis.com/css2?… is accepted.', 'brandkit')
+})) }}
+{{ fields.textField('style[font_custom_name]', style.font_custom_name, __('Custom font name', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[font_size]', style.font_size, {12: '12px', 13: '13px', 14: '14px', 15: '15px', 16: '16px', 18: '18px'}, __('Base font size', 'brandkit'), ro) }}
+
+{{ fields.largeTitle(__('Gradients and backgrounds', 'brandkit'), 'ti ti-gradienter') }}
+{% for key, label in {
+    gradient_header: __('Header gradient', 'brandkit'),
+    gradient_sidebar: __('Sidebar gradient', 'brandkit'),
+    gradient_buttons: __('Button gradient', 'brandkit'),
+    gradient_login: __('Login background gradient', 'brandkit'),
+    gradient_page: __('Page background gradient', 'brandkit')
+} %}
+    {{ fields.checkboxField('style[' ~ key ~ '][enabled]', style[key].enabled, label, ro) }}
+    {{ fields.dropdownArrayField('style[' ~ key ~ '][angle]', style[key].angle, {
+        0: '0°', 45: '45°', 90: '90°', 135: '135°', 160: '160°', 180: '180°', 225: '225°', 270: '270°', 315: '315°'
+    }, __('Angle', 'brandkit'), ro) }}
+    {{ fields.textField('style[' ~ key ~ '][stop1]', style[key].stop1|default(''), __('Stop 1 (#hex, empty = primary)', 'brandkit'), ro) }}
+    {{ fields.textField('style[' ~ key ~ '][stop2]', style[key].stop2|default(''), __('Stop 2 (#hex, empty = secondary)', 'brandkit'), ro) }}
+    {{ fields.textField('style[' ~ key ~ '][stop3]', style[key].stop3|default(''), __('Stop 3 (#hex, optional)', 'brandkit'), ro) }}
+{% endfor %}
+
+{{ fields.fileField('app_background_image', null, __('App background image', 'brandkit'), {
+    simple: true,
+    readonly: not can_edit,
+    accepted_files: 'image/png,image/jpeg,image/gif,image/webp'
+}) }}
+{% if previews.app_background_image %}
+    <div class="mb-3" style="max-width: 240px;">
+        <img src="{{ previews.app_background_image }}" alt="" class="img-fluid border rounded" />
+        {% if can_edit %}
+            <label class="form-check mt-1">
+                <input type="checkbox" class="form-check-input" name="_blank_app_background_image" value="1" />
+                <span class="form-check-label">{{ __('Clear', 'brandkit') }}</span>
+            </label>
+        {% endif %}
+    </div>
+{% endif %}
+{{ fields.dropdownArrayField('style[page_bg_fit]', style.page_bg_fit, {cover: 'cover', contain: 'contain', repeat: 'repeat'}, __('Background fit', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[page_bg_position]', style.page_bg_position, {
+    center: __('Center', 'brandkit'),
+    top: __('Top', 'brandkit'),
+    bottom: __('Bottom', 'brandkit'),
+    left: __('Left', 'brandkit'),
+    right: __('Right', 'brandkit'),
+    'top-left': __('Top left', 'brandkit'),
+    'top-right': __('Top right', 'brandkit'),
+    'bottom-left': __('Bottom left', 'brandkit'),
+    'bottom-right': __('Bottom right', 'brandkit')
+}, __('Background position', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[page_bg_overlay]', style.page_bg_overlay, {
+    0: '0%', 10: '10%', 18: '18%', 30: '30%', 45: '45%', 60: '60%'
+}, __('Overlay opacity', 'brandkit'), ro) }}
+
+{{ fields.largeTitle(__('Watermark', 'brandkit'), 'ti ti-droplet') }}
+{{ fields.dropdownArrayField('style[watermark_type]', style.watermark_type, {
+    none: __('None', 'brandkit'),
+    image: __('Image', 'brandkit'),
+    text: __('Text', 'brandkit')
+}, __('Watermark type', 'brandkit'), ro) }}
+{{ fields.textField('style[watermark_text]', style.watermark_text, __('Watermark text', 'brandkit'), ro) }}
+{{ fields.fileField('watermark_image', null, __('Watermark image', 'brandkit'), {
+    simple: true,
+    readonly: not can_edit,
+    accepted_files: 'image/png,image/jpeg,image/gif,image/webp'
+}) }}
+{% if previews.watermark_image %}
+    <div class="mb-3" style="max-width: 160px;">
+        <img src="{{ previews.watermark_image }}" alt="" class="img-fluid border rounded" />
+        {% if can_edit %}
+            <label class="form-check mt-1">
+                <input type="checkbox" class="form-check-input" name="_blank_watermark_image" value="1" />
+                <span class="form-check-label">{{ __('Clear', 'brandkit') }}</span>
+            </label>
+        {% endif %}
+    </div>
+{% endif %}
+{{ fields.dropdownArrayField('style[watermark_opacity]', style.watermark_opacity, {4: '4%', 8: '8%', 12: '12%', 18: '18%', 24: '24%', 32: '32%'}, __('Opacity', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[watermark_size]', style.watermark_size, {sm: __('Small', 'brandkit'), md: __('Medium', 'brandkit'), lg: __('Large', 'brandkit')}, __('Size', 'brandkit'), ro) }}
+{{ fields.dropdownArrayField('style[watermark_position]', style.watermark_position, {
+    center: __('Center', 'brandkit'),
+    'bottom-right': __('Bottom right', 'brandkit'),
+    'bottom-left': __('Bottom left', 'brandkit'),
+    'top-right': __('Top right', 'brandkit'),
+    'top-left': __('Top left', 'brandkit')
+}, __('Position', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[watermark_tile]', style.watermark_tile, __('Tile', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[watermark_app]', style.watermark_app, __('Show on app background', 'brandkit'), ro) }}
+{{ fields.checkboxField('style[watermark_login]', style.watermark_login, __('Show on login page', 'brandkit'), ro) }}
+<p class="text-muted">{{ __('Watermarks use pointer-events: none and sit behind content.', 'brandkit') }}</p>
+
+{{ fields.largeTitle(__('Export / import', 'brandkit'), 'ti ti-file-export') }}
+<p>
+    <a class="btn btn-outline-secondary" href="{{ export_url }}">
+        <i class="ti ti-download"></i>
+        {{ __('Export branding JSON', 'brandkit') }}
+    </a>
+</p>
+{{ fields.textareaField('style_import_json', '', __('Paste branding JSON', 'brandkit'), {
+    readonly: not can_edit,
+    rows: 6,
+    helper: __('On save, JSON replaces Style (and colours / copy when present). Logos are not included.', 'brandkit')
+}) }}
+{{ fields.fileField('style_import_file', null, __('Or upload a JSON file', 'brandkit'), {
+    simple: true,
+    readonly: not can_edit,
+    accepted_files: 'application/json,.json'
+}) }}

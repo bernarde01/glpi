@@ -33,9 +33,32 @@
         }
     };
 
+    const applyNoMotion = function () {
+        if (document.querySelector('meta[name="brandkit-no-motion"]')) {
+            document.documentElement.classList.add('brandkit-no-motion');
+        }
+    };
+
+    const applyWatermark = function () {
+        if (document.querySelector('.brandkit-watermark')) {
+            return;
+        }
+        const meta = document.querySelector('meta[name="brandkit-watermark"]');
+        if (!meta || !meta.getAttribute('content') || meta.getAttribute('content') === 'none') {
+            return;
+        }
+        const el = document.createElement('div');
+        el.className = 'brandkit-watermark';
+        el.setAttribute('aria-hidden', 'true');
+        el.dataset.kind = meta.getAttribute('content');
+        document.body.appendChild(el);
+    };
+
     const run = function () {
         applyIcon();
         applyTitlePrefix();
+        applyNoMotion();
+        applyWatermark();
     };
 
     if (document.readyState === 'loading') {

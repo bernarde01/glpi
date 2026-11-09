@@ -114,4 +114,33 @@ final class BrandingTest extends DbTestCase
         $this->assertStringContainsString(':root {', $css);
         $this->assertStringNotContainsString('--tblr-primary:', $css);
     }
+
+    public function testStyleJsonIsStoredAndResolved(): void
+    {
+        $this->login();
+        $this->addRightToProfile('Super-Admin', Branding::$rightname, ALLSTANDARDRIGHT);
+        $this->login();
+
+        $child_id = $this->createItem(Entity::class, [
+            'name'        => 'BrandKit style ' . random_int(1, 99999),
+            'entities_id' => 0,
+        ])->getID();
+
+        $ok = (new Branding())->saveFromForm([
+            'entities_id' => $child_id,
+            'inherit'     => 0,
+            'style'       => [
+                'preset'           => 'glass',
+                'sidebar_preset'   => 'glass',
+                'radius_global'    => 12,
+                'disable_animations' => 0,
+            ],
+        ]);
+        $this->assertTrue($ok);
+
+        $resolved = Branding::resolve($child_id);
+        $style = \GlpiPlugin\Brandkit\StyleSchema::fromRow($resolved);
+        $this->assertSame('glass', $style['sidebar_preset']);
+        $this->assertSame(12, $style['radius_global']);
+    }
 }

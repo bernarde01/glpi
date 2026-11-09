@@ -37,6 +37,13 @@ final class BrandingFormController extends AbstractController
 
         $input = $request->request->all();
         $this->hydrateUploadedFiles($request);
+        $import = $request->files->get('style_import_file');
+        if ($import !== null && is_object($import) && $import->getError() === UPLOAD_ERR_OK) {
+            $raw = @file_get_contents($import->getPathname());
+            if (is_string($raw) && $raw !== '') {
+                $input['style_import_json'] = $raw;
+            }
+        }
 
         $branding = new Branding();
         $branding->saveFromForm($input);

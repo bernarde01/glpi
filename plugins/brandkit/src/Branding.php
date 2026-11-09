@@ -42,6 +42,8 @@ class Branding extends CommonDBTM
         'logo_login_dark',
         'favicon',
         'login_background_image',
+        'app_background_image',
+        'watermark_image',
     ];
 
     /**
@@ -115,19 +117,26 @@ class Branding extends CommonDBTM
             $previews[$slot] = self::assetUrlFromRow($source, $slot);
         }
 
+        $source = ($inherit && !$is_root) ? $inherited : $item->fields;
+        $style  = StyleSchema::fromRow($source);
+
         TemplateRenderer::getInstance()->display('@brandkit/entity_tab.html.twig', [
-            'item'            => $item,
-            'entity'          => $entity,
-            'is_root'         => $is_root,
-            'inherit'         => $inherit,
-            'inherited'       => $inherited,
-            'previews'        => $previews,
-            'can_edit'        => self::canUpdate() && Session::haveAccessToEntity($entities_id),
-            'form_url'        => Html::getPrefixedUrl('/plugins/brandkit/Branding'),
-            'dashboard_colors' => self::paletteList($inherit && !$is_root ? $inherited : $item->fields),
-            'footer_links'    => self::footerLinksToText(
-                (string) (($inherit && !$is_root ? $inherited : $item->fields)['login_footer_links'] ?? '')
+            'item'             => $item,
+            'entity'           => $entity,
+            'is_root'          => $is_root,
+            'inherit'          => $inherit,
+            'inherited'        => $inherited,
+            'previews'         => $previews,
+            'can_edit'         => self::canUpdate() && Session::haveAccessToEntity($entities_id),
+            'form_url'         => Html::getPrefixedUrl('/plugins/brandkit/Branding'),
+            'export_url'       => Html::getPrefixedUrl('/plugins/brandkit/Export?e=' . $entities_id),
+            'dashboard_colors' => self::paletteList($source),
+            'footer_links'     => self::footerLinksToText(
+                (string) ($source['login_footer_links'] ?? '')
             ),
+            'style'            => $style,
+            'style_presets'    => StyleSchema::presets(),
+            'style_defaults'   => StyleSchema::defaults(),
         ]);
     }
 
@@ -452,6 +461,22 @@ class Branding extends CommonDBTM
             $out[$field] = CssSanitizer::normalizeHexColor(isset($input[$field]) ? (string) $input[$field] : null);
         }
 
+        if (!empty($input['style_import_json']) && is_string($input['style_import_json'])) {
+            $imported = StyleSchema::import($input['style_import_json']);
+            if ($imported['ok']) {
+                $input = self::mergeImported($input, $imported['data']);
+            } else {
+                Session::addMessageAfterRedirect(htmlescape($imported['error']), false, ERROR);
+            }
+        }
+
+        $preset_key = (string) ($input['apply_preset'] ?? '');
+        if ($preset_key !== '' && isset(StyleSchema::presets()[$preset_key])) {
+            $input['style'] = StyleSchema::presets()[$preset_key]['style'];
+        }
+
+        $out['style_json'] = StyleSchema::encode($input['style'] ?? []);
+
         $out['custom_css'] = CssSanitizer::sanitize((string) ($input['custom_css'] ?? ''));
         $out['login_heading'] = mb_substr(trim((string) ($input['login_heading'] ?? '')), 0, 255);
         $out['login_message'] = RichText::getSafeHtml((string) ($input['login_message'] ?? ''));
@@ -585,6 +610,50 @@ class Branding extends CommonDBTM
     }
 
     /**
+     * @param array<string, mixed> $input
+     * @param array<string, mixed> $imported
+     * @return array<string, mixed>
+     */
+    private static function mergeImported(array $input, array $imported): array
+    {
+        if (isset($imported['style']) && is_array($imported['style'])) {
+            $input['style'] = $imported['style'];
+        }
+        if (isset($imported['colors']) && is_array($imported['colors'])) {
+            foreach (self::COLOR_FIELDS as $field) {
+                if (array_key_exists($field, $imported['colors'])) {
+                    $input[$field] = $imported['colors'][$field];
+                }
+            }
+        }
+        foreach (
+            [
+                'product_name',
+                'page_title_prefix',
+                'login_heading',
+                'login_message',
+                'login_footer_links',
+                'custom_css',
+                'dashboard_palette',
+                'email_header_html',
+                'email_footer_html',
+            ] as $key
+        ) {
+            if (isset($imported[$key])) {
+                $input[$key] = $imported[$key];
+            }
+        }
+        if (isset($imported['dashboard_palette']) && is_string($imported['dashboard_palette'])) {
+            $decoded = json_decode($imported['dashboard_palette'], true);
+            if (is_array($decoded)) {
+                $input['dashboard_palette'] = $decoded;
+            }
+        }
+
+        return $input;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function emptyFields(): array
@@ -603,6 +672,7 @@ class Branding extends CommonDBTM
             'email_footer_html'       => '',
             'email_embed_logo'        => 1,
             'dashboard_palette'       => '',
+            'style_json'              => StyleSchema::encode(StyleSchema::defaults()),
             'date_mod'                => null,
             'date_creation'           => null,
         ];

@@ -8,3 +8,123 @@
 .brandkit-login-extra a {
     text-decoration: underline;
 }
+
+.brandkit-preview {
+    display: flex;
+    min-height: 220px;
+    border: 1px solid var(--tblr-border-color, #d9e2ec);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: var(--p-font, 14px);
+    --p-radius: 8px;
+    --p-btn-radius: 6px;
+    --p-shadow: 0 1px 3px rgb(15 23 42 / 0.1);
+    --p-pad: 1rem;
+    --p-duration: 220ms;
+    --p-primary: #0e7490;
+    --p-sidebar: #0f172a;
+    --p-header: #0e7490;
+    --p-accent: #fe9c5c;
+}
+
+.brandkit-preview-sidebar {
+    width: 132px;
+    background: var(--p-sidebar);
+    color: #fff;
+    padding: 0.75rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.brandkit-preview[data-sidebar="pill"] .brandkit-preview-nav {
+    border-radius: 999px;
+}
+
+.brandkit-preview[data-sidebar="glass"] .brandkit-preview-sidebar {
+    background: color-mix(in srgb, var(--p-sidebar), transparent 25%);
+}
+
+.brandkit-preview-nav {
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    cursor: default;
+}
+
+.brandkit-preview-nav.active {
+    background: color-mix(in srgb, #fff, transparent 82%);
+}
+
+.brandkit-preview[data-active="accent_bar"] .brandkit-preview-nav.active {
+    box-shadow: inset 3px 0 0 var(--p-primary);
+}
+
+.brandkit-preview-main {
+    flex: 1;
+    background: #f4f6fb;
+    display: flex;
+    flex-direction: column;
+}
+
+.brandkit-preview-header {
+    background: var(--p-header);
+    color: #fff;
+    padding: 0.5rem 0.85rem;
+    font-weight: 600;
+}
+
+.brandkit-preview[data-header="transparent"] .brandkit-preview-header {
+    background: color-mix(in srgb, var(--p-header), transparent 35%);
+}
+
+.brandkit-preview[data-header="gradient"] .brandkit-preview-header {
+    background-image: linear-gradient(90deg, var(--p-header), var(--p-primary));
+}
+
+.brandkit-preview-card {
+    margin: 0.85rem;
+    background: #fff;
+    border-radius: var(--p-radius);
+    box-shadow: var(--p-shadow);
+    padding: var(--p-pad);
+    transition: transform var(--p-duration), box-shadow var(--p-duration);
+}
+
+.brandkit-preview[data-hover="lift"] .brandkit-preview-card:hover {
+    transform: translateY(-3px);
+}
+
+.brandkit-preview[data-hover="grow"] .brandkit-preview-card:hover {
+    transform: scale(1.03);
+}
+
+.brandkit-preview[data-hover="glow"] .brandkit-preview-card:hover {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--p-primary), transparent 60%), 0 10px 24px color-mix(in srgb, var(--p-primary), transparent 50%);
+}
+
+.brandkit-preview-card-title {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.brandkit-preview-btn {
+    appearance: none;
+    border: 0;
+    background: var(--p-primary);
+    color: #fff;
+    border-radius: var(--p-btn-radius);
+    padding: 0.35rem 0.8rem;
+    transition: transform var(--p-duration);
+}
+
+.brandkit-preview-chart {
+    margin-top: 0.75rem;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: conic-gradient(var(--p-primary) 0 40%, var(--p-accent) 40% 70%, var(--p-header) 70% 100%);
+}
+
+#brandkit-presets .btn {
+    margin: 0;
+}

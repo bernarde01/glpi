@@ -149,7 +149,13 @@ CSS;
             $extra[] = $custom;
         }
 
-        return implode("\n", $lines) . "\n\n" . implode("\n\n", $extra) . "\n";
+        $raw_style = trim((string) ($branding['style_json'] ?? ''));
+        $style_css = '';
+        if ($raw_style !== '') {
+            $style_css = StyleCss::generate($branding, $urls, StyleSchema::fromRow($branding));
+        }
+
+        return implode("\n", $lines) . "\n\n" . implode("\n\n", $extra) . "\n\n" . $style_css;
     }
 
     /**

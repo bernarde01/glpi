@@ -25,8 +25,9 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\Brandkit\Branding;
 use GlpiPlugin\Brandkit\MailBranding;
 use GlpiPlugin\Brandkit\Profile as BrandkitProfile;
+use GlpiPlugin\Brandkit\StyleSchema;
 
-define('PLUGIN_BRANDKIT_VERSION', '1.0.0');
+define('PLUGIN_BRANDKIT_VERSION', '1.1.0');
 
 /**
  * Plugin metadata consumed by Plugin::getInfo() / Plugin::checkVersions().
@@ -86,7 +87,7 @@ function plugin_init_brandkit(): void
     ]);
 
     $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['brandkit'] = 'Config';
-    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['brandkit'] = 'js/brandkit.js';
+    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['brandkit'] = ['js/brandkit.js', 'js/brandkit-style.js'];
     $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_ANONYMOUS_PAGE]['brandkit'] = 'js/brandkit.js';
     // Load the dynamic theme stylesheet *after* core Tabler/GLPI CSS (header tags
     // render first and would otherwise lose the --glpi-logo* / --tblr-* overrides).
@@ -143,6 +144,40 @@ function plugin_init_brandkit(): void
         ];
     }
 
+    $style = StyleSchema::fromRow($resolved);
+    $font_url = (string) $style['font_url'];
+    if ($font_url === '') {
+        $font_url = StyleSchema::builtInFontUrl((string) $style['font_family']);
+    }
+    $font_url = StyleSchema::sanitizeFontUrl($font_url);
+    if ($font_url !== '') {
+        $header_tags[] = [
+            'tag'        => 'link',
+            'properties' => [
+                'rel'  => 'stylesheet',
+                'href' => $font_url,
+            ],
+        ];
+    }
+    if ((int) $style['disable_animations'] === 1) {
+        $header_tags[] = [
+            'tag'        => 'meta',
+            'properties' => [
+                'name'    => 'brandkit-no-motion',
+                'content' => '1',
+            ],
+        ];
+    }
+    if ((string) $style['watermark_type'] !== 'none') {
+        $header_tags[] = [
+            'tag'        => 'meta',
+            'properties' => [
+                'name'    => 'brandkit-watermark',
+                'content' => (string) $style['watermark_type'],
+            ],
+        ];
+    }
+
     $PLUGIN_HOOKS[Hooks::ADD_HEADER_TAG]['brandkit'] = $header_tags;
     $PLUGIN_HOOKS[Hooks::ADD_HEADER_TAG_ANONYMOUS_PAGE]['brandkit'] = $header_tags;
 }
@@ -181,6 +216,7 @@ CREATE TABLE `$table` (
   `logo_login` varchar(255) DEFAULT NULL,
   `logo_login_dark` varchar(255) DEFAULT NULL,
   `favicon` varchar(255) DEFAULT NULL,
+  `watermark_image` varchar(255) DEFAULT NULL,
   `color_primary` varchar(16) DEFAULT NULL,
   `color_secondary` varchar(16) DEFAULT NULL,
   `color_accent` varchar(16) DEFAULT NULL,
@@ -188,6 +224,7 @@ CREATE TABLE `$table` (
   `color_header` varchar(16) DEFAULT NULL,
   `custom_css` mediumtext,
   `login_background_image` varchar(255) DEFAULT NULL,
+  `app_background_image` varchar(255) DEFAULT NULL,
   `login_background_color` varchar(16) DEFAULT NULL,
   `login_heading` varchar(255) DEFAULT NULL,
   `login_message` text,
@@ -200,6 +237,7 @@ CREATE TABLE `$table` (
   `dashboard_palette` text,
   `dashboard_card_bg` varchar(16) DEFAULT NULL,
   `dashboard_card_text` varchar(16) DEFAULT NULL,
+  `style_json` mediumtext,
   `date_mod` timestamp NULL DEFAULT NULL,
   `date_creation` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -209,6 +247,12 @@ CREATE TABLE `$table` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC
 SQL
         );
+    }
+
+    if ($DB->tableExists($table)) {
+        $migration->addField($table, 'style_json', 'mediumtext', ['after' => 'dashboard_card_text']);
+        $migration->addField($table, 'app_background_image', 'string', ['after' => 'login_background_image', 'null' => true]);
+        $migration->addField($table, 'watermark_image', 'string', ['after' => 'favicon', 'null' => true]);
     }
 
     $now = $_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s');

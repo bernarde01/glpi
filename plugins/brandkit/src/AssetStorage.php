@@ -27,6 +27,8 @@ final class AssetStorage
         'logo_login_dark',
         'favicon',
         'login_background_image',
+        'app_background_image',
+        'watermark_image',
     ];
 
     private string $base_dir;

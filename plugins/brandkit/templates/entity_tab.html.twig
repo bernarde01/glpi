@@ -120,8 +120,10 @@
                 {{ fields.textareaField('custom_css', item.fields['custom_css']|default(inherited.custom_css|default('')), __('Custom CSS', 'brandkit'), {
                     readonly: not can_edit,
                     rows: 8,
-                    helper: __('Sanitised on save: style/script breakouts and javascript: URLs are removed.', 'brandkit')
+                    helper: __('Sanitised on save: style/script breakouts and javascript: URLs are removed. Applied after generated Style CSS.', 'brandkit')
                 }) }}
+
+                {% include '@brandkit/style_section.html.twig' %}
 
                 {{ fields.largeTitle(__('Login page', 'brandkit'), 'ti ti-login') }}
                 {{ fields.fileField('login_background_image', null, __('Login background image', 'brandkit'), {

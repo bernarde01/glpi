@@ -2,6 +2,22 @@
 
 All notable changes to BrandKit are documented here.
 
+## 1.1.0 — 2026-11-09
+
+### Added
+
+- **Style layer** — structured, per-entity visual restyling (inherited like the rest of BrandKit) that generates CSS variables and shallow GLPI/Tabler selectors. Not just a free-form CSS box.
+- Sidebar presets: default, compact, pill, floating, glass/blur. Active/hover item styles (background, accent bar, scale, indent), icon size, item spacing, header (flat / gradient / transparent) and dropdown styling.
+- Shape: global radius plus separate card, button, input and modal radii.
+- Elevation: none / soft / medium / strong / coloured-glow shadows for cards, dropdowns, modals and the sidebar.
+- Motion: hover lift / grow / glow, transition speed and easing, page/card fade-in, a global disable-animations switch, and `prefers-reduced-motion`.
+- Density (compact / comfortable / spacious), safe web fonts (system, Inter, Source Sans 3, IBM Plex Sans, Nunito, or a Google Fonts URL) and base font size.
+- Gradient builders (two or three stops + angle) for header, sidebar, buttons, login and page; app background image with fit, position and overlay.
+- Image or text watermarks (opacity, size, position, tiling) on the app and/or login, with `pointer-events: none`.
+- One-click presets: Corporate clean, Soft rounded, Glass, Bold gradient, Minimal flat.
+- JSON export / import of an entity’s branding (colours + style + copy; not uploaded files).
+- Live preview on the Entity Branding tab (sample menu, header, card, button, chart) and a simple contrast warning.
+
 ## 1.0.0 — 2026-11-09
 
 ### Added

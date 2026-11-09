@@ -15,6 +15,8 @@ use GlpiPlugin\Brandkit\CssGenerator;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/src/CssSanitizer.php';
+require_once dirname(__DIR__, 2) . '/src/StyleSchema.php';
+require_once dirname(__DIR__, 2) . '/src/StyleCss.php';
 require_once dirname(__DIR__, 2) . '/src/CssGenerator.php';
 
 final class CssGeneratorTest extends TestCase
@@ -52,6 +54,22 @@ final class CssGeneratorTest extends TestCase
         $this->assertStringContainsString('h1{color:navy}', $css);
         $this->assertStringNotContainsString('</style>', $css);
         $this->assertStringNotContainsString('<script', $css);
+        $this->assertStringNotContainsString('--brandkit-radius', $css);
+    }
+
+    public function testStyleJsonIsEmittedWhenPresent(): void
+    {
+        $css = CssGenerator::generate(
+            [
+                'style_json' => \GlpiPlugin\Brandkit\StyleSchema::encode(
+                    \GlpiPlugin\Brandkit\StyleSchema::presets()['minimal_flat']['style']
+                ),
+            ],
+            []
+        );
+        $this->assertStringContainsString('--brandkit-radius', $css);
+        $this->assertStringContainsString('--tblr-border-radius: 0px', $css);
+        $this->assertStringContainsString('prefers-reduced-motion', $css);
     }
 
     public function testEmptyBrandingProducesMinimalCss(): void
