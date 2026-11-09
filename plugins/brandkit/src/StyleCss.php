@@ -8,7 +8,9 @@
  *   body, body.welcome-anonymous, .page, .page-wrapper, #page
  *   .sidebar, .navbar.navbar-vertical, .topbar
  *   #navbar-menu .nav-link, #navbar-menu .nav-item, #navbar-menu .nav-item.active
+ *   .sidebar #navbar-menu .dropdown-menu, .sidebar #navbar-menu .dropdown-item
  *   header.navbar, header.navbar.navbar-light, header.navbar.topbar
+ *   #navigationheader.navigationheader, #navigationheader .main-header
  *   .dropdown-menu, .dropdown-item
  *   .card, .modal-content, .modal-dialog
  *   .btn, .btn-primary, .btn-sm
@@ -223,6 +225,9 @@ header.navbar .breadcrumb-item,
   display: inline-flex;
   align-items: center;
   background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
   border-radius: 0 !important;
   padding: 0;
   max-width: 14rem;
@@ -241,14 +246,19 @@ header.navbar .breadcrumb-item + .breadcrumb-item::before,
 }
 .page > header .breadcrumb-item a,
 header.navbar .breadcrumb-item a,
+header.navbar .breadcrumb-item a.d-inline-flex,
 .navbar.secondary-bar .breadcrumb-item a {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   line-height: 1.2;
-  padding: 0.15rem 0;
+  padding: 0.15rem 0.1rem;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
   border-radius: 0 !important;
   background: transparent !important;
+  color: color-mix(in srgb, var(--brandkit-header-fg, #fff), transparent 8%) !important;
 }
 .page > header .nav.navbar-nav,
 header.navbar .nav.navbar-nav,
@@ -261,9 +271,14 @@ header.navbar .nav.navbar-nav,
 .page > header .nav.navbar-nav .btn,
 header.navbar .nav.navbar-nav .btn,
 .navbar.secondary-bar .nav.navbar-nav .btn {
-  border-radius: var(--brandkit-radius-chrome) !important;
-  min-height: 1.7rem;
-  padding: 0.15rem 0.65rem !important;
+  border-radius: 999px !important;
+  min-height: 2rem;
+  padding: 0.3rem 0.95rem !important;
+  font-weight: 600;
+  gap: 0.3rem;
+}
+header.navbar .nav.navbar-nav .btn.btn-primary .d-none.d-xxl-block {
+  display: inline !important;
 }
 
 .input-group {
@@ -383,26 +398,88 @@ header.navbar .form-control::placeholder {
 header.navbar .form-control {
   background: transparent;
 }
+
+#navigationheader.navigationheader {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 2;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  min-height: 2.75rem;
+  margin: 0 0 0.85rem !important;
+  padding: 0.15rem 0.15rem 0.35rem;
+  overflow: visible !important;
+  color: var(--tblr-body-color) !important;
+  background: transparent !important;
+}
+#navigationheader .main-header,
+#navigationheader .card-header,
+#navigationheader .mt-n2 {
+  margin-top: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  overflow: visible !important;
+}
+#navigationheader .card-title,
+#navigationheader .navigationheader-title,
+#navigationheader .status,
+#navigationheader .badge.entity-name {
+  color: var(--tblr-body-color) !important;
+}
+#navigationheader .pagination-left,
+#navigationheader .pagination-right {
+  display: flex !important;
+  align-items: center;
+}
+body.central .page-wrapper {
+  overflow: visible;
+}
+body.central .page-body {
+  padding-top: 0.85rem;
+}
+body.central .tab-content.card {
+  overflow: visible !important;
+}
 CSS;
         $extra = '';
         $search = (string) ($style['search_style'] ?? 'default');
         if ($search === 'inset_dark') {
             $extra .= <<<CSS
 
+header.navbar form[role="search"] .input-group-flat,
 header.navbar .input-group-flat,
 .page > header .input-group-flat,
 .navbar.secondary-bar .input-group-flat {
-  background: color-mix(in srgb, #000, transparent 55%) !important;
+  background: color-mix(in srgb, #000, transparent 42%) !important;
   border: 0 !important;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff, transparent 82%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff, transparent 84%);
+  border-radius: 999px !important;
+  overflow: hidden;
+  min-height: 2.2rem;
 }
+header.navbar form[role="search"] .input-group-flat > .form-control,
 header.navbar .input-group-flat > .form-control,
-header.navbar .input-group-flat .btn-link {
+header.navbar form[role="search"] .input-group-flat .btn,
+header.navbar form[role="search"] .input-group-flat .btn-link,
+header.navbar .input-group-flat .btn,
+header.navbar .input-group-flat .btn-link,
+header.navbar .input-group-flat .input-group-text {
   color: #fff !important;
   background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  --tblr-btn-color: #fff;
+  --tblr-link-color: #fff;
 }
 header.navbar .input-group-flat > .form-control::placeholder {
   color: color-mix(in srgb, #fff, transparent 40%);
+}
+header.navbar .input-group-flat .btn-link .ti,
+header.navbar .input-group-flat .btn .ti {
+  color: #fff !important;
 }
 CSS;
         } elseif ($search === 'inset_light') {
@@ -444,17 +521,39 @@ CSS;
         } elseif ($crumb === 'ghost') {
             $extra .= <<<CSS
 
-header.navbar .breadcrumb-item a {
+header.navbar .breadcrumb,
+header.navbar .breadcrumb-item,
+header.navbar .breadcrumb-item a,
+header.navbar .breadcrumb-item a.d-inline-flex {
   background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   border-radius: 0 !important;
   font-weight: 500;
 }
-header.navbar .nav.navbar-nav .btn {
+header.navbar .nav.navbar-nav .btn.btn-primary {
   border-radius: 999px !important;
-  background: var(--tblr-primary) !important;
-  color: var(--tblr-primary-fg, #fff) !important;
+  background: color-mix(in srgb, var(--tblr-primary), #5eead4 28%) !important;
+  color: #fff !important;
   border: 0 !important;
-  padding: 0.2rem 0.85rem !important;
+  padding: 0.3rem 0.95rem !important;
+  min-height: 2rem !important;
+  box-shadow: none !important;
+}
+header.navbar .nav.navbar-nav .btn.btn-ghost-secondary {
+  background: transparent !important;
+  color: color-mix(in srgb, var(--brandkit-header-fg, #fff), transparent 8%) !important;
+  box-shadow: none !important;
+  padding: 0.2rem 0.5rem !important;
+  min-height: 1.85rem !important;
+  border-radius: var(--brandkit-radius-chrome) !important;
+}
+header.navbar .nav.navbar-nav .btn.btn-primary .d-none.d-xxl-block {
+  display: inline !important;
+}
+header.navbar form[role="search"] {
+  min-width: 11rem;
+  flex: 0 1 16rem;
 }
 CSS;
         }
@@ -465,18 +564,32 @@ CSS;
 header.navbar .user-menu-dropdown-toggle {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.45rem;
-  background: color-mix(in srgb, #fff, transparent 86%) !important;
+  gap: 0.55rem;
+  background: color-mix(in srgb, #fff, transparent 88%) !important;
   border-radius: 999px !important;
-  padding: 0.15rem 0.4rem 0.15rem 0.65rem !important;
+  padding: 0.2rem 0.35rem 0.2rem 0.7rem !important;
   border: 0 !important;
+  overflow: visible !important;
+  min-height: 2.5rem;
+  line-height: 1.15;
+}
+header.navbar .user-menu-dropdown-toggle .pe-2.d-none.d-xl-block,
+header.navbar .user-menu-dropdown-toggle .d-none.d-xl-block {
+  display: block !important;
+  text-align: end;
+}
+header.navbar .user-menu-dropdown-toggle .text-muted-menu {
+  color: color-mix(in srgb, var(--brandkit-header-fg, #fff), transparent 22%) !important;
+  margin-top: 0.15rem !important;
 }
 header.navbar .user-menu-dropdown-toggle .user-picture,
 header.navbar .user-menu-dropdown-toggle .avatar,
+header.navbar .user-menu-dropdown-toggle .avatar.rounded,
 header.navbar .user-menu-dropdown-toggle img {
-  border-radius: 999px !important;
-  width: 1.7rem;
-  height: 1.7rem;
+  border-radius: 50% !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem;
 }
 CSS;
         }
@@ -569,48 +682,85 @@ CSS,
 }
 CSS,
             'card' => <<<CSS
+div.card-tabs.vertical,
 .card-tabs.vertical {
   gap: 1rem;
-  align-items: flex-start;
+  align-items: stretch;
   background: transparent !important;
+  margin-top: 0.15rem;
 }
-.card-tabs.vertical #tabspanel.nav-tabs {
-  background: var(--tblr-bg-surface, #fff);
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs,
+.card-tabs.vertical ul#tabspanel.nav-tabs {
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--tblr-bg-surface, #fff) !important;
   border: 0 !important;
+  border-right: 0 !important;
   border-radius: var(--brandkit-radius-card) !important;
   box-shadow: var(--brandkit-shadow-card);
-  padding: 0.35rem 0.35rem 0.75rem;
+  padding: 0.35rem 0.4rem 0.85rem;
   min-width: 220px;
+  max-width: 260px;
 }
-.card-tabs.vertical #tabspanel.nav-tabs::before {
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs::before,
+.card-tabs.vertical ul#tabspanel.nav-tabs::before {
   content: var(--brandkit-tab-heading);
   display: flex;
   align-items: center;
+  width: 100%;
+  flex: 0 0 auto;
   font-weight: 650;
   font-size: 0.95rem;
   color: var(--tblr-primary);
-  padding: 0.7rem 0.9rem 0.45rem;
+  padding: 0.75rem 0.95rem 0.5rem;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
 }
-.card-tabs.vertical #tabspanel.nav-tabs .nav-link {
-  border: 0 !important;
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item > a.nav-link,
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item > a.nav-link.active,
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item:first-child > a.nav-link,
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item:last-child > a.nav-link,
+.card-tabs.vertical ul#tabspanel.nav-tabs .nav-link,
+.card-tabs.vertical ul#tabspanel.nav-tabs .nav-link.active {
+  border: 0 none !important;
+  border-width: 0 !important;
+  border-left: 0 none !important;
+  border-right: 0 none !important;
+  border-top: 0 none !important;
+  border-bottom: 0 none !important;
+  border-color: transparent !important;
   border-radius: 999px !important;
   background: transparent !important;
-  margin: 0.12rem 0.4rem !important;
+  box-shadow: none !important;
+  margin: 0.1rem 0.35rem !important;
+  margin-right: 0.35rem !important;
   padding: 0.45rem 0.85rem !important;
+  color: inherit;
 }
-.card-tabs.vertical #tabspanel.nav-tabs .nav-link.active {
-  background: color-mix(in srgb, var(--tblr-primary), #fff 82%) !important;
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item > a.nav-link:hover,
+.card-tabs.vertical ul#tabspanel.nav-tabs .nav-link:hover {
+  background: color-mix(in srgb, var(--tblr-primary), #fff 88%) !important;
+  color: var(--tblr-primary) !important;
+  border-radius: 999px !important;
+}
+div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item > a.nav-link.active,
+.card-tabs.vertical ul#tabspanel.nav-tabs .nav-link.active {
+  background: color-mix(in srgb, var(--tblr-primary), #fff 78%) !important;
   color: var(--tblr-primary) !important;
   font-weight: 600;
-  box-shadow: none;
+  box-shadow: none !important;
   border-left-width: 0 !important;
+  border-left-color: transparent !important;
 }
+div.card-tabs.vertical > .tab-content.card,
 .card-tabs.vertical .tab-content.card {
   border: 0 !important;
   border-radius: var(--brandkit-radius-card) !important;
   box-shadow: var(--brandkit-shadow-card);
   background: var(--tblr-bg-surface, #fff);
   padding: 1.25rem 1.5rem !important;
+  overflow: visible !important;
 }
 CSS,
             'merge' => <<<CSS
@@ -713,6 +863,8 @@ CSS;
         if ((string) ($style['form_sections'] ?? 'default') === 'accordion') {
             $css .= <<<CSS
 .brandkit-accordion {
+  display: block;
+  width: 100%;
   border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 20%);
   border-radius: 999px;
   background: var(--tblr-bg-surface, #fff);
@@ -728,7 +880,8 @@ CSS;
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.7rem 1.1rem;
+  width: 100%;
+  padding: 0.75rem 1.15rem;
   cursor: pointer;
   font-weight: 600;
 }
@@ -746,8 +899,36 @@ CSS;
   padding: 0.25rem 1.25rem 1.1rem;
   border-top: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 40%);
 }
-.tab-content .card-header {
-  border-radius: var(--brandkit-radius-card);
+#brandkit-fields > .card.border-0,
+.tab-content .asset .card.border-0.shadow-none {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+#brandkit-fields > .card.border-0 > .card-header,
+#brandkit-fields .card > .card-header.mb-3,
+.tab-content .asset > form .card.border-0 > .card-header,
+.tab-content .asset .card.border-0 > .card-header {
+  background: var(--tblr-bg-surface, #fff) !important;
+  color: var(--tblr-body-color) !important;
+  border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 20%) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--brandkit-shadow-card);
+  padding: 0.75rem 1.15rem !important;
+  margin-bottom: 0.85rem !important;
+}
+#brandkit-fields .card.border-0 > .card-header .ribbon,
+#brandkit-fields .card > .card-header .ribbon,
+.tab-content .asset .card.border-0 > .card-header .ribbon {
+  display: none !important;
+}
+#brandkit-fields .card.border-0 > .card-header .card-title,
+.tab-content .asset .card.border-0 > .card-header .card-title {
+  margin: 0 !important;
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+  color: inherit !important;
+  font-weight: 600;
 }
 
 CSS;
@@ -819,7 +1000,8 @@ CSS;
 body.central,
 body.central .page,
 body.central .page-wrapper,
-body.central .page-body {
+body.central .page-body,
+body.central #page {
   background-color: #eef1f6 !important;
 }
 body.central .card-tabs.vertical {
@@ -961,6 +1143,56 @@ CSS;
 .sidebar {
   box-shadow: var(--brandkit-shadow-sidebar);
 }
+body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu {
+  position: static !important;
+  transform: none !important;
+  inset: auto !important;
+  float: none !important;
+  min-width: 0 !important;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0.1rem 0 0.35rem !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu.show {
+  display: block !important;
+}
+body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu:not(.show) {
+  display: none !important;
+}
+body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-header {
+  display: none !important;
+}
+.sidebar #navbar-menu .dropdown-item {
+  color: color-mix(in srgb, var(--glpi-mainmenu-fg), transparent 12%) !important;
+  background: transparent !important;
+  border-left: 0 !important;
+  margin: 0.12rem 0.65rem;
+  padding: 0.4rem 0.85rem 0.4rem 1.55rem !important;
+  border-radius: 999px !important;
+}
+.sidebar #navbar-menu .dropdown-item:hover {
+  background: color-mix(in srgb, #fff, transparent 88%) !important;
+  color: #fff !important;
+  border-left: 0 !important;
+}
+.sidebar #navbar-menu .dropdown-item.active {
+  background: color-mix(in srgb, var(--tblr-primary), transparent 42%) !important;
+  color: #fff !important;
+  font-weight: 650;
+  border-left: 0 !important;
+}
+body.navbar-collapsed .sidebar #navbar-menu .dropdown-menu {
+  position: absolute !important;
+}
+body.navbar-collapsed .sidebar #navbar-menu .dropdown-item {
+  margin-inline: 0.25rem;
+  padding-inline: 0.75rem !important;
+}
 CSS;
 
         $preset = (string) $style['sidebar_preset'];
@@ -1015,6 +1247,33 @@ CSS;
         $rules[] = self::navItemStyle('#navbar-menu .nav-item.active > .nav-link, #navbar-menu .nav-link.active', (string) $style['nav_active_style']);
         $rules[] = self::navItemStyle('#navbar-menu .nav-item:not(.active) > .nav-link:hover', (string) $style['nav_hover_style']);
 
+        if ((string) $style['nav_active_style'] === 'accent_bar') {
+            $rules[] = <<<CSS
+.sidebar #navbar-menu > .navbar-nav > .nav-item > .nav-link,
+.sidebar #navbar-menu > ul.navbar-nav > li.nav-item > button.nav-link {
+  background: transparent !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none;
+}
+.sidebar #navbar-menu > .navbar-nav > .nav-item.active > .nav-link,
+.sidebar #navbar-menu > .navbar-nav > .nav-item > .nav-link.active,
+.sidebar #navbar-menu > .navbar-nav > .nav-item > .nav-link.show,
+.sidebar #navbar-menu > ul.navbar-nav > li.nav-item.active > button.nav-link {
+  color: var(--tblr-primary) !important;
+  background: transparent !important;
+  border-left-color: var(--tblr-primary) !important;
+  font-weight: 650;
+  box-shadow: inset 3px 0 0 var(--tblr-primary);
+}
+.sidebar #navbar-menu > .navbar-nav > .nav-item:not(.active) > .nav-link:hover {
+  color: var(--tblr-primary) !important;
+  border-left-color: var(--tblr-primary) !important;
+  background: color-mix(in srgb, #000, transparent 88%) !important;
+}
+CSS;
+        }
+
         $sidebar_g = $style['gradient_sidebar'];
         if (is_array($sidebar_g) && (int) ($sidebar_g['enabled'] ?? 0) === 1) {
             $grad = self::gradientCss($sidebar_g, $branding, 'sidebar');
@@ -1027,7 +1286,7 @@ CSS;
     private static function navItemStyle(string $selector, string $kind): string
     {
         return match ($kind) {
-            'accent_bar' => "{$selector} {\n  box-shadow: inset 3px 0 0 var(--tblr-primary);\n  background-color: color-mix(in srgb, var(--glpi-mainmenu-fg), transparent 92%);\n}",
+            'accent_bar' => "{$selector} {\n  box-shadow: inset 3px 0 0 var(--tblr-primary);\n  background-color: transparent !important;\n  color: var(--tblr-primary) !important;\n}",
             'scale' => "{$selector} {\n  transform: scale(1.04);\n}",
             'indent' => "{$selector} {\n  padding-inline-start: 1.75rem !important;\n}",
             default => "{$selector} {\n  background-color: color-mix(in srgb, var(--glpi-mainmenu-fg), transparent 88%);\n}",
@@ -1093,6 +1352,12 @@ CSS;
 }
 .dropdown-item {
   border-radius: var(--brandkit-radius-chrome);
+}
+body.vertical-layout:not(.navbar-collapsed) .sidebar .dropdown-menu,
+body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 CSS;
     }

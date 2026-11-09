@@ -2,6 +2,16 @@
 
 All notable changes to BrandKit are documented here.
 
+## 1.3.1 — 2026-11-09
+
+### Fixed
+
+- **Clean cards vs GLPI 12 sidebar DOM.** Section entries are `button.nav-link.dropdown-toggle` and sub-items are `a.dropdown-item` inside an in-flow `.dropdown-menu`. Generic popup `.dropdown-menu` radius/shadow was painting a light card over **Administration**, so the label looked empty. Expanded sidebar menus are now static and transparent; the active section uses teal text/icon plus a left accent (no wash); the active sub-item (**Entities**) is an indented rounded tinted pill. Collapsed flyouts keep the popup look.
+- **Header chrome.** Breadcrumb items no longer render as bordered boxes. **+ Add** is a padded teal pill with its label visible below the xxl breakpoint. Inset-dark search is a dark rounded field with a white icon (the search control is `.btn.btn-link`, which was inheriting the orange accent). The user chip shows the entity line (`d-none d-xl-block` is forced on) and a circular avatar.
+- **Entity header at scroll 0.** `#navigationheader` (entity title + Actions + list/pagination) was sitting under the sticky navbar or collapsing into the tab column (the list-search icon looked like a tab). It is a visible bar above the cards; `.mt-n2` on `.main-header` is reset; tab content no longer clips the first logo title.
+- **Card tab menu.** GLPI `_tabs.scss` `!important` left/right/bottom borders beat the 1.3.0 card preset. Higher-specificity resets remove those lines. The list is a white rounded card with a **Configuration** heading (`ul#tabspanel::before`). Active/hover items are rounded teal pills.
+- **Section cards.** Colours is a full-width rounded row with the chevron on the right. Style / Login / other `fields.largeTitle` ribbons (accent-orange `--glpi-form-header-*`) are restyled as the same card rows when the accordion section preset is on. The page tone greys `#page` as well as `.page-body`.
+
 ## 1.3.0 — 2026-11-09
 
 ### Fixed

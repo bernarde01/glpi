@@ -140,13 +140,43 @@ final class StyleCssTest extends TestCase
         $preset = StyleSchema::presets()['clean_cards'];
         $css = StyleCss::generate($preset['colors'] ?? [], [], StyleSchema::sanitize($preset['style']));
         $this->assertStringContainsString('--brandkit-tab-heading:', $css);
-        $this->assertStringContainsString('.card-tabs.vertical #tabspanel.nav-tabs::before', $css);
+        $this->assertStringContainsString('.card-tabs.vertical ul#tabspanel.nav-tabs::before', $css);
         $this->assertStringContainsString('background-color: #eef1f6', $css);
         $this->assertStringContainsString('#brandkit-fields .form-field.row', $css);
         $this->assertStringContainsString('grid-template-columns: minmax(12rem, 34%) 1fr', $css);
         $this->assertStringContainsString('.brandkit-file-ui', $css);
         $this->assertStringContainsString('font-family: "Inter"', $css);
         $this->assertStringContainsString('header.navbar .user-menu-dropdown-toggle', $css);
+        $this->assertStringContainsString('.sidebar #navbar-menu .dropdown-item.active', $css);
+        $this->assertStringContainsString('body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu', $css);
+        $this->assertStringContainsString('#navigationheader.navigationheader', $css);
+        $this->assertStringContainsString('border-left-width: 0 !important', $css);
+        $this->assertStringContainsString('div.card-tabs.vertical > ul#tabspanel.nav.nav-tabs > li.nav-item > a.nav-link.active', $css);
+        $this->assertStringContainsString('.d-none.d-xxl-block', $css);
+        $this->assertStringContainsString('.text-muted-menu', $css);
+        $this->assertStringContainsString('border-radius: 50%', $css);
+        $this->assertStringContainsString('#brandkit-fields > .card.border-0 > .card-header', $css);
+        $this->assertStringContainsString('form[role="search"]', $css);
+        $this->assertStringContainsString('body.central #page', $css);
+    }
+
+    public function testSidebarDropdownResetIsEmittedForEveryTemplate(): void
+    {
+        foreach (StyleSchema::presets() as $id => $preset) {
+            $css = StyleCss::generate($preset['colors'] ?? [], [], StyleSchema::sanitize($preset['style']));
+            $this->assertStringContainsString(
+                'body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu',
+                $css,
+                $id
+            );
+            $this->assertStringContainsString(
+                'body.vertical-layout:not(.navbar-collapsed) .sidebar #navbar-menu .dropdown-menu.show',
+                $css,
+                $id
+            );
+            $this->assertStringContainsString('.sidebar #navbar-menu .dropdown-item', $css, $id);
+            $this->assertStringContainsString('#navigationheader.navigationheader', $css, $id);
+        }
     }
 
     public function testWarmTealEmitsMergeTabsAndFilledFileButtons(): void

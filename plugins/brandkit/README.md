@@ -42,8 +42,8 @@ Clicking a gallery card is **try-it** (CSS injected, not saved). **Apply** fills
 
 Kept shallow so they survive GLPI 12 updates. Prefer Tabler/GLPI variables (`--tblr-border-radius`, `--tblr-box-shadow`, `--tblr-font-sans-serif`, `--tblr-body-font-size`, `--tblr-card-spacer-*`) plus:
 
-- Navigation: `.sidebar`, `.navbar.navbar-vertical`, `.topbar`, `#navbar-menu .nav-link`, `#navbar-menu .nav-item`
-- Header: `header.navbar`, `header.navbar.navbar-light`, `header.navbar.topbar`, `.page > header .breadcrumb`
+- Navigation: `.sidebar`, `.navbar.navbar-vertical`, `.topbar`, `#navbar-menu .nav-link`, `#navbar-menu .nav-item`, `.sidebar #navbar-menu .dropdown-menu`, `.sidebar #navbar-menu .dropdown-item`
+- Header: `header.navbar`, `header.navbar.navbar-light`, `header.navbar.topbar`, `.page > header .breadcrumb`, `#navigationheader.navigationheader`
 - Surfaces: `.card`, `.modal-content`, `.dropdown-menu`, `.kanban-column`, `.kanban-item`
 - Controls: `.btn`, `.btn-primary`, `.form-control`, `.form-select`, `.select2-selection`, `.input-group`, `input[type=file]`
 - In-page tabs: `.card-tabs #tabspanel.nav-tabs .nav-link`
@@ -97,7 +97,7 @@ php bin/console plugin:list
 
    ```bash
    cd plugins
-   tar czf brandkit-1.3.0.tar.gz \
+   tar czf brandkit-1.3.1.tar.gz \
      --exclude='tests' \
      --transform 's,^brandkit,brandkit,' \
      brandkit
@@ -108,7 +108,7 @@ php bin/console plugin:list
 2. Copy it onto the server and extract into GLPI’s plugins directory (or upload via **Setup → Plugins** / the marketplace drop-in folder):
 
    ```bash
-   tar xzf brandkit-1.3.0.tar.gz -C /var/www/glpi/plugins/
+   tar xzf brandkit-1.3.1.tar.gz -C /var/www/glpi/plugins/
    cd /var/www/glpi
    php bin/console plugin:install brandkit -u glpi
    php bin/console plugin:activate brandkit

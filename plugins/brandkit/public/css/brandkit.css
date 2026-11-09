@@ -323,13 +323,23 @@ html.brandkit-trying .brandkit-gallery-toolbar #brandkit-try-cancel {
 }
 
 .brandkit-accordion {
+    display: block;
+    width: 100%;
     margin: 0.85rem 0;
 }
 
 .brandkit-accordion > summary {
     list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    cursor: pointer;
 }
 
 .brandkit-accordion > summary::-webkit-details-marker {
     display: none;
+}
+
+.brandkit-accordion > summary .brandkit-acc-chevron {
+    margin-inline-start: auto;
 }
