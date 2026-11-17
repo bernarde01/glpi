@@ -1,0 +1,42 @@
+{
+    "id": "minimal_flat",
+    "name": "Minimal flat",
+    "description": "Zero radius, no shadows, compact density, animations off. A print-like UI.",
+    "colors": {
+        "color_primary": "#334155",
+        "color_secondary": "#64748b",
+        "color_accent": "#0f172a",
+        "color_sidebar": "#e2e8f0",
+        "color_header": "#f8fafc",
+        "login_background_color": "#f1f5f9"
+    },
+    "style": {
+        "preset": "minimal_flat",
+        "sidebar_preset": "compact",
+        "header_style": "flat",
+        "nav_active_style": "accent_bar",
+        "nav_hover_style": "indent",
+        "radius_global": 0,
+        "radius_cards": 0,
+        "radius_buttons": 0,
+        "radius_inputs": 0,
+        "radius_modals": 0,
+        "shadow_cards": "none",
+        "shadow_dropdowns": "none",
+        "shadow_modals": "soft",
+        "shadow_sidebar": "none",
+        "hover_cards": "none",
+        "hover_buttons": "none",
+        "hover_menu": "none",
+        "transition_speed": "instant",
+        "disable_animations": 1,
+        "density": "compact",
+        "font_family": "raleway",
+        "font_size": 13,
+        "nav_item_spacing": 0,
+        "nav_icon_size": 16,
+        "tab_preset": "underline",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
+    }
+}

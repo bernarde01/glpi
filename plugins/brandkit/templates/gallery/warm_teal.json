@@ -1,0 +1,56 @@
+{
+    "id": "warm_teal",
+    "name": "Warm teal",
+    "description": "Teal gradient sidebar, navy header, cream workspace, filled file buttons. Poppins. Tabs merge into content.",
+    "colors": {
+        "color_primary": "#0f766e",
+        "color_secondary": "#1e3a5f",
+        "color_accent": "#ea580c",
+        "color_sidebar": "#0f766e",
+        "color_header": "#1e293b",
+        "login_background_color": "#f6ead8"
+    },
+    "style": {
+        "preset": "warm_teal",
+        "sidebar_preset": "pill",
+        "nav_active_style": "background",
+        "nav_hover_style": "background",
+        "header_style": "flat",
+        "tab_preset": "merge",
+        "tab_item_spacing": 2,
+        "form_layout": "two_column",
+        "form_sections": "default",
+        "file_input_style": "filled",
+        "search_style": "inset_light",
+        "breadcrumb_style": "ghost",
+        "page_tone": "cream",
+        "header_user_chip": 1,
+        "radius_global": 10,
+        "radius_cards": 12,
+        "radius_buttons": 8,
+        "radius_inputs": 8,
+        "radius_modals": 14,
+        "shadow_cards": "soft",
+        "shadow_dropdowns": "medium",
+        "shadow_sidebar": "none",
+        "hover_buttons": "grow",
+        "density": "comfortable",
+        "font_family": "poppins",
+        "font_size": 14,
+        "font_cdn": 0,
+        "gradient_sidebar": {
+            "enabled": 1,
+            "angle": 180,
+            "stop1": "#14b8a6",
+            "stop2": "#0f766e",
+            "stop3": "#115e59"
+        },
+        "gradient_login": {
+            "enabled": 1,
+            "angle": 160,
+            "stop1": "#0f766e",
+            "stop2": "#1e293b",
+            "stop3": ""
+        }
+    }
+}

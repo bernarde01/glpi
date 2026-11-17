@@ -1,0 +1,231 @@
+# BrandKit translation template.
+# Copyright (C) 2026 Distillect
+# This file is distributed under the same license as the BrandKit package.
+msgid ""
+msgstr ""
+"Project-Id-Version: BrandKit 1.3.1\n"
+"Report-Msgid-Bugs-To: https://glpi.distillect.co.za/\n"
+"POT-Creation-Date: 2026-11-09 14:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid "Branding"
+msgid_plural "Branding"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Inherit branding from the parent entity"
+msgstr ""
+
+msgid "When inheritance is enabled, this entity uses the branding of its parent. Uncheck to override."
+msgstr ""
+
+msgid "Logos"
+msgstr ""
+
+msgid "Main sidebar logo"
+msgstr ""
+
+msgid "Collapsed sidebar logo"
+msgstr ""
+
+msgid "Login page logo"
+msgstr ""
+
+msgid "Login logo (dark mode)"
+msgstr ""
+
+msgid "Favicon"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Colours"
+msgstr ""
+
+msgid "Primary colour"
+msgstr ""
+
+msgid "Secondary colour"
+msgstr ""
+
+msgid "Accent colour"
+msgstr ""
+
+msgid "Sidebar colour"
+msgstr ""
+
+msgid "Header colour"
+msgstr ""
+
+msgid "Custom CSS"
+msgstr ""
+
+msgid "Sanitised on save: style/script breakouts and javascript: URLs are removed."
+msgstr ""
+
+msgid "Login page"
+msgstr ""
+
+msgid "Login background image"
+msgstr ""
+
+msgid "Login background colour"
+msgstr ""
+
+msgid "Login heading"
+msgstr ""
+
+msgid "Login message"
+msgstr ""
+
+msgid "Shown next to the login form. Coexists with Setup → General → text_login."
+msgstr ""
+
+msgid "Login footer links"
+msgstr ""
+
+msgid "One per line: Label|https://example.com"
+msgstr ""
+
+msgid "Product name and page title"
+msgstr ""
+
+msgid "Product name"
+msgstr ""
+
+msgid "Replaces “GLPI” in the browser title."
+msgstr ""
+
+msgid "Page title prefix"
+msgstr ""
+
+msgid "Notification emails"
+msgstr ""
+
+msgid "Email header HTML"
+msgstr ""
+
+msgid "Email footer HTML"
+msgstr ""
+
+msgid "Include logo in HTML emails"
+msgstr ""
+
+msgid "Dashboards"
+msgstr ""
+
+msgid "These colours are registered as the “brandkit” chart palette and also replace the default tab10 palette so existing widgets pick them up."
+msgstr ""
+
+msgid "Chart colour %s"
+msgstr ""
+
+msgid "Card background"
+msgstr ""
+
+msgid "Card text colour"
+msgstr ""
+
+msgid "BrandKit"
+msgstr ""
+
+msgid "Per-entity logos, colours and login branding are edited on Administration → Entities → Branding. The root entity supplies the default (and the login page, unless a hostname mapping below applies)."
+msgstr ""
+
+msgid "Edit root entity branding"
+msgstr ""
+
+msgid "Login hostname → entity map"
+msgstr ""
+
+msgid "One host per line: client.example.com=12  (entity id). Unmapped hosts use the root entity."
+msgstr ""
+
+msgid "Configuration saved."
+msgstr ""
+
+msgid "You do not have permission to update this entity."
+msgstr ""
+
+msgid "You do not have permission to update branding."
+msgstr ""
+
+msgid "In-page tabs"
+msgstr ""
+
+msgid "The vertical (or horizontal) tab menu on item forms: Entity, Address, Branding, All, …"
+msgstr ""
+
+msgid "Tab style"
+msgstr ""
+
+msgid "Underline"
+msgstr ""
+
+msgid "Accent bar"
+msgstr ""
+
+msgid "Tab item spacing"
+msgstr ""
+
+msgid "Bundled woff2 files are served from the plugin (works offline and with CSP)."
+msgstr ""
+
+msgid "Load this font from Google Fonts instead of the bundled files"
+msgstr ""
+
+msgid "Opt-in. Requires fonts.googleapis.com / fonts.gstatic.com in CSP. Bundled files are used when this is off."
+msgstr ""
+
+msgid "Only used when the CDN option is on. https://fonts.googleapis.com/css2?… only."
+msgstr ""
+
+msgid "Custom family name"
+msgstr ""
+
+msgid "Used when Font family is “Custom”. Pair with a Google Fonts URL (CDN on) or your own @font-face in Custom CSS."
+msgstr ""
+
+msgid "Configuration"
+msgstr ""
+
+msgid "Choose file"
+msgstr ""
+
+msgid "No file chosen"
+msgstr ""
+
+msgid "This logo appears in the main sidebar when expanded."
+msgstr ""
+
+msgid "Card (separate rounded panel)"
+msgstr ""
+
+msgid "Merge into content"
+msgstr ""
+
+msgid "Forms and chrome"
+msgstr ""
+
+msgid "Two-column (label left, control right)"
+msgstr ""
+
+msgid "Form layout"
+msgstr ""
+
+msgid "File inputs"
+msgstr ""
+
+msgid "Global search box"
+msgstr ""
+
+msgid "Page background tone"
+msgstr ""
+
+msgid "User menu as a rounded chip"
+msgstr ""

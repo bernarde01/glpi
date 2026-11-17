@@ -1,0 +1,43 @@
+{
+    "id": "high_contrast",
+    "name": "High-contrast accessible",
+    "description": "Black, white and amber. Large type, zero radius, motion off. Aimed at WCAG-style contrast.",
+    "colors": {
+        "color_primary": "#111111",
+        "color_secondary": "#111111",
+        "color_accent": "#ca8a04",
+        "color_sidebar": "#000000",
+        "color_header": "#000000",
+        "login_background_color": "#ffffff",
+        "dashboard_card_bg": "#ffffff",
+        "dashboard_card_text": "#111111"
+    },
+    "style": {
+        "preset": "high_contrast",
+        "sidebar_preset": "default",
+        "nav_active_style": "accent_bar",
+        "header_style": "flat",
+        "radius_global": 0,
+        "radius_cards": 0,
+        "radius_buttons": 0,
+        "radius_inputs": 0,
+        "radius_modals": 0,
+        "shadow_cards": "none",
+        "shadow_dropdowns": "none",
+        "shadow_modals": "none",
+        "shadow_sidebar": "none",
+        "hover_cards": "none",
+        "hover_buttons": "none",
+        "hover_menu": "none",
+        "transition_speed": "instant",
+        "disable_animations": 1,
+        "fade_in": 0,
+        "density": "comfortable",
+        "font_family": "roboto",
+        "font_size": 16,
+        "nav_icon_size": 20,
+        "tab_preset": "default",
+        "tab_item_spacing": 0,
+        "font_cdn": 0
+    }
+}

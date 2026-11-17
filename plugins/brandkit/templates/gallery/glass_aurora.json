@@ -1,0 +1,52 @@
+{
+    "id": "glass_aurora",
+    "name": "Glass aurora",
+    "description": "Frosted sidebar, transparent header and a mesh-gradient page wash. Works best with a light overlay.",
+    "colors": {
+        "color_primary": "#0ea5e9",
+        "color_secondary": "#6366f1",
+        "color_accent": "#34d399",
+        "color_sidebar": "#0f172a",
+        "color_header": "#e0f2fe",
+        "login_background_color": "#082f49"
+    },
+    "style": {
+        "preset": "glass_aurora",
+        "sidebar_preset": "glass",
+        "header_style": "transparent",
+        "dropdown_style": "glass",
+        "nav_active_style": "accent_bar",
+        "radius_global": 16,
+        "radius_cards": 20,
+        "radius_buttons": 12,
+        "radius_inputs": 12,
+        "radius_modals": 20,
+        "shadow_cards": "medium",
+        "shadow_dropdowns": "medium",
+        "shadow_modals": "strong",
+        "shadow_sidebar": "medium",
+        "hover_cards": "glow",
+        "hover_buttons": "glow",
+        "hover_menu": "glow",
+        "font_family": "inter",
+        "page_bg_overlay": 30,
+        "fade_in": 1,
+        "gradient_page": {
+            "enabled": 1,
+            "angle": 135,
+            "stop1": "#0ea5e9",
+            "stop2": "#6366f1",
+            "stop3": "#34d399"
+        },
+        "gradient_login": {
+            "enabled": 1,
+            "angle": 160,
+            "stop1": "#082f49",
+            "stop2": "#6366f1",
+            "stop3": "#0ea5e9"
+        },
+        "tab_preset": "pill",
+        "tab_item_spacing": 2,
+        "font_cdn": 0
+    }
+}
