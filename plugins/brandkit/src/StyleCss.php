@@ -58,6 +58,7 @@ final class StyleCss
         $blocks[] = self::pageBackground($style, $urls, $branding);
         $blocks[] = self::watermark($style, $urls);
         $blocks[] = self::surfaces($style);
+        $blocks[] = self::itil($style);
         $blocks[] = self::reducedMotion();
 
         return trim(implode("\n\n", array_filter($blocks))) . "\n";
@@ -73,7 +74,7 @@ final class StyleCss
         $radius_css = $radius === 999 ? '999px' : $radius . 'px';
         $r_card = self::px((int) $style['radius_cards']);
         $r_btn = self::px((int) $style['radius_buttons']);
-        $r_in = self::px((int) $style['radius_inputs']);
+        $r_in = self::resolveInputRadiusPx($style, $radius);
         $r_mod = self::px((int) $style['radius_modals']);
         $r_chrome = self::chromePx($radius);
         $btn_pad = ((int) $style['radius_buttons'] === 999) ? '1.15rem' : '0.85rem';
@@ -116,12 +117,21 @@ final class StyleCss
         $lines[] = sprintf('  --brandkit-watermark-opacity: %s;', number_format(((int) $style['watermark_opacity']) / 100, 2, '.', ''));
         $lines[] = sprintf('  --brandkit-page-overlay: %s;', number_format(((int) $style['page_bg_overlay']) / 100, 2, '.', ''));
 
-        $density = self::densityMap((string) $style['density']);
-        $lines[] = sprintf('  --brandkit-card-pad: %s;', $density['card']);
-        $lines[] = sprintf('  --brandkit-table-pad: %s;', $density['table']);
-        $lines[] = sprintf('  --brandkit-form-gap: %s;', $density['form']);
-        $lines[] = sprintf('  --tblr-card-spacer-y: %s !important;', $density['card']);
-        $lines[] = sprintf('  --tblr-card-spacer-x: %s !important;', $density['card']);
+        if (self::densityOverridesActive((string) $style['density'])) {
+            $density = self::densityMap((string) $style['density']);
+            $lines[] = sprintf('  --brandkit-card-pad: %s;', $density['card']);
+            $lines[] = sprintf('  --brandkit-table-pad: %s;', $density['table']);
+            $lines[] = sprintf('  --brandkit-form-gap: %s;', $density['form']);
+            $lines[] = sprintf('  --tblr-card-spacer-y: %s !important;', $density['card']);
+            $lines[] = sprintf('  --tblr-card-spacer-x: %s !important;', $density['card']);
+        }
+
+        if (self::itilChromeActive($style)) {
+            // Footer chrome only — keep GLPI default --glpi-timeline-* tints (green / grey / amber / blue).
+            $lines[] = '  --glpi-itil-secondary-bg: #eef1f6;';
+            $lines[] = '  --brandkit-shadow-timeline: 0 2px 4px color-mix(in srgb, var(--tblr-body-color), transparent 80%),'
+                . ' 0 6px 18px color-mix(in srgb, var(--tblr-body-color), transparent 88%);';
+        }
 
         $lines[] = '}';
 
@@ -181,8 +191,76 @@ final class StyleCss
 .select2-container .select2-selection {
   border-radius: var(--brandkit-radius-input) !important;
   min-height: 2.2rem;
+}
+
+.form-control,
+.form-select,
+.select2-container .select2-selection--multiple {
   padding-block: 0.4rem;
   padding-inline: 0.75rem;
+}
+
+/* Select2 single centers its value with line-height equal to the control
+   height. Padding on the selection box shifts that line downward. */
+.select2-container .select2-selection--single {
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+  line-height: normal !important;
+  margin: 0;
+}
+.select2-container .select2-selection--single .select2-selection__arrow {
+  height: 100% !important;
+  top: 0 !important;
+}
+
+/* Detach list from the field so all four corners can round (native GLPI flushes top). */
+.select2-dropdown {
+  border-radius: var(--brandkit-radius-input) !important;
+  border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 8%) !important;
+  background: var(--tblr-bg-surface, #fff);
+  box-shadow: var(--brandkit-shadow-dropdown);
+  overflow: hidden;
+}
+
+.select2-dropdown.select2-dropdown--below {
+  margin-top: 0.3rem;
+  border-top: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 8%) !important;
+  border-top-left-radius: var(--brandkit-radius-input) !important;
+  border-top-right-radius: var(--brandkit-radius-input) !important;
+  border-bottom-left-radius: var(--brandkit-radius-input) !important;
+  border-bottom-right-radius: var(--brandkit-radius-input) !important;
+}
+
+.select2-dropdown.select2-dropdown--above {
+  margin-bottom: 0.3rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 8%) !important;
+  border-top-left-radius: var(--brandkit-radius-input) !important;
+  border-top-right-radius: var(--brandkit-radius-input) !important;
+  border-bottom-left-radius: var(--brandkit-radius-input) !important;
+  border-bottom-right-radius: var(--brandkit-radius-input) !important;
+}
+
+.select2-container.select2-container--open .select2-selection {
+  border-radius: var(--brandkit-radius-input) !important;
+}
+
+/* Search criteria row: value text input must match Select2 / select height. */
+.search-form-container .search-form .normalcriteria input.form-control[type="text"],
+.search-form-container .sort-container input.form-control[type="text"] {
+  height: 2.2rem;
+  min-height: 2.2rem;
+  padding-block: 0.35rem;
+  line-height: 1.25;
+  box-sizing: border-box;
+}
+
+.search-form-container .search-form .select2-container .select2-selection--single,
+.search-form-container .sort-container .select2-container .select2-selection--single {
+  height: 2.2rem;
+  min-height: 2.2rem;
 }
 CSS;
     }
@@ -281,31 +359,119 @@ header.navbar .nav.navbar-nav .btn.btn-primary .d-none.d-xxl-block {
   display: inline !important;
 }
 
-.input-group {
+/* Form split rows (e.g. ITIL Items): rounded controls with a gap — not one fused bar. */
+.input-group:not(.input-group-flat) {
   align-items: stretch;
-  border-radius: var(--brandkit-radius-chrome);
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  background: transparent;
+  border-radius: 0;
 }
-.input-group > .form-control,
-.input-group > .form-select,
-.input-group > .form-control:focus,
-.input-group > .btn,
-.input-group > .input-group-text,
-.input-group > .select2-container .select2-selection {
-  border-radius: 0 !important;
+
+.input-group:not(.input-group-flat) > .input-group-text,
+.input-group:not(.input-group-flat) > .form-control,
+.input-group:not(.input-group-flat) > .form-select,
+.input-group:not(.input-group-flat) > .form-control:focus,
+.input-group:not(.input-group-flat) > .btn,
+.input-group:not(.input-group-flat) > .select2-container,
+.input-group:not(.input-group-flat) > .select2-container .select2-selection {
+  border-radius: var(--brandkit-radius-input) !important;
 }
-.input-group > :first-child {
-  border-top-left-radius: var(--brandkit-radius-chrome) !important;
-  border-bottom-left-radius: var(--brandkit-radius-chrome) !important;
+
+.input-group:not(.input-group-flat) > .input-group-text,
+.input-group:not(.input-group-flat) > .btn {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  width: auto;
 }
-.input-group > :last-child {
-  border-top-right-radius: var(--brandkit-radius-chrome) !important;
-  border-bottom-right-radius: var(--brandkit-radius-chrome) !important;
+
+.input-group:not(.input-group-flat) > .form-select:not(:last-child),
+.input-group:not(.input-group-flat) > .form-select:not(:only-of-type) {
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  width: auto !important;
+  max-width: 100%;
 }
+
+/* Lone select after a label: grow on the row, wrap before squashing. */
+.input-group:not(.input-group-flat) > .form-select:only-of-type:last-child {
+  flex: 1 1 12rem;
+  flex-shrink: 0;
+  min-width: min(100%, 12rem);
+  max-width: 100%;
+}
+
+/* Ajax field (label + select2 only, e.g. “My devices”): grow / wrap, never squash the label. */
+.input-group:not(.input-group-flat) > .form-control,
+.input-group:not(.input-group-flat) > .select2-container {
+  flex: 1 1 0;
+  flex-shrink: 0;
+  min-width: min(100%, 14rem);
+  max-width: 100%;
+}
+
+.input-group:not(.input-group-flat) > .select2-container {
+  display: block;
+  width: auto;
+}
+
+.input-group:not(.input-group-flat) > .select2-container + span,
+.input-group:not(.input-group-flat) > span.ms-1 {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+}
+
+/* Label + item type + ajax results: keep type on row 1; device search always row 2 (wide panels otherwise share one row and Select2 ellipsizes). */
+.input-group:not(.input-group-flat) > .form-select ~ .d-flex {
+  flex: 1 1 100%;
+  flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
+  align-items: stretch;
+}
+
+.input-group:not(.input-group-flat) > .form-select ~ .d-flex .select2-container {
+  display: block;
+  flex: 1 1 0;
+  width: 100% !important;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .input-group .input-group-text .btn,
 .input-group-flat .input-group-text .btn {
   border-radius: 0 !important;
   min-height: auto;
 }
+
+/* Header search: single connected control */
+.input-group.input-group-flat {
+  align-items: stretch;
+  border-radius: var(--brandkit-radius-chrome);
+  gap: 0;
+}
+
+.input-group.input-group-flat > .form-control,
+.input-group.input-group-flat > .form-select,
+.input-group.input-group-flat > .form-control:focus,
+.input-group.input-group-flat > .btn,
+.input-group.input-group-flat > .input-group-text,
+.input-group.input-group-flat > .select2-container .select2-selection {
+  border-radius: 0 !important;
+}
+
+.input-group.input-group-flat > :first-child,
+.input-group.input-group-flat > :first-child .select2-selection {
+  border-top-left-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-left-radius: var(--brandkit-radius-chrome) !important;
+}
+
+.input-group.input-group-flat > :last-child,
+.input-group.input-group-flat > :last-child .select2-selection {
+  border-top-right-radius: var(--brandkit-radius-chrome) !important;
+  border-bottom-right-radius: var(--brandkit-radius-chrome) !important;
+}
+
 header.navbar .input-group-flat,
 .navbar.secondary-bar .input-group-flat,
 .page > header .input-group-flat {
@@ -342,18 +508,38 @@ header.navbar .input-group-flat .btn-link,
 
 input[type="file"].form-control,
 .form-control[type="file"] {
-  padding: 0.3rem 0.7rem;
+  padding: 0;
+  padding-inline-end: 0.75rem;
   min-height: 2.35rem;
   line-height: 1.4;
-  border-radius: var(--brandkit-radius-chrome) !important;
+  border-radius: var(--brandkit-radius-input) !important;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: stretch;
+  align-self: center;
+  max-width: 100%;
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 input[type="file"]::file-selector-button {
-  margin-inline-end: 0.75rem;
-  padding: 0.35rem 0.85rem;
+  margin: 0;
+  margin-inline-end: 0.65rem;
+  padding: 0.45rem 0.9rem;
+  min-height: 2.35rem;
   border: 0;
-  border-radius: var(--brandkit-radius-chrome);
+  border-inline-end: 1px solid var(--tblr-border-color);
+  border-radius: 0;
   background: color-mix(in srgb, var(--tblr-primary), transparent 82%);
   color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.fileupload:not(.only-uploaded-files) input[type="file"].form-control,
+.fileupload:not(.only-uploaded-files) .form-control[type="file"] {
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 .badge {
@@ -759,7 +945,6 @@ div.card-tabs.vertical > .tab-content.card,
   border-radius: var(--brandkit-radius-card) !important;
   box-shadow: var(--brandkit-shadow-card);
   background: var(--tblr-bg-surface, #fff);
-  padding: 1.25rem 1.5rem !important;
   overflow: visible !important;
 }
 CSS,
@@ -819,46 +1004,12 @@ CSS,
      */
     private static function forms(array $style): string
     {
-        $css = '';
-        if ((string) ($style['form_layout'] ?? 'default') === 'two_column') {
-            $css .= <<<CSS
-@media (min-width: 992px) {
-  .tab-content .asset .form-field.row,
-  #brandkit-fields .form-field.row {
-    display: grid;
-    grid-template-columns: minmax(12rem, 34%) 1fr;
-    width: 100% !important;
-    max-width: none !important;
-    flex: 0 0 100%;
-    border-bottom: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 35%);
-    padding: 1.1rem 0.15rem;
-    margin: 0 !important;
-    align-items: start;
-    column-gap: 1.5rem;
-  }
-  .tab-content .asset .form-field > .col-form-label,
-  #brandkit-fields .form-field > .col-form-label {
-    text-align: start !important;
-    font-weight: 650;
-    font-size: 0.95rem;
-    padding-top: 0.35rem;
-  }
-  .tab-content .asset .form-field .form-text,
-  .tab-content .asset .form-field .text-muted,
-  #brandkit-fields .form-field .form-text,
-  #brandkit-fields .form-field .text-muted {
-    display: block;
-    font-weight: 400;
-    font-size: 0.82rem;
-    margin-top: 0.2rem;
-  }
-}
+        $css = <<<CSS
 .brandkit-logo-row {
   border-bottom: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 35%);
 }
 
 CSS;
-        }
 
         if ((string) ($style['form_sections'] ?? 'default') === 'accordion') {
             $css .= <<<CSS
@@ -866,14 +1017,15 @@ CSS;
   display: block;
   width: 100%;
   border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 20%);
-  border-radius: 999px;
+  border-radius: var(--brandkit-radius-card);
   background: var(--tblr-bg-surface, #fff);
   box-shadow: var(--brandkit-shadow-card);
   margin: 0.85rem 0;
   overflow: hidden;
 }
-.brandkit-accordion[open] {
-  border-radius: var(--brandkit-radius-card);
+.brandkit-accordion:focus,
+.brandkit-accordion:focus-within {
+  outline: none;
 }
 .brandkit-accordion > summary {
   list-style: none;
@@ -884,6 +1036,17 @@ CSS;
   padding: 0.75rem 1.15rem;
   cursor: pointer;
   font-weight: 600;
+  outline: none !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+.brandkit-accordion > summary:focus {
+  outline: none !important;
+  box-shadow: none;
+}
+.brandkit-accordion > summary:focus-visible {
+  outline: none !important;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--tblr-primary), transparent 55%);
 }
 .brandkit-accordion > summary::-webkit-details-marker {
   display: none;
@@ -892,12 +1055,27 @@ CSS;
   margin-inline-start: auto;
   transition: transform var(--brandkit-duration) var(--brandkit-easing);
 }
+.brandkit-accordion[open] > summary {
+  border-bottom: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 40%);
+}
 .brandkit-accordion[open] > summary .brandkit-acc-chevron {
   transform: rotate(90deg);
 }
 .brandkit-accordion-body {
-  padding: 0.25rem 1.25rem 1.1rem;
-  border-top: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 40%);
+  padding: 0 0 0.5rem;
+  border-top: 0;
+}
+#brandkit-fields .sp-original-input-container,
+#brandkit-fields .sp-colorize-container {
+  display: block;
+  max-width: 100%;
+  border-radius: var(--brandkit-radius-input);
+  overflow: hidden;
+  background: transparent;
+}
+#brandkit-fields input.form-control.spectrum.sp-colorize {
+  border-radius: var(--brandkit-radius-input) !important;
+  overflow: hidden;
 }
 #brandkit-fields > .card.border-0,
 .tab-content .asset .card.border-0.shadow-none {
@@ -907,27 +1085,34 @@ CSS;
 }
 #brandkit-fields > .card.border-0 > .card-header,
 #brandkit-fields .card > .card-header.mb-3,
+body.central .asset .card.border-0 > .card-header,
 .tab-content .asset > form .card.border-0 > .card-header,
 .tab-content .asset .card.border-0 > .card-header {
-  background: var(--tblr-bg-surface, #fff) !important;
+  background: color-mix(in srgb, var(--glpi-form-header-fg), var(--tblr-bg-surface, #fff) 86%) !important;
   color: var(--tblr-body-color) !important;
-  border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 20%) !important;
-  border-radius: 999px !important;
+  border: 1px solid var(--glpi-form-header-border-color) !important;
+  border-top: 1px solid var(--glpi-form-header-border-color) !important;
+  border-radius: var(--brandkit-radius-card) !important;
   box-shadow: var(--brandkit-shadow-card);
   padding: 0.75rem 1.15rem !important;
   margin-bottom: 0.85rem !important;
+  overflow: hidden;
 }
 #brandkit-fields .card.border-0 > .card-header .ribbon,
 #brandkit-fields .card > .card-header .ribbon,
+body.central .asset .card.border-0 > .card-header .ribbon,
 .tab-content .asset .card.border-0 > .card-header .ribbon {
   display: none !important;
 }
 #brandkit-fields .card.border-0 > .card-header .card-title,
-.tab-content .asset .card.border-0 > .card-header .card-title {
+body.central .asset .card.border-0 > .card-header .card-title,
+body.central .asset .card.border-0 > .card-header .card-subtitle,
+.tab-content .asset .card.border-0 > .card-header .card-title,
+.tab-content .asset .card.border-0 > .card-header .card-subtitle {
   margin: 0 !important;
   margin-inline-start: 0 !important;
   padding-inline-start: 0 !important;
-  color: inherit !important;
+  color: var(--tblr-body-color) !important;
   font-weight: 600;
 }
 
@@ -939,7 +1124,7 @@ CSS;
             $css .= <<<CSS
 input[type="file"]::file-selector-button {
   background: transparent;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tblr-primary), transparent 35%);
+  box-shadow: none;
   color: var(--tblr-primary);
   font-weight: 600;
 }
@@ -960,16 +1145,13 @@ CSS;
             $css .= <<<CSS
 input[type="file"].form-control,
 .form-control[type="file"] {
-  padding-left: 0;
   background: var(--tblr-bg-surface, #fff);
 }
 input[type="file"]::file-selector-button {
   background: var(--tblr-primary);
   color: var(--tblr-primary-fg, #fff);
   font-weight: 600;
-  border-radius: var(--brandkit-radius-chrome) 0 0 var(--brandkit-radius-chrome);
-  margin: 0;
-  margin-inline-end: 0.65rem;
+  border-inline-end-color: color-mix(in srgb, var(--tblr-primary), #000 12%);
 }
 .brandkit-file-ui {
   border: 1px solid var(--tblr-border-color);
@@ -1036,7 +1218,7 @@ CSS;
     {
         $family = self::fontStack($style);
 
-        return <<<CSS
+        $css = <<<CSS
 body,
 .page,
 .page-wrapper {
@@ -1044,6 +1226,164 @@ body,
   font-size: var(--brandkit-font-size);
 }
 
+/* List views: search engine + ITIL tabs on user/asset forms (GLPI datatables). */
+body.central table.search-results,
+body.central [data-glpi-tab-content] table.table {
+  --brandkit-list-font: var(--brandkit-font-size);
+  font-size: var(--brandkit-list-font) !important;
+}
+
+body.central table.table.search-results thead th,
+body.central table.search-results thead th,
+body.central [data-glpi-tab-content] table.table thead th {
+  font-size: var(--brandkit-list-font) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: normal;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--tblr-body-color), transparent 22%);
+  background-color: var(--tblr-bg-surface, #fff);
+  padding: 0.5rem 0.65rem;
+  vertical-align: middle;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--tblr-border-color);
+}
+
+body.central table.search-results thead th.fw-bold,
+body.central [data-glpi-tab-content] table.table thead th.fw-bold {
+  font-weight: 600 !important;
+}
+
+body.central table.search-results thead th .sort-indicator,
+body.central [data-glpi-tab-content] table.table thead th .sort-indicator {
+  font-size: 0.9em;
+  vertical-align: middle;
+}
+
+body.central table.search-results tbody td,
+body.central [data-glpi-tab-content] table.table tbody td {
+  font-size: var(--brandkit-list-font);
+  padding: 0.5rem 0.65rem;
+  vertical-align: middle;
+}
+
+body.central table.search-results a,
+body.central [data-glpi-tab-content] table.table a {
+  font-weight: 500;
+}
+
+body.central table.search-results .brandkit-status-cell,
+body.central [data-glpi-tab-content] table.table .brandkit-status-cell {
+  white-space: normal;
+}
+
+body.central table.search-results .brandkit-status-pill,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill {
+  --brandkit-status-accent: var(--tblr-primary);
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 12rem;
+  border-radius: var(--brandkit-radius-chrome);
+  border: 1px solid color-mix(in srgb, var(--brandkit-status-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--brandkit-status-accent) 14%, var(--tblr-bg-surface, #fff));
+  line-height: 1.25;
+  vertical-align: middle;
+}
+
+body.central table.search-results .brandkit-status-pill__tile,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill__tile {
+  flex: 0 0 5px;
+  width: 5px;
+  border-radius: var(--brandkit-radius-chrome) 0 0 var(--brandkit-radius-chrome);
+  background: var(--brandkit-status-accent);
+}
+
+body.central table.search-results .brandkit-status-pill__content,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill__content {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem 0.35rem 0.4rem;
+  min-width: 0;
+}
+
+body.central table.search-results .brandkit-status-pill__content .itilstatus,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill__content .itilstatus {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+body.central table.search-results .brandkit-status-pill__body,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+body.central table.search-results .brandkit-status-pill__title,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill__title {
+  font-weight: 600;
+}
+
+body.central table.search-results .brandkit-status-pill__detail,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill__detail {
+  font-size: 0.92em;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+body.central table.search-results td:has(.brandkit-list-pill-host),
+body.central [data-glpi-tab-content] table.table td:has(.brandkit-list-pill-host) {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+body.central table.search-results .badge_block.brandkit-list-pill-host,
+body.central [data-glpi-tab-content] table.table .badge_block.brandkit-list-pill-host {
+  display: inline-flex;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  white-space: nowrap;
+  width: max-content;
+  max-width: max-content;
+}
+
+body.central table.search-results .brandkit-status-pill--single,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill--single {
+  max-width: none;
+  width: max-content;
+  flex-shrink: 0;
+}
+
+body.central table.search-results .brandkit-status-pill--single .brandkit-status-pill__content,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill--single .brandkit-status-pill__content {
+  align-items: center;
+  min-width: max-content;
+  flex-shrink: 0;
+}
+
+body.central table.search-results .brandkit-status-pill--single .brandkit-status-pill__body,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill--single .brandkit-status-pill__body {
+  min-width: max-content;
+}
+
+body.central table.search-results .brandkit-status-pill--single .brandkit-status-pill__title,
+body.central [data-glpi-tab-content] table.table .brandkit-status-pill--single .brandkit-status-pill__title {
+  white-space: nowrap;
+}
+
+body.central table.search-results td:has(.brandkit-status-cell),
+body.central [data-glpi-tab-content] table.table td:has(.brandkit-status-cell) {
+  vertical-align: middle;
+}
+
+CSS;
+
+        if (self::densityOverridesActive((string) $style['density'])) {
+            $css .= <<<CSS
 .table > :not(caption) > * > *,
 table.table td,
 table.table th {
@@ -1058,7 +1398,11 @@ table.table th {
 .form-field, .field-container, .row.mb-2, .row.mb-3 {
   --tblr-gutter-y: var(--brandkit-form-gap);
 }
+
 CSS;
+        }
+
+        return $css;
     }
 
     /**
@@ -1549,6 +1893,400 @@ CSS;
 CSS;
     }
 
+    /**
+     * Ticket / Change / Problem split view: card timeline + properties panel.
+     *
+     * @param array<string, mixed> $style
+     */
+    private static function itil(array $style): string
+    {
+        if (!self::itilChromeActive($style)) {
+            return '';
+        }
+
+        return <<<CSS
+body.central #itil-object-container {
+  padding-bottom: 0.5rem;
+}
+
+body.central .itil-object .itil-left-side {
+  border-top: 0 !important;
+  background: var(--tblr-bg-surface, #fff);
+  border-radius: var(--brandkit-radius-card);
+  box-shadow: var(--brandkit-shadow-card);
+}
+
+body.central .itil-timeline {
+  width: 100%;
+}
+
+body.central .timeline-item .timeline-content {
+  border-radius: var(--brandkit-radius-card) !important;
+  box-shadow: var(--brandkit-shadow-timeline);
+  padding: 0.85rem 1rem !important;
+}
+
+body.central .timeline-item .timeline-content::before,
+body.central .timeline-item .timeline-content::after {
+  display: none !important;
+}
+
+body.central .timeline-item:not(.private-item) .timeline-content {
+  padding: 0.85rem 1rem !important;
+}
+
+body.central .timeline-item .timeline-content.card {
+  box-shadow: var(--brandkit-shadow-timeline);
+}
+
+body.central .timeline-item.Document_Item .timeline-content,
+body.central .timeline-item.Document_Item .timeline-content.card {
+  border: 0;
+  box-shadow: none;
+  background-color: transparent;
+  padding: 0.35rem 0 !important;
+}
+
+body.central .timeline-item .timeline-content .card-body {
+  padding: 0.25rem 0.5rem !important;
+}
+
+body.central .timeline-item .timeline-header {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+  font-size: 0.88rem;
+}
+
+body.central .timeline-item .timeline-header .badge {
+  border-radius: var(--brandkit-radius-chrome);
+  font-weight: 500;
+}
+
+/* User initials / photos — rounded tiles, softer tints, light shadow. */
+body.central #itil-object-container .avatar.rounded,
+body.central table.search-results .avatar.rounded,
+body.central [data-glpi-tab-content] table.table .avatar.rounded,
+body.central .asset .avatar.rounded {
+  border-radius: var(--brandkit-radius-chrome) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--tblr-body-color), transparent 80%),
+    0 3px 8px color-mix(in srgb, var(--tblr-body-color), transparent 90%);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid color-mix(in srgb, #fff, var(--tblr-body-color) 10%);
+}
+
+body.central #itil-object-container .avatar-md:not(.avatar-xl) {
+  width: 2.35rem;
+  height: 2.35rem;
+  font-size: 0.72rem;
+}
+
+body.central .asset .avatar-xl.rounded {
+  font-size: 1.35rem;
+}
+
+body.central header.navbar .avatar.rounded {
+  border-radius: 50% !important;
+  box-shadow: none;
+  border: 0;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+@media (min-width: 992px) {
+  body.central .itil-object .itil-left-side {
+    padding: 1rem 1.25rem 1.25rem !important;
+    margin-inline-end: 0.5rem;
+  }
+
+  body.central .itil-object .itil-right-side {
+    background: var(--tblr-bg-surface, #fff);
+    border-radius: var(--brandkit-radius-card);
+    box-shadow: var(--brandkit-shadow-card);
+    border: 0 !important;
+    border-left: 0 !important;
+    padding: 0.35rem 0.5rem 0.75rem;
+    margin-top: 0 !important;
+  }
+}
+
+body.central .itil-object-fields#itil-data {
+  border-radius: var(--brandkit-radius-card);
+}
+
+body.central .itil-object-fields .accordion-item {
+  border: 0;
+  background: transparent;
+}
+
+body.central .itil-object-fields .accordion-header {
+  margin-bottom: 0.15rem;
+}
+
+body.central .itil-object-fields .accordion-button {
+  border-radius: var(--brandkit-radius-chrome);
+  font-weight: 600;
+  box-shadow: none;
+  padding: 0.55rem 0.75rem;
+  background: color-mix(in srgb, var(--tblr-body-color), transparent 96%);
+}
+
+body.central .itil-object-fields .accordion-button:not(.collapsed) {
+  background: color-mix(in srgb, var(--tblr-primary), transparent 90%);
+  color: var(--tblr-primary);
+}
+
+body.central .itil-object-fields .accordion-body {
+  padding-top: 0.75rem;
+  padding-bottom: 0.5rem;
+}
+
+body.central .itil-object-fields .accordion-body > .input-group:first-child,
+body.central .itil-object-fields .accordion-body > .row:first-child,
+body.central .itil-object-fields .accordion-body > form:first-child {
+  margin-top: 0.1rem;
+}
+
+body.central .itil-footer {
+  background: var(--tblr-bg-surface, #fff);
+  border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 25%);
+  border-radius: var(--brandkit-radius-card) var(--brandkit-radius-card) 0 0;
+  box-shadow: 0 -6px 24px color-mix(in srgb, var(--tblr-body-color), transparent 92%);
+  margin-top: 0.35rem;
+}
+
+body.central .itil-footer .main-actions .btn {
+  border-radius: var(--brandkit-radius-btn);
+}
+
+body.central .itil-footer .main-actions.btn-group > .btn:first-child {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: var(--brandkit-radius-btn) !important;
+  border-bottom-left-radius: var(--brandkit-radius-btn) !important;
+}
+
+body.central .itil-footer .main-actions.btn-group > .btn.dropdown-toggle-split {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: var(--brandkit-radius-btn) !important;
+  border-bottom-right-radius: var(--brandkit-radius-btn) !important;
+  margin-inline-start: 0;
+  border-inline-start: 1px solid color-mix(in srgb, #fff, transparent 35%);
+}
+
+body.central .itil-footer .main-actions .btn.action-task,
+body.central .itil-footer .main-actions .btn.action-solution,
+body.central .itil-footer .main-actions .btn.action-validation,
+body.central .itil-footer .main-actions .btn.action-document {
+  box-shadow: var(--brandkit-shadow-card);
+}
+
+body.central .itil-footer .main-actions .dropdown-menu {
+  min-width: 13rem;
+  border: 1px solid color-mix(in srgb, var(--tblr-border-color), transparent 15%);
+  padding: 0.35rem;
+}
+
+body.central .itil-footer .main-actions .dropdown-menu.show {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+body.central .itil-footer .main-actions .dropdown-menu > li {
+  margin: 0;
+  list-style: none;
+}
+
+body.central .itil-footer .main-actions .dropdown-menu .dropdown-item {
+  border-radius: var(--brandkit-radius-chrome) !important;
+  box-shadow: none !important;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 500;
+  white-space: normal;
+}
+
+body.central .itil-footer .main-actions .dropdown-menu .dropdown-item:hover,
+body.central .itil-footer .main-actions .dropdown-menu .dropdown-item:focus {
+  filter: brightness(0.97);
+}
+
+body.central .itil-footer {
+  overflow: visible;
+}
+
+body.central .itil-footer .form-buttons > span:first-child {
+  flex: 0 0 auto;
+  z-index: 2;
+}
+
+body.central .itil-right-side #itil-data {
+  position: relative;
+}
+
+@media (min-width: 992px) {
+  body.central #itil-object-container.right-collapsed .itil-left-side {
+    width: calc(100% - 90px);
+  }
+
+  /* GLPI .itil-object is flex-column: never use flex-basis 90px here — that sets height, not width. */
+  body.central #itil-object-container.right-collapsed .itil-right-side {
+    overflow: hidden;
+    width: 90px !important;
+    max-width: 90px;
+    height: calc(100% + 4px);
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    cursor: pointer;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    border-left: 1px solid var(--tblr-border-color) !important;
+    background: var(--tblr-bg-surface, #fff) !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .itil-object-fields#itil-data {
+    border-radius: 0;
+    box-shadow: none;
+    position: static;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .itil-object-fields .accordion-header {
+    margin-bottom: 0;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .itil-object-fields .accordion-item {
+    background: transparent;
+  }
+
+  /* Native collapsed rail: icon-only headers (BrandKit card tabs must not apply here). */
+  body.central #itil-object-container.right-collapsed .itil-right-side #itil-data .item-title {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side #itil-data .accordion-collapse {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side #itil-data .accordion-button::after {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side #itil-data .accordion-button .btn {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .itil-object-fields .accordion-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    width: 100%;
+    min-height: 2.35rem;
+    padding: 0.4rem 0.2rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: var(--tblr-body-color);
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .itil-object-fields .accordion-button .badge {
+    margin: 0 !important;
+    max-width: 100%;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.65rem;
+    line-height: 1.1;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side #heading-main-item .accordion-button.collapsed .status-recall {
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side #heading-main-item .accordion-button.collapsed .item-icon {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-footer .form-buttons > span:first-child {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-footer .switch-panel-width,
+  body.central #itil-object-container.right-collapsed .itil-footer .collapse-panel {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-expanded .itil-footer .collapse-panel {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-expanded .itil-footer .switch-panel-width {
+    display: inline-flex !important;
+    visibility: visible !important;
+  }
+
+  body.central #itil-object-container:not(.right-collapsed) .itil-right-side .switch-panel-width {
+    display: none !important;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side #itil-data {
+    padding-bottom: 3.75rem;
+  }
+
+  /* Sticky .itil-footer overlays the rail; sit expand control above it (native start-0 alignment). */
+  body.central #itil-object-container.right-collapsed .itil-right-side #itil-data > .d-none.d-md-block {
+    position: absolute;
+    bottom: 3.65rem;
+    left: 0;
+    right: auto;
+    width: auto;
+    z-index: 2;
+    margin: 0;
+    padding: 0 0 0 0.15rem;
+    text-align: start;
+    pointer-events: none;
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .switch-panel-width {
+    display: inline-block !important;
+    visibility: visible !important;
+    position: static !important;
+    pointer-events: auto;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    color: var(--tblr-muted);
+  }
+
+  body.central #itil-object-container.right-collapsed .itil-right-side .switch-panel-width:hover {
+    color: var(--tblr-primary);
+  }
+}
+
+CSS;
+    }
+
+    /**
+     * @param array<string, mixed> $style
+     */
+    private static function itilChromeActive(array $style): bool
+    {
+        $preset = (string) ($style['preset'] ?? '');
+
+        return $preset === 'clean_cards'
+            || (string) ($style['page_tone'] ?? '') === 'grey'
+            || (string) ($style['tab_preset'] ?? '') === 'card';
+    }
+
     private static function reducedMotion(): string
     {
         return <<<CSS
@@ -1629,6 +2367,14 @@ CSS;
     }
 
     /**
+     * Default / comfortable keep GLPI spacing; only compact and spacious override paddings.
+     */
+    private static function densityOverridesActive(string $density): bool
+    {
+        return in_array($density, ['compact', 'spacious'], true);
+    }
+
+    /**
      * @param array<string, mixed> $style
      * @return array{card: string, table: string, form: string}
      */
@@ -1678,6 +2424,25 @@ CSS;
         }
 
         return min($n, $cap) . 'px';
+    }
+
+    /**
+     * Input / select radius. Explicit 0 stays square only when the theme is globally square;
+     * otherwise inherit capped chrome so selects match cards (e.g. Clean cards).
+     *
+     * @param array<string, mixed> $style
+     */
+    private static function resolveInputRadiusPx(array $style, int $globalRadius): string
+    {
+        $inputRadius = (int) $style['radius_inputs'];
+        if ($inputRadius > 0) {
+            return self::px($inputRadius);
+        }
+        if ($globalRadius > 0) {
+            return self::chromePx($globalRadius);
+        }
+
+        return '0px';
     }
 
     private static function cssString(string $text): string

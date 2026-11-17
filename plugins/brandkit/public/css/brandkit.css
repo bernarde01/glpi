@@ -9,6 +9,26 @@
     text-decoration: underline;
 }
 
+/* GLPI puts DISPLAY_LOGIN in a side column; stack welcome above the form, centred. */
+body.welcome-anonymous .main-content-card form > .row.justify-content-center {
+    flex-direction: column;
+    align-items: center;
+}
+
+body.welcome-anonymous .main-content-card form > .row .col-auto:has(.brandkit-login-extra) {
+    order: -1;
+    width: 100%;
+    max-width: 36rem;
+    padding: 0 0.5rem 1.25rem !important;
+    text-align: center;
+}
+
+body.welcome-anonymous .main-content-card form > .row .col-md-5 {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 28rem;
+}
+
 .brandkit-preview {
     display: flex;
     min-height: 220px;

@@ -245,6 +245,23 @@ class Branding extends CommonDBTM
     }
 
     /**
+     * Chart palette for {@see Hooks::DASHBOARD_PALETTES}: only when Chart colour slots
+     * were saved — avoids replacing core tab10 with similar theme teals.
+     *
+     * @return list<string>
+     */
+    public static function explicitDashboardPaletteForRequest(): array
+    {
+        $resolved = self::resolveForRequest();
+        $raw      = trim((string) ($resolved['dashboard_palette'] ?? ''));
+        if ($raw === '') {
+            return [];
+        }
+
+        return self::paletteList($resolved);
+    }
+
+    /**
      * @param array<string, mixed> $row
      * @return list<string>
      */

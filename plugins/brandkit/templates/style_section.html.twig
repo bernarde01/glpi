@@ -43,7 +43,7 @@
 <input type="hidden" name="apply_preset" id="brandkit-apply-preset" value="" />
 
 <div class="brandkit-gallery-toolbar mb-2 d-flex flex-wrap gap-2 align-items-center">
-    <span class="text-muted">{{ __('Browse a template, try it on this page, then Apply to copy it into the form. Save the entity to persist.', 'brandkit') }}</span>
+    <span class="text-muted">{{ __('Try a template on this page. Apply saves that look for this entity.', 'brandkit') }}</span>
     <button type="button" class="btn btn-sm btn-outline-secondary" id="brandkit-try-cancel" hidden>
         {{ __('Cancel try-it', 'brandkit') }}
     </button>
@@ -152,12 +152,14 @@
     default: __('Default GLPI grid', 'brandkit'),
     two_column: __('Two-column (label left, control right)', 'brandkit')
 }, __('Form layout', 'brandkit'), ro|merge({
-    helper: __('Applies to item forms (tickets, entities, …). The Branding tab always uses two-column logo rows.', 'brandkit')
+    helper: __('Both options keep GLPI’s native half-width field grid and control sizing. Branding logo rows use their own layout.', 'brandkit')
 })) }}
 {{ fields.dropdownArrayField('style[form_sections]', style.form_sections, {
     default: __('Default headings', 'brandkit'),
     accordion: __('Accordion / collapsible cards', 'brandkit')
-}, __('Section headings', 'brandkit'), ro) }}
+}, __('Section headings', 'brandkit'), ro|merge({
+    helper: __('“Accordion” turns GLPI section titles (e.g. Contact information) into tinted rounded rows. Primary/accent colour controls the tint strength.', 'brandkit')
+})) }}
 {{ fields.dropdownArrayField('style[file_input_style]', style.file_input_style, {
     default: __('Default', 'brandkit'),
     outlined: __('Outlined Choose file', 'brandkit'),

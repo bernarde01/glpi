@@ -101,7 +101,14 @@ CSS;
         if (!empty($urls['logo_login']) || !empty($urls['logo_login_dark'])) {
             $login_url = self::cssUrl((string) ($urls['logo_login'] ?: $urls['logo_login_dark']));
             $extra[] = sprintf(
-                ".page-anonymous .glpi-logo, body.welcome-anonymous .glpi-logo {\n  --logo: url(\"%s\") !important;\n  content: url(\"%s\") !important;\n}",
+                ".page-anonymous .glpi-logo,\nbody.welcome-anonymous .glpi-logo {\n"
+                . "  --logo: url(\"%s\") !important;\n"
+                . "  content: url(\"%s\") !important;\n"
+                . "  width: min(320px, 84vw) !important;\n"
+                . "  max-width: 100%%;\n"
+                . "  height: 96px !important;\n"
+                . "  object-fit: contain;\n"
+                . "}",
                 $login_url,
                 $login_url
             );
@@ -110,7 +117,37 @@ CSS;
         if (!empty($urls['logo_main'])) {
             $main = self::cssUrl((string) $urls['logo_main']);
             $extra[] = sprintf(
-                ".page .glpi-logo {\n  background-image: url(\"%s\") !important;\n  background-repeat: no-repeat !important;\n  background-size: contain !important;\n}",
+                "body.vertical-layout .sidebar .navbar-brand {\n"
+                . "  display: flex;\n"
+                . "  justify-content: center;\n"
+                . "  padding-inline: 0.75rem;\n"
+                . "  margin-bottom: 0.35rem;\n"
+                . "}\n"
+                . "body.vertical-layout .sidebar .navbar-brand .glpi-logo {\n"
+                . "  background-image: url(\"%s\") !important;\n"
+                . "  background-repeat: no-repeat !important;\n"
+                . "  background-size: contain !important;\n"
+                . "  background-position: center center;\n"
+                . "  width: 100%%;\n"
+                . "  max-width: 210px;\n"
+                . "  height: 52px;\n"
+                . "  margin-inline: auto;\n"
+                . "}\n"
+                . "body.navbar-collapsed .sidebar .navbar-brand .glpi-logo {\n"
+                . "  width: 40px;\n"
+                . "  max-width: 40px;\n"
+                . "  height: 40px;\n"
+                . "}\n"
+                . "body.horizontal-layout .page > header.topbar .navbar-brand .glpi-logo,\n"
+                . "body.helpdesk .page > header.topbar .navbar-brand .glpi-logo {\n"
+                . "  background-image: url(\"%s\") !important;\n"
+                . "  background-repeat: no-repeat !important;\n"
+                . "  background-size: contain !important;\n"
+                . "  background-position: left center;\n"
+                . "  width: min(240px, 46vw);\n"
+                . "  height: 52px;\n"
+                . "}",
+                $main,
                 $main
             );
         }
@@ -122,10 +159,9 @@ CSS;
                     '  background-image: url("%s");',
                     self::cssUrl((string) $urls['login_background_image'])
                 );
-                $rules[] = '  background-position: center;';
-                $rules[] = '  background-size: cover;';
+                $rules[] = '  background-position: left bottom;';
+                $rules[] = '  background-size: min(42vw, 520px) auto;';
                 $rules[] = '  background-repeat: no-repeat;';
-                $rules[] = '  background-attachment: fixed;';
             }
             if ($login_bg !== null) {
                 $rules[] = sprintf('  background-color: %s;', $login_bg);
@@ -168,6 +204,14 @@ CSS;
             $url = self::cssUrl((string) $urls['logo_main']);
             $lines[] = sprintf('  --glpi-logo: url("%s") !important;', $url);
             $lines[] = sprintf('  --glpi-logo-light: url("%s") !important;', $url);
+        }
+
+        if (!empty($urls['logo_login'])) {
+            $url = self::cssUrl((string) $urls['logo_login']);
+            $lines[] = sprintf('  --glpi-logo-dark: url("%s") !important;', $url);
+            $lines[] = sprintf('  --glpi-logo-dark-login: url("%s") !important;', $url);
+        } elseif (!empty($urls['logo_main'])) {
+            $url = self::cssUrl((string) $urls['logo_main']);
             $lines[] = sprintf('  --glpi-logo-dark: url("%s") !important;', $url);
         }
 
@@ -181,14 +225,11 @@ CSS;
             $lines[] = sprintf('  --glpi-logo-reduced: url("%s") !important;', $url);
         }
 
-        if (!empty($urls['logo_login'])) {
-            $url = self::cssUrl((string) $urls['logo_login']);
-            $lines[] = sprintf('  --glpi-logo-dark-login: url("%s") !important;', $url);
-            $lines[] = sprintf('  --glpi-logo-light-login: url("%s") !important;', $url);
-        }
-
         if (!empty($urls['logo_login_dark'])) {
             $url = self::cssUrl((string) $urls['logo_login_dark']);
+            $lines[] = sprintf('  --glpi-logo-light-login: url("%s") !important;', $url);
+        } elseif (!empty($urls['logo_login'])) {
+            $url = self::cssUrl((string) $urls['logo_login']);
             $lines[] = sprintf('  --glpi-logo-light-login: url("%s") !important;', $url);
         }
     }

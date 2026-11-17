@@ -125,6 +125,51 @@ final class AssetStorage
         return ['ok' => true, 'filename' => $filename];
     }
 
+    /**
+     * Copy an existing image from disk (CLI / local dev seeding).
+     *
+     * @return array{ok: true, filename: string}|array{ok: false, error: string}
+     */
+    public function importFromPath(int $entities_id, string $slot, string $sourcePath): array
+    {
+        if (!self::isAllowedSlot($slot)) {
+            return ['ok' => false, 'error' => 'Invalid image slot'];
+        }
+
+        $resolved = realpath($sourcePath);
+        if ($resolved === false || !is_file($resolved) || !is_readable($resolved)) {
+            return ['ok' => false, 'error' => 'Source file not found or not readable'];
+        }
+
+        $size = filesize($resolved);
+        if ($size === false || $size <= 0 || $size > self::MAX_BYTES) {
+            return ['ok' => false, 'error' => sprintf('Image must be between 1 byte and %d bytes', self::MAX_BYTES)];
+        }
+
+        $ext = strtolower((string) pathinfo($resolved, PATHINFO_EXTENSION));
+        $checked = $this->validateImageUpload($slot, $resolved, $ext);
+        if ($checked['ok'] === false) {
+            return $checked;
+        }
+
+        $safe_ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
+        $filename = sprintf('%s_%s.%s', $slot, bin2hex(random_bytes(8)), $safe_ext);
+
+        $dir = $this->entityDirectory($entities_id);
+        if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
+            return ['ok' => false, 'error' => 'Unable to create storage directory'];
+        }
+
+        $dest = $dir . '/' . $filename;
+        if (!@copy($resolved, $dest)) {
+            return ['ok' => false, 'error' => 'Unable to copy image into branding storage'];
+        }
+
+        @chmod($dest, 0644);
+
+        return ['ok' => true, 'filename' => $filename];
+    }
+
     public function delete(int $entities_id, string $filename): void
     {
         $path = $this->absolutePath($entities_id, $filename);

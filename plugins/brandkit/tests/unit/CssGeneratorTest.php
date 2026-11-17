@@ -51,6 +51,8 @@ final class CssGeneratorTest extends TestCase
         $this->assertStringContainsString('--glpi-logo-dark-login:', $css);
         $this->assertStringContainsString('body.welcome-anonymous', $css);
         $this->assertStringContainsString('background-image: url("/plugins/brandkit/Asset/login_background_image?e=0");', $css);
+        $this->assertStringContainsString('background-position: left bottom;', $css);
+        $this->assertStringNotContainsString('background-attachment: fixed', $css);
         $this->assertStringContainsString('background-color: #0a0a0a;', $css);
         $this->assertStringContainsString('--brandkit-dash-card-bg: #111111 !important;', $css);
         $this->assertStringContainsString('h1{color:navy}', $css);
@@ -79,5 +81,20 @@ final class CssGeneratorTest extends TestCase
         $css = CssGenerator::generate([], []);
         $this->assertStringContainsString(':root {', $css);
         $this->assertStringNotContainsString('--tblr-primary:', $css);
+    }
+
+    public function testLogoVarsPreferLightMainAndDarkLogin(): void
+    {
+        $css = CssGenerator::generate(
+            [],
+            [
+                'logo_main'  => '/plugins/brandkit/Asset/logo_main?e=0',
+                'logo_login' => '/plugins/brandkit/Asset/logo_login?e=0',
+            ]
+        );
+
+        $this->assertStringContainsString('--glpi-logo-light: url("/plugins/brandkit/Asset/logo_main?e=0")', $css);
+        $this->assertStringContainsString('--glpi-logo-dark: url("/plugins/brandkit/Asset/logo_login?e=0")', $css);
+        $this->assertStringNotContainsString('--glpi-logo-dark: url("/plugins/brandkit/Asset/logo_main?e=0")', $css);
     }
 }

@@ -27,7 +27,7 @@ use GlpiPlugin\Brandkit\MailBranding;
 use GlpiPlugin\Brandkit\Profile as BrandkitProfile;
 use GlpiPlugin\Brandkit\StyleSchema;
 
-define('PLUGIN_BRANDKIT_VERSION', '1.3.1');
+define('PLUGIN_BRANDKIT_VERSION', '1.5.0');
 
 /**
  * Plugin metadata consumed by Plugin::getInfo() / Plugin::checkVersions().
@@ -87,7 +87,14 @@ function plugin_init_brandkit(): void
     ]);
 
     $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['brandkit'] = 'Config';
-    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['brandkit'] = ['js/brandkit.js', 'js/brandkit-style.js'];
+    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['brandkit'] = [
+        'js/brandkit.js',
+        'js/brandkit-style.js',
+        'js/brandkit-itil-tooltips.js',
+        'js/brandkit-nav-dashboard.js',
+        'js/brandkit-list-status.js',
+        'js/brandkit-user-avatars.js',
+    ];
     $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_ANONYMOUS_PAGE]['brandkit'] = 'js/brandkit.js';
     // Load the dynamic theme stylesheet *after* core Tabler/GLPI CSS (header tags
     // render first and would otherwise lose the --glpi-logo* / --tblr-* overrides).

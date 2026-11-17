@@ -26,7 +26,7 @@ function plugin_brandkit_dashboard_palettes($palettes = null): array
     }
 
     try {
-        $colors = Branding::dashboardPaletteForRequest();
+        $colors = Branding::explicitDashboardPaletteForRequest();
     } catch (Throwable $e) {
         return $palettes;
     }

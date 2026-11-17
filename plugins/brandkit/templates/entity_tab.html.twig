@@ -139,7 +139,7 @@
                 {{ fields.checkboxField('email_embed_logo', item.fields['email_embed_logo']|default(inherited.email_embed_logo|default(1)), __('Include logo in HTML emails', 'brandkit'), {readonly: not can_edit}) }}
 
                 {{ fields.largeTitle(__('Dashboards', 'brandkit'), 'ti ti-chart-pie') }}
-                <p class="text-muted">{{ __('These colours are registered as the “brandkit” chart palette and also replace the default tab10 palette so existing widgets pick them up.', 'brandkit') }}</p>
+                <p class="text-muted">{{ __('When saved, these colours register the “brandkit” chart palette and replace the default tab10 palette. Leave empty and save nothing here to keep GLPI’s standard multi-colour charts.', 'brandkit') }}</p>
                 {% for i in 0..7 %}
                     {{ fields.colorField(
                         'dashboard_palette[' ~ i ~ ']',

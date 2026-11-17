@@ -79,6 +79,35 @@ final class StyleCssTest extends TestCase
         $this->assertStringContainsString('body.central .brandkit-watermark', $css);
     }
 
+    public function testFormLayoutDoesNotForceFullWidthFieldRows(): void
+    {
+        foreach (['default', 'two_column'] as $layout) {
+            $style = StyleSchema::defaults();
+            $style['form_layout'] = $layout;
+            $css = StyleCss::generate([], [], StyleSchema::sanitize($style));
+            $this->assertStringNotContainsString('flex: 0 0 100%', $css, $layout);
+            $this->assertStringNotContainsString('#brandkit-fields .form-field.row.col-sm-6', $css, $layout);
+            $this->assertStringNotContainsString('.field-container > .select2-container', $css, $layout);
+        }
+    }
+
+    public function testComfortableDensityDoesNotOverrideGlpiSpacing(): void
+    {
+        $style = StyleSchema::defaults();
+        $style['density'] = 'comfortable';
+        $css = StyleCss::generate([], [], StyleSchema::sanitize($style));
+        $this->assertStringNotContainsString('.asset .card-body', $css);
+        $this->assertStringNotContainsString('--tblr-card-spacer-y', $css);
+    }
+
+    public function testZeroInputRadiusFallsBackToChromeWhenGlobalIsRounded(): void
+    {
+        $style = StyleSchema::sanitize(StyleSchema::presets()['clean_cards']['style']);
+        $style['radius_inputs'] = 0;
+        $css = StyleCss::generate([], [], $style);
+        $this->assertStringContainsString('--brandkit-radius-input: 10px', $css);
+    }
+
     public function testChromeCapsGlobalRadiusAndJoinsInputGroups(): void
     {
         $style = StyleSchema::defaults();
@@ -89,7 +118,8 @@ final class StyleCssTest extends TestCase
         $this->assertStringContainsString('--brandkit-radius-chrome: 10px', $css);
         $this->assertStringContainsString('--tblr-border-radius: 10px', $css);
         $this->assertStringNotContainsString('--tblr-border-radius: 999px', $css);
-        $this->assertStringContainsString('.input-group > :first-child', $css);
+        $this->assertStringContainsString('.input-group:not(.input-group-flat)', $css);
+        $this->assertStringContainsString('.input-group.input-group-flat > :first-child', $css);
         $this->assertStringContainsString('input[type="file"]::file-selector-button', $css);
         $this->assertStringContainsString('header.navbar .breadcrumb', $css);
         $this->assertStringContainsString('.btn-sm', $css);
@@ -124,7 +154,7 @@ final class StyleCssTest extends TestCase
     {
         foreach (StyleSchema::presets() as $id => $preset) {
             $css = StyleCss::generate($preset['colors'] ?? [], [], StyleSchema::sanitize($preset['style']));
-            $this->assertStringContainsString('.input-group > :first-child', $css, $id);
+            $this->assertStringContainsString('.input-group.input-group-flat > :first-child', $css, $id);
             $this->assertStringContainsString('.card-tabs #tabspanel.nav-tabs .nav-link', $css, $id);
             $this->assertStringContainsString('--brandkit-radius-chrome:', $css, $id);
             $this->assertStringContainsString('input[type="file"]::file-selector-button', $css, $id);
@@ -142,8 +172,8 @@ final class StyleCssTest extends TestCase
         $this->assertStringContainsString('--brandkit-tab-heading:', $css);
         $this->assertStringContainsString('.card-tabs.vertical ul#tabspanel.nav-tabs::before', $css);
         $this->assertStringContainsString('background-color: #eef1f6', $css);
-        $this->assertStringContainsString('#brandkit-fields .form-field.row', $css);
-        $this->assertStringContainsString('grid-template-columns: minmax(12rem, 34%) 1fr', $css);
+        $this->assertStringNotContainsString('grid-template-columns: minmax(12rem, 34%) 1fr', $css);
+        $this->assertStringNotContainsString('.asset .card-body', $css);
         $this->assertStringContainsString('.brandkit-file-ui', $css);
         $this->assertStringContainsString('font-family: "Inter"', $css);
         $this->assertStringContainsString('header.navbar .user-menu-dropdown-toggle', $css);
@@ -156,8 +186,26 @@ final class StyleCssTest extends TestCase
         $this->assertStringContainsString('.text-muted-menu', $css);
         $this->assertStringContainsString('border-radius: 50%', $css);
         $this->assertStringContainsString('#brandkit-fields > .card.border-0 > .card-header', $css);
+        $this->assertStringContainsString('body.central .asset .card.border-0 > .card-header', $css);
+        $this->assertStringContainsString('body.central table.search-results thead th', $css);
+        $this->assertStringContainsString('body.central [data-glpi-tab-content] table.table thead th', $css);
         $this->assertStringContainsString('form[role="search"]', $css);
         $this->assertStringContainsString('body.central #page', $css);
+        $this->assertStringContainsString('.select2-container .select2-selection--single', $css);
+        $this->assertStringContainsString('.select2-dropdown.select2-dropdown--below', $css);
+        $this->assertStringContainsString('border-top-left-radius: var(--brandkit-radius-input)', $css);
+        $this->assertStringContainsString('line-height: normal !important', $css);
+        $this->assertStringContainsString('.brandkit-accordion {', $css);
+        $this->assertStringContainsString('border-radius: var(--brandkit-radius-card)', $css);
+        $this->assertStringContainsString('.sp-colorize-container', $css);
+        $this->assertStringNotContainsString('--glpi-timeline-itil-content-bg: var(--tblr-bg-surface, #fff)', $css);
+        $this->assertStringContainsString('--glpi-itil-secondary-bg: #eef1f6', $css);
+        $this->assertStringContainsString('body.central .itil-object .itil-left-side', $css);
+        $this->assertStringContainsString('body.central .timeline-item .timeline-content::before', $css);
+        $this->assertStringContainsString('#itil-object-container.right-collapsed .itil-right-side .switch-panel-width', $css);
+        $this->assertStringContainsString('height: calc(100% + 4px)', $css);
+        $this->assertStringNotContainsString('flex: 0 0 90px', $css);
+        $this->assertStringContainsString('#itil-object-container.right-expanded .itil-footer .switch-panel-width', $css);
     }
 
     public function testSidebarDropdownResetIsEmittedForEveryTemplate(): void

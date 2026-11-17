@@ -1,7 +1,7 @@
 {
     "id": "clean_cards",
     "name": "Clean cards",
-    "description": "Grey workspace, white rounded cards, card tab panel, Inter. Two-column forms and outlined file inputs.",
+    "description": "Grey workspace, white rounded cards, card tab panel, Inter. GLPI form spacing, outlined file inputs.",
     "colors": {
         "color_primary": "#0e7490",
         "color_secondary": "#134e4a",
@@ -18,7 +18,7 @@
         "header_style": "flat",
         "tab_preset": "card",
         "tab_item_spacing": 2,
-        "form_layout": "two_column",
+        "form_layout": "default",
         "form_sections": "accordion",
         "file_input_style": "outlined",
         "search_style": "inset_dark",

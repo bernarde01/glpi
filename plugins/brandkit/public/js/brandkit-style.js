@@ -290,13 +290,31 @@
         if (!tpl) {
             return;
         }
-        fillStyle(tpl.style || {});
-        fillColors(tpl.colors || {});
+        try {
+            fillStyle(tpl.style || {});
+            fillColors(tpl.colors || {});
+        } catch (e) { /* preview and save still run */ }
+        const preset = document.getElementById('brandkit-apply-preset');
+        if (preset) {
+            preset.value = tpl.id || '';
+        }
         applyPreviewFrom(tpl.style || {}, tpl.colors || {});
-        tryTemplate(tpl);
         document.querySelectorAll('.brandkit-gallery-card').forEach(function (card) {
             card.classList.toggle('is-active', card.getAttribute('data-template') === tpl.id);
         });
+        // Paint immediately, then persist. The preview tag is discarded on reload;
+        // the saved stylesheet is what every GLPI page actually uses.
+        tryTemplate(tpl);
+        const form = styleForm();
+        const cfg = readConfig();
+        if (!form || cfg.canEdit === false || form.dataset.brandkitApplying === '1') {
+            return;
+        }
+        form.dataset.brandkitApplying = '1';
+        setStatus('Applying “' + (tpl.name || 'template') + '”…', false);
+        window.setTimeout(function () {
+            form.submit();
+        }, 0);
     };
 
     const collectCurrent = function () {
